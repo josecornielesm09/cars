@@ -1164,8 +1164,8 @@
        desplazamientos y las escalas, que son lo que marea. */
 
     /* --- Bucle único ----------------------------------------------------- */
-    var scenes = [hero, caps, inv].filter(function (s) { return s && s._tick; });
-    var iceZones = [caps];
+    var scenes = [hero, caps].filter(function (s) { return s && s._tick; });
+    var iceZones = [];
     var raf = null;
 
     function paint() {
