@@ -390,6 +390,14 @@ html { background: var(--night); }
   object-fit: cover;
 }
 
+.hero__video {
+  background: #04060f;
+  opacity: 0;
+  transition: opacity 320ms ease;
+  will-change: opacity;
+}
+.hero__video.is-ready { opacity: 1; }
+
 /* Secuencia de telefono: todas apiladas, solo una encendida. Sin
    transicion, el cambio tiene que sentirse como reproduccion. */
 .hero__seq { position: absolute; inset: 0; z-index: 1; }
