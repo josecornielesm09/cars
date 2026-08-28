@@ -1,0 +1,59 @@
+HERO — el destape
+==================
+
+ESTADO: funcionando. No falta nada.
+
+  hero-cover.webp   30 KB · 1024x1024 · con transparencia
+                    La "lona". Se genero a partir de assets/360/frame-01.webp
+                    NO es una foto: es la silueta de la propia Tacoma,
+                    suavizada y con grano de tela encima.
+
+  hero_video.mp4    El video de dron que subiste. De aqui salieron
+                    assets/360/giro.mp4 y giro-movil.mp4.
+
+
+POR QUE UNA SILUETA Y NO UNA FOTO
+----------------------------------
+Porque sale de la MISMA imagen que se destapa. La lona calza exacto sobre
+la camioneta, cuadro por cuadro. Con dos fotos distintas tendrias que dejar
+el tripode clavado y aun asi bailaria un poco al cambiar.
+
+Ademas pesa 30 KB.
+
+
+SI ALGUN DIA QUIERES LA FOTO REAL
+----------------------------------
+Guardala aqui y cambia la ruta en script.js, bloque CONFIG:
+
+  heroCover: "assets/hero/hero-cover.jpg"
+
+Como tomarla, en 5 minutos:
+
+  1. Compra una lona o cobertor de carro. Gris o negra mate.
+     Ferreteria, 15 a 25 dolares.
+  2. Mete la Tacoma al taller o ponla contra el porton, ya de tarde.
+  3. CAMARA EN TRIPODE. Una luz apuntando desde arriba si tienes.
+  4. Foto 1: con la lona encima.
+  5. SIN MOVER LA CAMARA NI UN CENTIMETRO, quita la lona.
+  6. Foto 2: la camioneta destapada, para reemplazar heroImage.
+
+El paso 5 es todo el truco. Si mueves el tripode entre una foto y otra, el
+destape se ve como un salto en vez de como magia.
+
+  Tamano:   2400 x 1500 px o mas
+  Formato:  JPG calidad alta, menos de 600 KB
+
+
+COMO SE REGENERA LA LONA ACTUAL
+--------------------------------
+Si cambias frame-01.webp, regenera la lona con esto desde assets/:
+
+  ffmpeg -y -i 360/frame-01.webp     -f lavfi -i "gradients=s=1024x1024:c0=0x3C4767:c1=0x090C17:x0=512:y0=90:x1=512:y1=980:d=1"     -filter_complex "[0:v]format=rgba,alphaextract,gblur=sigma=14,lut=y='if(gt(val,88),255,0)',gblur=sigma=6[mask];[1:v]trim=end_frame=1,setpts=PTS-STARTPTS,format=rgb24,noise=alls=14:allf=t+u,gblur=sigma=1.6,eq=contrast=1.12:brightness=-0.02[base];[base][mask]alphamerge[out]"     -map "[out]" -frames:v 1 hero/hero-cover.png
+
+  ffmpeg -y -i hero/hero-cover.png -c:v libwebp -pix_fmt yuva420p     -lossless 0 -quality 80 -compression_level 6 hero/hero-cover.webp
+
+Que hace cada parte:
+  alphaextract    saca la silueta del recorte
+  gblur + lut     engorda y suaviza la forma, como cae la tela
+  noise           el grano que la hace parecer tela y no un sticker
+  alphamerge      pega el degradado dentro de la silueta

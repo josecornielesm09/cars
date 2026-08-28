@@ -1,0 +1,27 @@
+# Secretos — nunca deben subir
+.env
+.env.*
+
+# Notas de trabajo
+PROMPT_MAESTRO_CAR_HAUS_3D.md
+**/LEEME.txt
+.claude
+
+# Respaldos de la version anterior
+*.bak
+
+# Material fuente: la pagina usa las versiones optimizadas
+assets/360/tacoma-360-frames-01-12
+assets/gallery/*.jpg
+assets/hero/hero_video.mp4
+
+# Los recortes se sirven en WebP; los PNG de 2048px son la fuente
+assets/vehicles/*.png
+
+# El giro de 12 cuadros se sustituyo por la ficha con una sola imagen
+assets/360/frame-*.webp
+
+# Ya no se usa video en ninguna pantalla: el hero corre con secuencias
+assets/360/giro.mp4
+assets/360/giro-movil.mp4
+assets/360/giro-poster.webp

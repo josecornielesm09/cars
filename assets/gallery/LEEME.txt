@@ -1,0 +1,24 @@
+GALERÍA — "Lo que se mueve cada semana"
+=======================================
+
+Pon aquí las fotos del lote y nómbralas así:
+
+  galeria-01.jpg
+  galeria-02.jpg
+  galeria-03.jpg
+  ...
+
+Cuántas: 6 mínimo, 8 ideal. El carrusel acepta las que sean.
+Formato: JPG (no PNG: pesa de más para fotos normales).
+Forma: vertical o cuadrada. El marco es 4:5 (más alto que ancho).
+Tamaño: 1200 x 1500 px es suficiente. Menos de 400 KB por foto.
+Recorte: NO hace falta quitar el fondo. Son fotos normales.
+
+Después de subirlas, se activan en script.js:
+
+  var gallery = [
+    { src: "assets/gallery/galeria-01.jpg", caption: "Entrega en Pharr" },
+    { src: "assets/gallery/galeria-02.jpg", caption: "TRD Pro recién llegada" }
+  ];
+
+El caption es opcional y aparece abajo de la foto.

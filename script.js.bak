@@ -1,0 +1,1973 @@
+/* ==========================================================================
+   CAR HAUS LLC — Landing 3D inmersiva | Toyota Tacoma · Pharr, Texas
+   React 16 + ReactDOM 16 + React Transition Group v2 + PropTypes + bezier-easing
+   Todo por CDN. Sin JSX, sin npm, sin bundler: React.createElement en todo.
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  var e = React.createElement;
+  var CSSTransition = ReactTransitionGroup.CSSTransition;
+  var TransitionGroup = ReactTransitionGroup.TransitionGroup;
+
+  /* ==========================================================================
+     CONFIGURACIÓN — datos verificados de Car Haus LLC.
+     EDITABLE: teléfono, dirección, Facebook y unidad inicial.
+     ========================================================================== */
+  var CONFIG = {
+    brand: "Car Haus LLC",
+    phoneDisplay: "956-867-2015",
+    phoneHref: "tel:+19568672015",
+    whatsappNumber: "19568672015",
+    address: "913 W U.S. Hwy 83, Suite C, Pharr, TX 78577",
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent("913 W U.S. Hwy 83 Suite C, Pharr, TX 78577"),
+    facebookUrl: "https://www.facebook.com/Carhaus2021",
+    email: "jorgealfonsolopez94@gmail.com",
+    logo: "assets/logo/carhaus-logo.png",
+    autoRotateMs: 6000 // 0 desactiva la auto-rotación
+  };
+
+  /* ==========================================================================
+     MODELO DE DATOS — INVENTARIO EDITABLE
+     --------------------------------------------------------------------------
+     Espejo exacto de vehicles.json (única fuente de especificaciones).
+     Para actualizar el inventario: edita vehicles.json y refleja los mismos
+     objetos aquí (la página abre con doble clic, sin servidor, y fetch de un
+     archivo local queda bloqueado por el navegador).
+
+     Campos con "Actualizar" NO se muestran al visitante hasta reemplazarlos:
+       price        → precio confirmado de la unidad
+       downPayment  → enganche con crédito aprobado
+       warranty     → "3 meses: motor, transmisión y A/C" cuando aplique
+       promotion    → "4 tanques de gasolina gratis" + promotionActive:true
+       available    → false marca la unidad como VENDIDA y apaga los CTAs
+
+     frame → medido del recorte alfa del PNG, no es una especificación:
+       contact = fracción vertical donde tocan las llantas (línea de piso)
+       top     = fracción vertical donde empieza el techo
+       scale   = normaliza el tamaño aparente entre las cinco fotografías
+     ========================================================================== */
+  var vehicles = [
+    /* ------------------------------- UNIDAD 1 ------------------------------- */
+    {
+      id: "tacoma-2025-sr-red",
+      featured: true,
+      year: 2025,
+      make: "Toyota",
+      model: "Tacoma",
+      trim: "SR",
+      color: "Rojo",
+      mileage: 9299,
+      engine: "2.4L Turbo",
+      transmission: "Automática",
+      drivetrain: "",
+      cab: "Crew Cab",
+      titleType: "Rebuilt",
+      titleDisclosure: "Título rebuilt — bien reparada",
+      highlights: ["Lista para uso diario o para el trabajo"],
+      price: "Actualizar",
+      downPayment: "Actualizar",
+      warranty: "Actualizar",
+      promotion: "Actualizar",
+      promotionActive: false,
+      available: true,
+      image: "assets/vehicles/tacoma-2025-sr-red.png",
+      frame: { contact: 0.732, scale: 1.15, top: 0.294 }
+    },
+    /* ------------------------------- UNIDAD 2 ------------------------------- */
+    {
+      id: "tacoma-2021-trd-sport-white",
+      featured: false,
+      year: 2021,
+      make: "Toyota",
+      model: "Tacoma",
+      trim: "TRD Sport",
+      color: "Blanco",
+      mileage: 49524,
+      engine: "V6 3.5L",
+      transmission: "Automática",
+      drivetrain: "2WD",
+      cab: "Double Cab",
+      titleType: "Rebuilt",
+      titleDisclosure: "Título rebuilt — bien reparada",
+      highlights: [
+        "Asientos eléctricos",
+        "Cámara de reversa",
+        "Pantalla táctil",
+        "Estribos laterales",
+        "Tapa rígida para caja"
+      ],
+      price: "Actualizar",
+      downPayment: "Actualizar",
+      warranty: "Actualizar",
+      promotion: "Actualizar",
+      promotionActive: false,
+      available: true,
+      image: "assets/vehicles/tacoma-2021-trd-sport-white.png",
+      frame: { contact: 0.698, scale: 0.93, top: 0.212 }
+    },
+    /* ------------------------------- UNIDAD 3 ------------------------------- */
+    {
+      id: "tacoma-2017-trd-off-road-beige",
+      featured: false,
+      year: 2017,
+      make: "Toyota",
+      model: "Tacoma",
+      trim: "TRD Off Road",
+      color: "Beige",
+      mileage: 57429,
+      engine: "V6 3.5L",
+      transmission: "Automática",
+      drivetrain: "4x4",
+      cab: "Access Cab",
+      titleType: "Rebuilt",
+      titleDisclosure: "Título rebuilt — bien reparada profesionalmente",
+      highlights: [],
+      price: "Actualizar",
+      downPayment: "Actualizar",
+      warranty: "Actualizar",
+      promotion: "Actualizar",
+      promotionActive: false,
+      available: true,
+      image: "assets/vehicles/tacoma-2017-trd-off-road-beige.png",
+      frame: { contact: 0.700, scale: 1.03, top: 0.242 }
+    },
+    /* ------------------------------- UNIDAD 4 ------------------------------- */
+    {
+      id: "tacoma-2021-trd-off-road-gray",
+      featured: false,
+      year: 2021,
+      make: "Toyota",
+      model: "Tacoma",
+      trim: "TRD Off Road",
+      color: "Gris",
+      mileage: 95626,
+      engine: "V6 3.5L",
+      transmission: "Automática",
+      drivetrain: "4x4",
+      cab: "Double Cab",
+      titleType: "Rebuilt",
+      titleDisclosure: "Título rebuilt — muy bien reparada",
+      highlights: [
+        "Cámara de reversa",
+        "Pantalla táctil",
+        "Estribos laterales",
+        "Lista para el trabajo, la aventura o el uso diario"
+      ],
+      price: "Actualizar",
+      downPayment: "Actualizar",
+      warranty: "Actualizar",
+      promotion: "Actualizar",
+      promotionActive: false,
+      available: true,
+      image: "assets/vehicles/tacoma-2021-trd-off-road-gray.png",
+      frame: { contact: 0.722, scale: 1.08, top: 0.296 }
+    },
+    /* ------------------------------- UNIDAD 5 ------------------------------- */
+    {
+      id: "tacoma-2019-trd-pro-blue",
+      featured: false,
+      year: 2019,
+      make: "Toyota",
+      model: "Tacoma",
+      trim: "TRD Pro",
+      color: "Azul",
+      mileage: 46101,
+      engine: "V6 3.5L",
+      transmission: "",
+      drivetrain: "4x4",
+      cab: "",
+      titleType: "Rebuilt",
+      titleDisclosure: "Título rebuilt — bien reparada",
+      highlights: [
+        "Quemacocos",
+        "Navegación",
+        "Asientos de piel con calefacción",
+        "Sonido Premium JBL",
+        "Monitor de punto ciego",
+        "Radar Cruise Control",
+        "Crawl Control",
+        "Multi-Terrain Select",
+        "Snorkel",
+        "Bolsas de aire intactas"
+      ],
+      price: "Actualizar",
+      downPayment: "Actualizar",
+      warranty: "Actualizar",
+      promotion: "Actualizar",
+      promotionActive: false,
+      available: true,
+      image: "assets/vehicles/tacoma-2019-trd-pro-blue.png",
+      frame: { contact: 0.766, scale: 0.93, top: 0.242 }
+    }
+  ];
+
+  /* ==========================================================================
+     TICKER — EDITABLE
+     Marcas y versiones que maneja el lote. Escribe aquí solo lo que realmente
+     vendan: esta cinta es lo primero que lee el visitante después del hero.
+     ========================================================================== */
+  var marquee = [
+    "Toyota", "Tacoma", "TRD Pro", "TRD Off Road", "TRD Sport",
+    "SR", "4x4", "2WD", "Double Cab", "Access Cab", "Crew Cab"
+  ];
+
+  /* ==========================================================================
+     GALERÍA — EDITABLE
+     Segundo carrusel, para enseñar variedad: entregas, unidades vendidas,
+     el lote, detalles. Agrega objetos con la ruta de cada foto:
+       { src: "assets/gallery/entrega-01.jpg", caption: "Entrega en Pharr" }
+     Mientras esté vacío se muestran espacios reservados, nunca fotos de stock.
+     ========================================================================== */
+  var gallery = [];
+
+  /* ==========================================================================
+     Utilidades
+     ========================================================================== */
+
+  /* Un campo pendiente nunca llega al visitante. */
+  function ready(value) {
+    if (value === null || value === undefined) return false;
+    var s = String(value).trim();
+    return s !== "" && s.toLowerCase() !== "actualizar";
+  }
+
+  function reduceMotion() {
+    return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
+  function thousands(n) {
+    return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  /* Nombre corto para la navegación; el año desempata versiones repetidas. */
+  function shortName(v) {
+    return v.trim.toUpperCase();
+  }
+  function isRepeatedTrim(v) {
+    var n = 0;
+    for (var i = 0; i < vehicles.length; i++) if (vehicles[i].trim === v.trim) n++;
+    return n > 1;
+  }
+
+  function trimLine(v) {
+    return v.trim + (ready(v.drivetrain) ? " · " + v.drivetrain : "");
+  }
+
+  function altText(v) {
+    return (
+      v.year + " " + v.make + " " + v.model + " " + v.trim +
+      (ready(v.drivetrain) ? " " + v.drivetrain : "") +
+      (ready(v.color) ? " color " + v.color.toLowerCase() : "") +
+      " en Car Haus LLC, Pharr, Texas"
+    );
+  }
+
+  function whatsappUrl(v) {
+    var msg =
+      "Hola, vi la " + v.year + " Toyota Tacoma " + v.trim +
+      (ready(v.drivetrain) ? " " + v.drivetrain : "") +
+      " en la página de Car Haus. ¿Sigue disponible? Quiero conocer precio, down payment y requisitos.";
+    return "https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg);
+  }
+
+  /* dataLayer: parámetros de la unidad activa, nunca datos personales. */
+  function track(name, v, extra) {
+    if (!window.dataLayer || typeof window.dataLayer.push !== "function") return;
+    var payload = { event: name };
+    if (v) {
+      payload.vehicle_id = v.id;
+      payload.vehicle_year = v.year;
+      payload.vehicle_trim = v.trim;
+      payload.vehicle_drivetrain = v.drivetrain || "";
+    }
+    if (extra) for (var k in extra) if (Object.prototype.hasOwnProperty.call(extra, k)) payload[k] = extra[k];
+    window.dataLayer.push(payload);
+  }
+
+  /* ==========================================================================
+     Datos comerciales visibles: precio y garantía solo si están confirmados.
+     ========================================================================== */
+  function factsFor(v) {
+    var out = [];
+    if (ready(v.price)) {
+      out.push({ key: "price", count: Number(String(v.price).replace(/[^0-9.]/g, "")), prefix: "$", label: "Precio" });
+    }
+    out.push({ key: "trim", text: trimLine(v).toUpperCase(), label: "Versión" });
+    if (ready(v.warranty)) {
+      out.push({ key: "warranty", text: "3 meses", label: "Motor · transmisión · A/C" });
+    }
+    if (out.length < 3 && typeof v.mileage === "number") {
+      out.push({ key: "mileage", count: v.mileage, suffix: "MI", label: "Millaje" });
+    }
+    if (out.length < 3 && ready(v.engine)) {
+      out.push({ key: "engine", text: v.engine.toUpperCase(), label: "Motor" });
+    }
+    return out.slice(0, 3);
+  }
+
+  function badgesFor(v, options) {
+    var list = [{ key: "inspected", text: "Inspeccionada" }];
+    if (ready(v.warranty)) list.push({ key: "warranty", text: "Garantía 3 meses" });
+    if (!options || !options.compact) list.push({ key: "finance", text: "Financiamiento disponible" });
+    if (ready(v.titleType) && v.titleType.toLowerCase() === "rebuilt") {
+      list.push({ key: "rebuilt", text: "Título rebuilt", action: true });
+    }
+    if (v.promotionActive && ready(v.promotion)) list.push({ key: "promo", text: "Promo: " + v.promotion });
+    if (v.available === false) list.push({ key: "sold", text: "Vendida", sold: true });
+    return list;
+  }
+
+  /* ==========================================================================
+     Contador numérico — requestAnimationFrame + BezierEasing(0.4,-0.7,0.1,1.5)
+     ========================================================================== */
+  var easeOvershoot =
+    typeof BezierEasing === "function" ? BezierEasing(0.4, -0.7, 0.1, 1.5) : function (t) { return t; };
+
+  function Counter(props) {
+    var target = props.value;
+    var st = React.useState(reduceMotion() ? target : 0);
+    var value = st[0], setValue = st[1];
+
+    React.useEffect(function () {
+      if (reduceMotion()) { setValue(target); return; }
+      var raf = null, start = null, dur = 1100;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min(1, (ts - start) / dur);
+        setValue(Math.max(0, target * easeOvershoot(p)));
+        if (p < 1) raf = window.requestAnimationFrame(step);
+      }
+      raf = window.requestAnimationFrame(step);
+      return function () { if (raf) window.cancelAnimationFrame(raf); };
+    }, [target]);
+
+    return thousands(value);
+  }
+  Counter.propTypes = { value: PropTypes.number.isRequired };
+
+  /* ==========================================================================
+     Nieve fina: la atmósfera del logo, no partículas genéricas
+     ========================================================================== */
+  function Snow() {
+    var flakes = React.useMemo(function () {
+      var a = [];
+      for (var i = 0; i < 18; i++) {
+        a.push({ left: (i * 5.7 + 3) % 100, delay: (i % 9) * 1.4, dur: 13 + (i % 6) * 3.4, size: i % 3 === 0 ? 3 : 2 });
+      }
+      return a;
+    }, []);
+    return e(
+      "div",
+      { className: "snow", "aria-hidden": "true" },
+      flakes.map(function (f, i) {
+        return e("i", {
+          key: i,
+          style: {
+            left: f.left + "%",
+            width: f.size + "px",
+            height: f.size + "px",
+            animationDelay: f.delay + "s",
+            animationDuration: f.dur + "s"
+          }
+        });
+      })
+    );
+  }
+
+  /* ==========================================================================
+     Iconos
+     ========================================================================== */
+  function IconWhatsapp() {
+    return e(
+      "svg",
+      { viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false", fill: "currentColor" },
+      e("path", {
+        d: "M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.33 4.96L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm0 18.02a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.11.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24 4.54 0 8.23 3.7 8.23 8.24 0 4.54-3.69 8.24-8.24 8.24Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.35-.77-1.84-.2-.49-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03s.87 2.35.99 2.51c.12.17 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.29Z"
+      })
+    );
+  }
+  function IconPhone() {
+    return e(
+      "svg",
+      { viewBox: "0 0 24 24", "aria-hidden": "true", focusable: "false", fill: "currentColor" },
+      e("path", {
+        d: "M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.4.6 3.6.6.6 0 1 .5 1 1V20c0 .6-.4 1-1 1C10.7 21 3 13.3 3 4c0-.6.5-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.4 0 .8-.2 1l-2.3 2.2Z"
+      })
+    );
+  }
+
+  /* ==========================================================================
+     Fotografía de la unidad + reflejo real sobre el piso
+     ========================================================================== */
+  function UnitPhoto(props) {
+    var v = props.vehicle;
+    var decorative = !!props.decorative;
+    var st = React.useState(false);
+    var failed = st[0], setFailed = st[1];
+
+    if (failed) {
+      // Nunca se carga una imagen externa de reemplazo.
+      return e("div", { className: "photo-pending" }, "Foto de unidad pendiente");
+    }
+
+    var styleVars = {
+      "--contact": v.frame ? v.frame.contact : 0.72,
+      "--scale": v.frame ? v.frame.scale : 1
+    };
+
+    return e(
+      React.Fragment,
+      null,
+      e("img", {
+        className: "unit-mirror",
+        src: v.image,
+        alt: "",
+        "aria-hidden": "true",
+        width: 500,
+        height: 500,
+        style: styleVars,
+        draggable: false
+      }),
+      e("img", {
+        className: "unit-photo",
+        src: v.image,
+        alt: decorative ? "" : altText(v),
+        "aria-hidden": decorative ? "true" : undefined,
+        width: 500,
+        height: 500,
+        style: styleVars,
+        loading: props.priority ? "eager" : "lazy",
+        decoding: "async",
+        draggable: false,
+        onError: function () { setFailed(true); }
+      })
+    );
+  }
+  UnitPhoto.propTypes = { vehicle: PropTypes.object.isRequired, priority: PropTypes.bool, decorative: PropTypes.bool };
+
+  /* ==========================================================================
+     Menú
+     ========================================================================== */
+  function MenuPanel(props) {
+    var panelRef = React.useRef(null);
+
+    React.useEffect(function () {
+      function onKey(ev) { if (ev.key === "Escape") props.onClose(); }
+      document.addEventListener("keydown", onKey);
+      var first = panelRef.current && panelRef.current.querySelector("button, a");
+      if (first) first.focus();
+      return function () { document.removeEventListener("keydown", onKey); };
+    }, []);
+
+    /* El menú navega a secciones reales de la página, nunca a páginas ficticias. */
+    var sections = [
+      { hash: "#inventario", label: "Inventario", hint: vehicles.length + " Tacomas" },
+      { hash: "#como-comprar", label: "Cómo comprar", hint: "4 pasos" },
+      { hash: "#requisitos", label: "Requisitos", hint: "Documentos" },
+      { hash: "#por-que", label: "Garantía", hint: "Según la unidad" },
+      { hash: "#titulos", label: "Títulos rebuilt", hint: "Qué significan" },
+      { hash: "#ubicacion", label: "Ubicación", hint: "Pharr, TX" }
+    ];
+
+    return e(
+      "div",
+      {
+        className: "menu-overlay",
+        onMouseDown: function (ev) { if (ev.target === ev.currentTarget) props.onClose(); }
+      },
+      e(
+        "div",
+        { className: "menu-panel", role: "dialog", "aria-modal": "true", "aria-label": "Menú de Car Haus", ref: panelRef },
+        e(
+          "div",
+          { className: "menu-head" },
+          e(
+            "div",
+            null,
+            e("h2", { className: "menu-title" }, "Car Haus"),
+            e("p", { className: "menu-subtitle" }, "Pharr, Texas")
+          ),
+          e("button", { type: "button", className: "menu-close", onClick: props.onClose, "aria-label": "Cerrar menú" }, "✕")
+        ),
+
+        sections.map(function (item) {
+          return e(
+            "button",
+            {
+              key: item.hash,
+              type: "button",
+              className: "menu-link",
+              onClick: function () { props.onNavigate(item.hash); }
+            },
+            item.label,
+            e("span", null, item.hint)
+          );
+        }),
+
+        e(
+          "a",
+          { className: "menu-link", href: CONFIG.facebookUrl, target: "_blank", rel: "noopener noreferrer" },
+          "Facebook",
+          e("span", null, "@Carhaus2021")
+        ),
+
+        e(
+          "a",
+          {
+            className: "menu-link",
+            href: whatsappUrl(props.vehicle),
+            target: "_blank",
+            rel: "noopener noreferrer",
+            onClick: function () { track("whatsapp_click", props.vehicle, { source: "menu" }); }
+          },
+          "WhatsApp",
+          e("span", null, CONFIG.phoneDisplay)
+        ),
+
+        e(
+          "div",
+          { className: "menu-foot" },
+          e("b", null, "Visítanos"),
+          e("p", { style: { margin: "0 0 6px" } }, CONFIG.address),
+          e("p", { style: { margin: "0 0 6px" } }, "Teléfono y WhatsApp: " + CONFIG.phoneDisplay),
+          e("p", { style: { margin: "0 0 6px" } }, CONFIG.email),
+          e("p", { style: { margin: 0 } }, "Atendemos Pharr, McAllen, Mission, Edinburg, Harlingen y todo el Rio Grande Valley.")
+        )
+      )
+    );
+  }
+  MenuPanel.propTypes = {
+    vehicle: PropTypes.object.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onNavigate: PropTypes.func.isRequired
+  };
+
+
+  /* ==========================================================================
+     Secciones de la landing
+     --------------------------------------------------------------------------
+     Contenido tomado de la página pública de Car Haus en Facebook
+     (facebook.com/Carhaus2021): descripción del negocio, años de experiencia,
+     teléfono, WhatsApp, correo, dirección y valoración. Nada inventado.
+     ========================================================================== */
+
+  /* Revela cada sección al entrar en pantalla, sin librerías. */
+  function useReveal() {
+    var ref = React.useRef(null);
+    React.useEffect(function () {
+      var node = ref.current;
+      if (!node) return;
+      if (reduceMotion() || typeof IntersectionObserver === "undefined") {
+        node.setAttribute("data-visible", "true");
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+          if (en.isIntersecting) {
+            en.target.setAttribute("data-visible", "true");
+            io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.16 });
+      io.observe(node);
+      return function () { io.disconnect(); };
+    }, []);
+    return ref;
+  }
+
+  /* Trazo de marcador: el mismo gesto que hacen sobre el parabrisas. */
+  function MarkerCircle() {
+    return e(
+      "svg",
+      { className: "figure-mark", viewBox: "0 0 120 90", preserveAspectRatio: "none", "aria-hidden": "true", focusable: "false" },
+      e("path", { d: "M96 12C80 4 44 2 24 12 4 22 2 52 14 68c12 16 52 20 76 12 22-8 30-30 24-46" })
+    );
+  }
+
+  /* Marco hexagonal de las flechas del escaparate. */
+  function HexFrame() {
+    return e(
+      "svg",
+      { className: "hex-frame", viewBox: "0 0 100 112", "aria-hidden": "true", focusable: "false" },
+      e("path", {
+        d: "M50 2 L96 29 L96 83 L50 110 L4 83 L4 29 Z",
+        fill: "none", stroke: "currentColor", strokeWidth: "2"
+      })
+    );
+  }
+
+  /* Tacómetro: la aguja barre una vez cuando la sección entra en pantalla.
+     El arco mide 240 unidades; en reposo queda a tres cuartos. */
+  function Tachometer() {
+    var ticks = [];
+    for (var t = 0; t <= 8; t++) {
+      var a = (-138 + t * 24) * Math.PI / 180;
+      var r1 = t % 2 === 0 ? 62 : 68;
+      ticks.push(
+        e("line", {
+          key: t,
+          className: "tach-tick",
+          x1: 100 + Math.cos(a) * r1, y1: 92 + Math.sin(a) * r1,
+          x2: 100 + Math.cos(a) * 76, y2: 92 + Math.sin(a) * 76
+        })
+      );
+    }
+    return e(
+      "div",
+      { className: "tach" },
+      e(
+        "svg",
+        {
+          className: "tach-dial", viewBox: "0 0 200 116",
+          style: { "--arc-len": 240, "--arc-rest": 72 },
+          "aria-hidden": "true", focusable: "false"
+        },
+        e("path", { className: "tach-arc", d: "M24 92 A 76 76 0 0 1 176 92" }),
+        e("path", { className: "tach-fill", d: "M24 92 A 76 76 0 0 1 176 92" }),
+        ticks,
+        e("line", { className: "tach-needle", x1: "100", y1: "92", x2: "100", y2: "34" }),
+        e("circle", { cx: "100", cy: "92", r: "5", fill: "var(--snow)" })
+      ),
+      e(
+        "p",
+        { className: "tach-readout" },
+        "Del primer mensaje a las llaves",
+        e("b", null, "4 pasos")
+      )
+    );
+  }
+
+  /* Sello de tinta: el gesto de un documento estampado. */
+  function RebuiltStamp() {
+    return e(
+      "svg",
+      { className: "stamp", viewBox: "0 0 260 132", "aria-hidden": "true", focusable: "false" },
+      e("rect", {
+        x: "5", y: "5", width: "250", height: "122",
+        fill: "none", stroke: "currentColor", strokeWidth: "4"
+      }),
+      e("rect", {
+        x: "15", y: "15", width: "230", height: "102",
+        fill: "none", stroke: "currentColor", strokeWidth: "1.5", opacity: ".7"
+      }),
+      e(
+        "text",
+        {
+          x: "130", y: "68", textAnchor: "middle", fill: "currentColor",
+          style: { font: "800 44px \"Big Shoulders Display\", sans-serif", letterSpacing: "4px" }
+        },
+        "REBUILT"
+      ),
+      e(
+        "text",
+        {
+          x: "130", y: "97", textAnchor: "middle", fill: "currentColor",
+          style: { font: "700 13px \"Roboto Mono\", monospace", letterSpacing: "3px" }
+        },
+        "TÍTULO DECLARADO"
+      )
+    );
+  }
+
+  /* Escudo de la US 83: el lote está justo sobre esa carretera. */
+  function RouteShield() {
+    return e(
+      "svg",
+      { viewBox: "0 0 74 82", "aria-hidden": "true", focusable: "false" },
+      e("path", {
+        d: "M37 2C24 2 12 6 4 10v34c0 20 15 30 33 36 18-6 33-16 33-36V10C62 6 50 2 37 2z",
+        fill: "none", stroke: "rgba(168,190,255,.5)", strokeWidth: "2"
+      }),
+      e(
+        "text",
+        {
+          x: "37", y: "30", textAnchor: "middle",
+          fill: "#A8BEFF",
+          style: { font: "600 11px \"Barlow Condensed\", sans-serif", letterSpacing: "2px" }
+        },
+        "U.S."
+      ),
+      e(
+        "text",
+        {
+          x: "37", y: "62", textAnchor: "middle",
+          fill: "#F2F5FF",
+          style: { font: "800 34px \"Big Shoulders Display\", sans-serif" }
+        },
+        "83"
+      )
+    );
+  }
+
+  /* Carrusel horizontal: scroll nativo con imanes, flechas y barra de avance.
+     En móvil se desliza con el dedo sin JavaScript de por medio. */
+  function useCarousel() {
+    var trackRef = React.useRef(null);
+    var st = React.useState({ progress: 0, atStart: true, atEnd: false });
+    var state = st[0], setState = st[1];
+
+    var measure = React.useCallback(function () {
+      var el = trackRef.current;
+      if (!el) return;
+      var max = el.scrollWidth - el.clientWidth;
+      var p = max > 4 ? el.scrollLeft / max : 0;
+      setState({ progress: p, atStart: el.scrollLeft <= 4, atEnd: max - el.scrollLeft <= 4 });
+    }, []);
+
+    React.useEffect(function () {
+      var el = trackRef.current;
+      if (!el) return;
+      measure();
+      el.addEventListener("scroll", measure, { passive: true });
+      window.addEventListener("resize", measure);
+      return function () {
+        el.removeEventListener("scroll", measure);
+        window.removeEventListener("resize", measure);
+      };
+    }, [measure]);
+
+    function step(dir) {
+      var el = trackRef.current;
+      if (!el) return;
+      var card = el.firstChild;
+      var amount = card ? card.getBoundingClientRect().width + 18 : el.clientWidth * 0.8;
+      el.scrollBy({ left: dir * amount, behavior: reduceMotion() ? "auto" : "smooth" });
+    }
+
+    return { ref: trackRef, state: state, step: step };
+  }
+
+  function CarouselControls(props) {
+    return e(
+      "div",
+      { className: "rail-controls" },
+      e(
+        "div",
+        { className: "rail-progress", "aria-hidden": "true" },
+        e("span", { style: { transform: "scaleX(" + Math.max(0.06, props.progress) + ")" } })
+      ),
+      e(
+        "div",
+        { className: "rail-arrows" },
+        e(
+          "button",
+          {
+            type: "button", className: "rail-arrow",
+            "aria-label": "Ver anteriores", disabled: props.atStart,
+            onClick: function () { props.step(-1); }
+          },
+          "←"
+        ),
+        e(
+          "button",
+          {
+            type: "button", className: "rail-arrow",
+            "aria-label": "Ver siguientes", disabled: props.atEnd,
+            onClick: function () { props.step(1); }
+          },
+          "→"
+        )
+      )
+    );
+  }
+
+  /* Cinta de marcas y versiones: se repite dos veces para que el bucle
+     no tenga costura. Se detiene al pasar el cursor y con motion reducido. */
+  function BrandTicker() {
+    var items = marquee.concat(marquee);
+    return e(
+      "div",
+      { className: "ticker", "aria-hidden": "true" },
+      e(
+        "div",
+        { className: "ticker-track" },
+        items.map(function (m, i) {
+          return e(
+            "span",
+            { key: i, className: "ticker-item" },
+            m,
+            e("i", { className: "ticker-sep" })
+          );
+        })
+      )
+    );
+  }
+
+  function SectionHead(props) {
+    return e(
+      "header",
+      { className: "section-head" },
+      e("p", { className: "section-eyebrow" }, props.eyebrow),
+      e("h2", { className: "section-title" }, props.title),
+      props.lead ? e("p", { className: "section-lead" }, props.lead) : null
+    );
+  }
+
+  /* -------------------------------- Inventario ----------------------------
+     Escaparate: una unidad por pantalla, se desliza en horizontal.
+     Las pestañas filtran por tracción sin sacar ninguna unidad del carril.
+     ------------------------------------------------------------------------ */
+  function InventorySection(props) {
+    var ref = useReveal();
+    var car = useCarousel();
+
+    var filterState = React.useState("todas");
+    var filter = filterState[0], setFilter = filterState[1];
+
+    var tabs = React.useMemo(function () {
+      var found = [];
+      vehicles.forEach(function (v) {
+        if (ready(v.drivetrain) && found.indexOf(v.drivetrain) === -1) found.push(v.drivetrain);
+      });
+      return [{ id: "todas", label: "Todas" }].concat(
+        found.map(function (d) { return { id: d, label: d }; })
+      );
+    }, []);
+
+    var shown = vehicles.filter(function (v) {
+      return filter === "todas" || v.drivetrain === filter;
+    });
+
+    /* Al cambiar de pestaña el carril vuelve al principio. */
+    React.useEffect(function () {
+      if (car.ref.current) car.ref.current.scrollLeft = 0;
+    }, [filter]);
+
+    var index = Math.min(shown.length - 1, Math.round(car.state.progress * (shown.length - 1)));
+
+    return e(
+      "section",
+      { className: "showcase", id: "inventario", ref: ref },
+
+      e(
+        "header",
+        { className: "showcase-head" },
+        e(
+          "div",
+          null,
+          e("p", { className: "section-eyebrow" }, "Inventario"),
+          e("h2", { className: "showcase-title" }, "Las Tacomas que hay en piso")
+        ),
+        e(
+          "div",
+          { className: "showcase-tabs", role: "tablist", "aria-label": "Filtrar por tracción" },
+          tabs.map(function (t) {
+            return e(
+              "button",
+              {
+                key: t.id,
+                type: "button",
+                role: "tab",
+                className: "showcase-tab",
+                "aria-selected": filter === t.id ? "true" : "false",
+                onClick: function () { setFilter(t.id); }
+              },
+              t.label
+            );
+          })
+        )
+      ),
+
+      e(
+        "ul",
+        {
+          className: "showcase-track",
+          ref: car.ref,
+          tabIndex: 0,
+          role: "group",
+          "aria-label": "Unidades disponibles"
+        },
+        shown.map(function (v) {
+          var sold = v.available === false;
+          var realIndex = vehicles.indexOf(v);
+          return e(
+            "li",
+            { key: v.id, className: "slide" + (sold ? " slide--sold" : "") },
+
+            e(
+              "header",
+              { className: "slide-head" },
+              e("span", { className: "slide-year" }, v.year),
+              e(
+                "h3",
+                { className: "slide-name" },
+                "Tacoma ",
+                e("span", null, v.trim + (ready(v.drivetrain) ? " · " + v.drivetrain : ""))
+              )
+            ),
+
+            e(
+              "div",
+              { className: "slide-stage" },
+              e("span", { className: "slide-glow", "aria-hidden": "true" }),
+              e("span", { className: "slide-floor", "aria-hidden": "true" }),
+              e(
+                "span",
+                {
+                  className: "slide-figure",
+                  /* Recorta el margen transparente del PNG justo bajo las
+                     llantas, usando la línea de contacto ya medida. */
+                  style: {
+                    "--top": Math.max(0, (v.frame && v.frame.top ? v.frame.top : 0.24) - 0.035),
+                    "--cut": (v.frame ? v.frame.contact : 0.72) + 0.045
+                  }
+                },
+                e("img", {
+                  className: "slide-photo",
+                  src: v.image,
+                  alt: altText(v),
+                  width: 500, height: 500,
+                  loading: "lazy", decoding: "async", draggable: false
+                })
+              )
+            ),
+
+            e(
+              "ul",
+              { className: "slide-specs" },
+              typeof v.mileage === "number"
+                ? e("li", { key: "mi" }, e("b", null, thousands(v.mileage) + " mi"), e("span", null, "Millaje"))
+                : null,
+              ready(v.engine) ? e("li", { key: "en" }, e("b", null, v.engine), e("span", null, "Motor")) : null,
+              ready(v.cab) ? e("li", { key: "cab" }, e("b", null, v.cab), e("span", null, "Cabina")) : null,
+              ready(v.titleType) ? e("li", { key: "ti" }, e("b", null, v.titleType), e("span", null, "Título")) : null,
+              ready(v.price) ? e("li", { key: "pr" }, e("b", null, v.price), e("span", null, "Precio")) : null
+            ),
+
+            e(
+              "div",
+              { className: "slide-links" },
+              e(
+                "button",
+                { type: "button", className: "line-link", onClick: function () { props.onShow(realIndex); } },
+                "Verla en el escenario"
+              ),
+              sold
+                ? e("span", { className: "line-link line-link--sold" }, "Vendida")
+                : e(
+                    "a",
+                    {
+                      className: "line-link",
+                      href: whatsappUrl(v),
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      onClick: function () { track("whatsapp_click", v, { source: "escaparate" }); }
+                    },
+                    "Cotizar por WhatsApp"
+                  ),
+              e(
+                "a",
+                {
+                  className: "line-link",
+                  href: CONFIG.phoneHref,
+                  onClick: function () { track("phone_click", v, { source: "escaparate" }); }
+                },
+                "Llamar"
+              )
+            )
+          );
+        })
+      ),
+
+      /* Flechas hexagonales a los costados, como en la referencia */
+      e(
+        "button",
+        {
+          type: "button", className: "hex-arrow hex-arrow--prev",
+          "aria-label": "Unidad anterior", disabled: car.state.atStart,
+          onClick: function () { car.step(-1); }
+        },
+        e(HexFrame, null),
+        e("span", { className: "hex-glyph" }, "‹")
+      ),
+      e(
+        "button",
+        {
+          type: "button", className: "hex-arrow hex-arrow--next",
+          "aria-label": "Unidad siguiente", disabled: car.state.atEnd,
+          onClick: function () { car.step(1); }
+        },
+        e(HexFrame, null),
+        e("span", { className: "hex-glyph" }, "›")
+      ),
+
+      e(
+        "div",
+        { className: "showcase-foot" },
+        e(
+          "p",
+          { className: "showcase-count" },
+          e("b", null, ("0" + (index + 1)).slice(-2)),
+          e("i", null, "/"),
+          ("0" + shown.length).slice(-2)
+        ),
+        e(
+          "div",
+          { className: "rail-progress", "aria-hidden": "true" },
+          e("span", { style: { transform: "scaleX(" + Math.max(0.08, car.state.progress) + ")" } })
+        ),
+        e(
+          "p",
+          { className: "showcase-hint" },
+          "Desliza o usa las flechas"
+        )
+      )
+    );
+  }
+
+  /* --------------------------------- Galería ------------------------------ */
+  function GallerySection() {
+    var ref = useReveal();
+    var car = useCarousel();
+    var slots = gallery.length ? gallery : [1, 2, 3, 4, 5, 6];
+
+    return e(
+      "section",
+      { className: "band band--gallery", id: "galeria", ref: ref },
+      e(SectionHead, {
+        eyebrow: "En el lote",
+        title: "Lo que se mueve cada semana",
+        lead: "Entregas, unidades que acaban de entrar y detalles de cada camioneta."
+      }),
+      e(CarouselControls, { progress: car.state.progress, atStart: car.state.atStart, atEnd: car.state.atEnd, step: car.step }),
+      e(
+        "ul",
+        {
+          className: "gallery-track",
+          ref: car.ref,
+          tabIndex: 0,
+          role: "group",
+          "aria-label": "Carrusel de fotos del lote"
+        },
+        slots.map(function (g, i) {
+          if (gallery.length) {
+            return e(
+              "li",
+              { key: i, className: "gallery-item" },
+              e("img", { src: g.src, alt: g.caption || "", loading: "lazy", decoding: "async" }),
+              g.caption ? e("figcaption", { className: "gallery-caption" }, g.caption) : null
+            );
+          }
+          return e(
+            "li",
+            { key: i, className: "gallery-item gallery-item--empty" },
+            e("span", { className: "gallery-slot" }, ("0" + (i + 1)).slice(-2)),
+            e("span", null, "Foto pendiente")
+          );
+        })
+      )
+    );
+  }
+
+  /* ------------------------------ Por qué Car Haus ------------------------ */
+  function TrustSection() {
+    var ref = useReveal();
+    return e(
+      "section",
+      { className: "band band--trust", id: "por-que", ref: ref },
+      e(
+        "div",
+        { className: "trust-split" },
+        e(
+          "div",
+          null,
+          e(SectionHead, {
+            eyebrow: "Por qué Car Haus",
+            title: "Treinta años vendiendo camionetas en el Valle",
+            lead: "Somos un dealer de Pharr especializado en Toyota Tacoma. Cada unidad entra inspeccionada y te decimos de frente qué tipo de título trae antes de que preguntes."
+          }),
+          e(
+            "ul",
+            { className: "figure-row" },
+            e(
+              "li",
+              null,
+              e(
+                "span",
+                { className: "figure-wrap" },
+                e(MarkerCircle, null),
+                e("span", { className: "figure-value" }, "30+")
+              ),
+              e("span", { className: "figure-label" }, "Años de experiencia")
+            ),
+            e("li", null, e("span", { className: "figure-value" }, "100%"), e("span", { className: "figure-label" }, "Recomendado, 6 opiniones")),
+            e("li", null, e("span", { className: "figure-value" }, "1,300"), e("span", { className: "figure-label" }, "Seguidores en Facebook"))
+          ),
+          e("p", { className: "figure-source" }, "Cifras publicadas en la página de Car Haus en Facebook.")
+        ),
+        e(
+          "ul",
+          { className: "pillars" },
+          e(
+            "li",
+            null,
+            e("h3", null, "Inspeccionadas antes de venderse"),
+            e("p", null, "Revisamos cada camioneta y la entregamos lista para manejar. Si algo se reparó, te lo enseñamos.")
+          ),
+          e(
+            "li",
+            null,
+            e("h3", null, "El título, de frente"),
+            e("p", null, "Varias unidades traen título rebuilt. No lo escondemos: te explicamos qué se reparó y cómo quedó.")
+          ),
+          e(
+            "li",
+            null,
+            e("h3", null, "Financiamiento con financieras"),
+            e("p", null, "Trabajamos con compañías financieras y la aprobación depende de tu crédito. No somos Buy Here Pay Here ni financiamos en casa.")
+          ),
+          e(
+            "li",
+            null,
+            e("h3", null, "Garantía según la unidad"),
+            e("p", null, "Hay camionetas que salen con 3 meses en motor, transmisión y aire acondicionado. Pregúntanos si la que te gustó la incluye.")
+          )
+        )
+      )
+    );
+  }
+
+  /* -------------------------------- Cómo comprar -------------------------- */
+  function HowToSection() {
+    var ref = useReveal();
+    var steps = [
+      { t: "Escríbenos por WhatsApp", d: "Mándanos la unidad que te interesa. Te respondemos con lo que hay disponible y sus condiciones." },
+      { t: "Ven a verla a Pharr", d: "Agendamos tu visita, la manejas y revisas el vehículo con calma en el lote." },
+      { t: "Revisamos el historial juntos", d: "Te mostramos el tipo de título y las reparaciones de esa camioneta en particular." },
+      { t: "Aplicamos a financiamiento", d: "Enviamos tu solicitud a las compañías financieras. La aprobación depende de tu crédito." }
+    ];
+    return e(
+      "section",
+      { className: "band band--howto", id: "como-comprar", ref: ref },
+      e(Tachometer, null),
+      e(SectionHead, {
+        eyebrow: "Cómo comprar",
+        title: "Cuatro pasos, sin vueltas",
+        lead: "Así se ve el proceso completo, desde el primer mensaje hasta que te llevas la camioneta."
+      }),
+      e(
+        "ol",
+        { className: "steps" },
+        steps.map(function (s2, i) {
+          return e(
+            "li",
+            { key: i },
+            e("span", { className: "step-number" }, e("small", null, "PASO"), i + 1),
+            e("h3", null, s2.t),
+            e("p", null, s2.d)
+          );
+        })
+      ),
+      e(
+        "div",
+        { className: "requirements", id: "requisitos" },
+        e("h3", null, "Lo que necesitas traer"),
+        e(
+          "ul",
+          null,
+          e("li", null, "ID o licencia de manejo"),
+          e("li", null, "Seguro Social"),
+          e("li", null, "Comprobante de ingresos"),
+          e("li", null, "Comprobante de domicilio")
+        ),
+        e("p", { className: "requirements-note" }, "Financiamiento mediante financieras, sujeto a aprobación de crédito.")
+      )
+    );
+  }
+
+  /* ------------------------------ Título rebuilt -------------------------- */
+  function RebuiltSection() {
+    var ref = useReveal();
+    return e(
+      "section",
+      { className: "band band--rebuilt", id: "titulos", ref: ref },
+      e(
+        "div",
+        { className: "rebuilt-split" },
+        e(
+          "div",
+          null,
+          e(RebuiltStamp, null),
+          e(SectionHead, { eyebrow: "Transparencia", title: "Qué significa un título rebuilt" }),
+          e(
+            "p",
+            { className: "rebuilt-copy" },
+            "Un título rebuilt indica que el vehículo fue declarado pérdida total por una aseguradora y después se reparó y pasó inspección para volver a circular legalmente."
+          ),
+          e(
+            "p",
+            { className: "rebuilt-copy" },
+            "Es la razón por la que estas camionetas cuestan menos que una de título limpio. También es la razón por la que te explicamos, unidad por unidad, qué se reparó y en qué estado quedó. Tú decides con la información completa."
+          )
+        ),
+        e(
+          "ul",
+          { className: "rebuilt-points" },
+          e("li", null, "Te decimos el tipo de título antes de que preguntes."),
+          e("li", null, "Puedes revisar el vehículo con tu mecánico de confianza."),
+          e("li", null, "Las unidades se entregan inspeccionadas y listas para manejar."),
+          e("li", null, "Pregunta por el historial de la unidad que te interesa: lo revisamos contigo.")
+        )
+      )
+    );
+  }
+
+  /* ------------------------------- Ubicación ------------------------------ */
+  function LocationSection(props) {
+    var ref = useReveal();
+    return e(
+      "section",
+      { className: "band band--location", id: "ubicacion", ref: ref },
+      e(
+        "div",
+        { className: "location-split" },
+        e(
+          "div",
+          null,
+          e(SectionHead, { eyebrow: "Visítanos", title: "Estamos sobre la 83, en Pharr" }),
+          e(
+            "div",
+            { className: "route-shield" },
+            e(RouteShield, null),
+            e("p", null, "Sobre la U.S. Highway 83, en Pharr. Búscanos en la Suite C.")
+          ),
+          e(
+            "dl",
+            { className: "contact-list" },
+            e("dt", null, "Dirección"),
+            e(
+              "dd",
+              null,
+              e(
+                "a",
+                {
+                  href: CONFIG.mapsUrl,
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                  onClick: function () { track("location_click", props.vehicle, { source: "seccion" }); }
+                },
+                CONFIG.address
+              )
+            ),
+            e("dt", null, "Teléfono y WhatsApp"),
+            e("dd", null, e("a", { href: CONFIG.phoneHref, onClick: function () { track("phone_click", props.vehicle, { source: "seccion" }); } }, CONFIG.phoneDisplay)),
+            e("dt", null, "Correo"),
+            e("dd", null, e("a", { href: "mailto:" + CONFIG.email }, CONFIG.email)),
+            e("dt", null, "Facebook"),
+            e("dd", null, e("a", { href: CONFIG.facebookUrl, target: "_blank", rel: "noopener noreferrer" }, "facebook.com/Carhaus2021"))
+          ),
+          e(
+            "div",
+            { className: "cta-row" },
+            e(
+              "a",
+              {
+                className: "cta cta--whatsapp",
+                href: whatsappUrl(props.vehicle),
+                target: "_blank",
+                rel: "noopener noreferrer",
+                onClick: function () { track("whatsapp_click", props.vehicle, { source: "ubicacion" }); }
+              },
+              e(IconWhatsapp, null),
+              "Escribir por WhatsApp"
+            ),
+            e(
+              "a",
+              {
+                className: "cta cta--call",
+                href: CONFIG.mapsUrl,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                onClick: function () { track("location_click", props.vehicle, { source: "ubicacion-boton" }); }
+              },
+              "Cómo llegar"
+            )
+          )
+        ),
+        e(
+          "div",
+          { className: "coverage" },
+          e("h3", null, "A quién atendemos"),
+          e(
+            "ul",
+            null,
+            ["Pharr", "McAllen", "Mission", "Edinburg", "Harlingen", "Todo el Rio Grande Valley"].map(function (c) {
+              return e("li", { key: c }, c);
+            })
+          )
+        )
+      )
+    );
+  }
+
+  /* --------------------------------- Footer ------------------------------- */
+  function SiteFooter() {
+    return e(
+      "footer",
+      { className: "site-footer" },
+      e(
+        "div",
+        { className: "footer-top" },
+        e(
+          "div",
+          { className: "brand" },
+          e("img", { className: "brand-mark", src: CONFIG.logo, alt: "", width: 120, height: 120 }),
+          e(
+            "div",
+            null,
+            e("span", { className: "brand-name" }, "Car Haus"),
+            e("span", { className: "brand-meta" }, "Especialistas en Toyota Tacoma")
+          )
+        ),
+        e(
+          "p",
+          { className: "footer-address" },
+          CONFIG.address,
+          e("br", null),
+          e("a", { href: CONFIG.phoneHref }, CONFIG.phoneDisplay),
+          " · ",
+          e("a", { href: "mailto:" + CONFIG.email }, CONFIG.email)
+        )
+      ),
+      e(
+        "p",
+        { className: "footer-legal" },
+        "Financiamiento mediante compañías financieras, sujeto a aprobación de crédito. Car Haus LLC no es Buy Here Pay Here y no ofrece financiamiento en casa. Precio, garantía, millaje, año, tipo de título y disponibilidad cambian según la unidad; confirma las condiciones de la camioneta que te interesa antes de comprar."
+      ),
+      e("p", { className: "footer-copy" }, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, Texas")
+    );
+  }
+
+  /* ==========================================================================
+     Aplicación
+     ========================================================================== */
+  function App() {
+    var initialIndex = React.useMemo(function () {
+      for (var i = 0; i < vehicles.length; i++) if (vehicles[i].featured && vehicles[i].available !== false) return i;
+      return 0;
+    }, []);
+
+    var idxState = React.useState(initialIndex);
+    var index = idxState[0], setIndex = idxState[1];
+
+    /* turn = vueltas acumuladas del anillo. index se deriva de turn, así el
+       giro conserva la dirección del gesto aunque se salte de la 5 a la 1. */
+    var turnState = React.useState(0);
+    var turn = turnState[0], setTurn = turnState[1];
+
+    var menuState = React.useState(false);
+    var menuOpen = menuState[0], setMenuOpen = menuState[1];
+
+    var rebuiltState = React.useState(false);
+    var rebuiltOpen = rebuiltState[0], setRebuiltOpen = rebuiltState[1];
+
+    var pauseState = React.useState(false);
+    var paused = pauseState[0], setPaused = pauseState[1];
+
+    var vehicle = vehicles[index];
+    var activeSlot = ((turn % vehicles.length) + vehicles.length) % vehicles.length;
+
+    var menuBtnRef = React.useRef(null);
+    var stageRef = React.useRef(null);
+    var heroRef = React.useRef(null);
+    var wheelLock = React.useRef(0);
+    var touch = React.useRef(null);
+    var pointer = React.useRef({ x: 0, y: 0, raf: null });
+    var washRef = React.useRef(null);
+    var haloRef = React.useRef(null);
+    var cameraRef = React.useRef(null);
+    var copyRef = React.useRef(null);
+
+    var goTo = React.useCallback(function (target, method) {
+      var total = vehicles.length;
+      var t = ((target % total) + total) % total;
+      if (t === index) return;
+      var current = ((turn % total) + total) % total;
+      var forward = (t - current + total) % total;      // pasos hacia adelante
+      var backward = (current - t + total) % total;     // pasos hacia atrás
+      var step = forward <= backward ? forward : -backward;
+      setTurn(turn + step);
+      setIndex(t);
+      setRebuiltOpen(false);
+      track("vehicle_navigation", vehicles[t], { method: method || "unknown" });
+    }, [index, turn]);
+
+    var next = React.useCallback(function (m) { goTo(index + 1, m); }, [goTo, index]);
+    var prev = React.useCallback(function (m) { goTo(index - 1, m); }, [goTo, index]);
+
+    React.useEffect(function () { track("vehicle_view", vehicle); }, [vehicle.id]);
+
+    /* --- Rueda: una unidad por gesto, debounce de 80 ms.
+           No secuestra el scroll si la ventana no alcanza para la interfaz. --- */
+    React.useEffect(function () {
+      /* Solo mientras el hero ocupa la pantalla: más abajo el scroll es normal
+         y la página completa se recorre como cualquier otra. */
+      function canHijack() {
+        if (window.innerWidth <= 960 || window.innerHeight < 660) return false;
+        var hero = heroRef.current;
+        if (!hero) return false;
+        var r = hero.getBoundingClientRect();
+        return r.top >= -8 && r.bottom > window.innerHeight * 0.9;
+      }
+      function onWheel(ev) {
+        if (menuOpen || !canHijack()) return;
+        var d = Math.abs(ev.deltaY) >= Math.abs(ev.deltaX) ? ev.deltaY : ev.deltaX;
+        if (Math.abs(d) < 6) return;
+        ev.preventDefault();
+        var now = Date.now();
+        if (now - wheelLock.current < 80 + 620) return; // debounce + duración de la transición
+        wheelLock.current = now;
+        setPaused(true);
+        if (d > 0) next("wheel"); else prev("wheel");
+      }
+      window.addEventListener("wheel", onWheel, { passive: false });
+      return function () { window.removeEventListener("wheel", onWheel); };
+    }, [next, prev, menuOpen]);
+
+    /* --- Teclado --- */
+    React.useEffect(function () {
+      function onKey(ev) {
+        if (menuOpen) return;
+        if (ev.key === "ArrowRight" || ev.key === "ArrowDown") { ev.preventDefault(); setPaused(true); next("keyboard"); }
+        else if (ev.key === "ArrowLeft" || ev.key === "ArrowUp") { ev.preventDefault(); setPaused(true); prev("keyboard"); }
+      }
+      window.addEventListener("keydown", onKey);
+      return function () { window.removeEventListener("keydown", onKey); };
+    }, [next, prev, menuOpen]);
+
+    /* --- Auto-rotación cada 6 s; se pausa con interacción, menú o motion reducido --- */
+    React.useEffect(function () {
+      if (!CONFIG.autoRotateMs || paused || menuOpen || reduceMotion()) return;
+      var t = window.setTimeout(function () { next("auto"); }, CONFIG.autoRotateMs);
+      return function () { window.clearTimeout(t); };
+    }, [index, paused, menuOpen, next]);
+
+    /* --- Paralaje por puntero: solo desktop, sin state por movimiento --- */
+    React.useEffect(function () {
+      if (reduceMotion()) return;
+      function onMove(ev) {
+        if (window.innerWidth <= 960) return;
+        pointer.current.x = (ev.clientX / window.innerWidth - 0.5) * 2;
+        pointer.current.y = (ev.clientY / window.innerHeight - 0.5) * 2;
+        if (pointer.current.raf) return;
+        pointer.current.raf = window.requestAnimationFrame(function () {
+          pointer.current.raf = null;
+          var x = pointer.current.x, y = pointer.current.y;
+          if (washRef.current) washRef.current.style.transform = "translate3d(" + x * 6 + "px," + y * 6 + "px,0)";
+          if (haloRef.current) haloRef.current.style.transform =
+            "translate3d(calc(-50% + " + x * 12 + "px), calc(-50% + " + y * 12 + "px), -90px)";
+          /* La cámara se inclina: el piso, el anillo y el fondo se mueven
+             en profundidad, no solo en píxeles. */
+          if (cameraRef.current) cameraRef.current.style.transform =
+            "rotateX(" + (-y * 2.2) + "deg) rotateY(" + (x * 3.4) + "deg) translate3d(" + x * 14 + "px,0,0)";
+          if (copyRef.current) copyRef.current.style.transform = "translate3d(" + x * 4 + "px," + y * 4 + "px,0)";
+        });
+      }
+      window.addEventListener("mousemove", onMove);
+      return function () {
+        window.removeEventListener("mousemove", onMove);
+        if (pointer.current.raf) window.cancelAnimationFrame(pointer.current.raf);
+      };
+    }, []);
+
+    /* --- Swipe horizontal con umbral, sin bloquear el scroll vertical --- */
+    function onTouchStart(ev) {
+      var t = ev.touches[0];
+      touch.current = { x: t.clientX, y: t.clientY };
+      setPaused(true);
+    }
+    function onTouchEnd(ev) {
+      if (!touch.current) return;
+      var t = ev.changedTouches[0];
+      var dx = t.clientX - touch.current.x;
+      var dy = t.clientY - touch.current.y;
+      touch.current = null;
+      if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.3) return;
+      if (dx < 0) next("swipe"); else prev("swipe");
+    }
+
+    function closeMenu() {
+      setMenuOpen(false);
+      if (menuBtnRef.current) menuBtnRef.current.focus();
+    }
+
+    var sold = vehicle.available === false;
+    var facts = factsFor(vehicle);
+    var badges = badgesFor(vehicle, { compact: true });
+    var waHref = whatsappUrl(vehicle);
+
+    /* --- CTAs reutilizados en el hero y en la barra fija móvil --- */
+    function whatsappCta(label, source) {
+      return e(
+        "a",
+        {
+          className: "cta cta--whatsapp",
+          href: sold ? undefined : waHref,
+          target: "_blank",
+          rel: "noopener noreferrer",
+          "aria-disabled": sold ? "true" : undefined,
+          tabIndex: sold ? -1 : undefined,
+          onClick: function () { if (!sold) track("whatsapp_click", vehicle, { source: source }); }
+        },
+        e(IconWhatsapp, null),
+        label
+      );
+    }
+    function callCta(label, source) {
+      return e(
+        "a",
+        {
+          className: "cta cta--call",
+          href: CONFIG.phoneHref,
+          onClick: function () { track("phone_click", vehicle, { source: source }); }
+        },
+        e(IconPhone, null),
+        label
+      );
+    }
+
+    /* Barra de revoluciones: marca cuánto se ha recorrido de la página.
+       Se actualiza con requestAnimationFrame, sin estado de React. */
+    var rpmRef = React.useRef(null);
+    React.useEffect(function () {
+      if (reduceMotion()) return;
+      var raf = null;
+      function paint() {
+        raf = null;
+        var doc = document.documentElement;
+        var max = doc.scrollHeight - window.innerHeight;
+        var p = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+        if (rpmRef.current) rpmRef.current.style.transform = "scaleX(" + p + ")";
+      }
+      function onScroll() { if (!raf) raf = window.requestAnimationFrame(paint); }
+      window.addEventListener("scroll", onScroll, { passive: true });
+      window.addEventListener("resize", onScroll);
+      paint();
+      return function () {
+        window.removeEventListener("scroll", onScroll);
+        window.removeEventListener("resize", onScroll);
+        if (raf) window.cancelAnimationFrame(raf);
+      };
+    }, []);
+
+    /* Lleva una unidad al escenario desde el inventario de abajo. */
+    function showInStage(i) {
+      goTo(i, "inventario");
+      setPaused(true);
+      if (heroRef.current && heroRef.current.scrollIntoView) {
+        heroRef.current.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" });
+      }
+    }
+
+    return e(
+      React.Fragment,
+      null,
+      e("div", { className: "scroll-rpm", ref: rpmRef, "aria-hidden": "true" }),
+      e(
+      "div",
+      { className: "carhaus-app", ref: heroRef },
+
+      /* ---------- Fondo ---------- */
+      e(
+        "div",
+        { className: "backdrop", "aria-hidden": "true" },
+        e("div", { className: "backdrop-wash", ref: washRef }),
+        e("div", { className: "backdrop-haze" }),
+        e("div", { className: "vignette" }),
+        e(Snow, null)
+      ),
+
+      /* ---------- Header ---------- */
+      e(
+        "header",
+        { className: "carhaus-header" },
+        e(
+          "div",
+          { className: "brand" },
+          e("img", { className: "brand-mark", src: CONFIG.logo, alt: "Car Haus LLC", width: 120, height: 120 }),
+          e(
+            "div",
+            null,
+            e("span", { className: "brand-name" }, "Car Haus"),
+            e("span", { className: "brand-meta" }, "Pharr · Rio Grande Valley")
+          )
+        ),
+        e("p", { className: "specialty" }, "Especialistas en Toyota Tacoma"),
+        e(
+          "button",
+          {
+            type: "button",
+            className: "menu-button",
+            ref: menuBtnRef,
+            "aria-haspopup": "dialog",
+            "aria-expanded": menuOpen ? "true" : "false",
+            "aria-label": "Abrir menú",
+            onClick: function () { setPaused(true); setMenuOpen(true); }
+          },
+          e("i", null), e("i", null), e("i", null)
+        )
+      ),
+
+      /* ---------- Escenario ---------- */
+      e(
+        "main",
+        {
+          className: "inventory-stage",
+          ref: stageRef,
+          onMouseEnter: function () { setPaused(true); },
+          onMouseLeave: function () { setPaused(false); },
+          onFocus: function () { setPaused(true); },
+          onTouchStart: onTouchStart,
+          onTouchEnd: onTouchEnd
+        },
+
+        e("div", { className: "copy-scrim", "aria-hidden": "true" }),
+        e("div", { className: "nav-scrim", "aria-hidden": "true" }),
+
+        e(
+          "article",
+          { className: "vehicle-slide" },
+
+          /* ----- Texto ----- */
+          e(
+            "section",
+            { className: "vehicle-copy", ref: copyRef },
+            e("p", { className: "eyebrow" }, "Tacomas disponibles en Pharr, Texas"),
+            e(
+              "h1",
+              { className: "vehicle-title" },
+              "Tu próxima",
+              e("span", { className: "line-2" }, "Tacoma")
+            ),
+            e("div", { className: "title-rule" }),
+
+            e(
+              "div",
+              { className: "copy-swap" },
+              e(
+                TransitionGroup,
+                { component: null },
+                e(
+                  CSSTransition,
+                  { key: vehicle.id, classNames: "copy", timeout: 660 },
+                  e(
+                    "div",
+                    null,
+                    e(
+                      "h2",
+                      { className: "vehicle-subtitle", "aria-live": "polite" },
+                      e("span", { className: "subtitle-year" }, vehicle.year),
+                      "Toyota Tacoma ",
+                      e("span", { className: "trim" }, trimLine(vehicle))
+                    ),
+                    e(
+                      "p",
+                      { className: "vehicle-desc" },
+                      "Lista para el trabajo, la aventura o el uso diario. Conoce su historial, condiciones y opciones de financiamiento antes de decidir."
+                    ),
+                    vehicle.highlights && vehicle.highlights.length
+                      ? e(
+                          "ul",
+                          { className: "equipment" },
+                          vehicle.highlights.slice(0, 5).map(function (h, i) { return e("li", { key: i }, h); })
+                        )
+                      : null,
+                    ready(vehicle.titleDisclosure)
+                      ? e("p", { className: "title-note" }, vehicle.titleDisclosure)
+                      : null
+                  )
+                )
+              )
+            ),
+
+            /* Badges condicionales */
+            e(
+              "div",
+              { style: { position: "relative" } },
+              e(
+                TransitionGroup,
+                { component: null },
+                e(
+                  CSSTransition,
+                  { key: vehicle.id, classNames: "badges", timeout: 560 },
+                  e(
+                    "ul",
+                    { className: "badges" },
+                    badges.map(function (b) {
+                      if (b.action) {
+                        return e(
+                          "li",
+                          { key: b.key },
+                          e(
+                            "button",
+                            {
+                              type: "button",
+                              className: "badge badge--action",
+                              "aria-expanded": rebuiltOpen ? "true" : "false",
+                              "aria-controls": "rebuilt-panel",
+                              onClick: function () {
+                                var opening = !rebuiltOpen;
+                                setRebuiltOpen(opening);
+                                setPaused(true);
+                                if (opening) track("rebuilt_info_open", vehicle);
+                              }
+                            },
+                            b.text
+                          )
+                        );
+                      }
+                      return e(
+                        "li",
+                        { key: b.key },
+                        e("span", { className: "badge" + (b.sold ? " badge--sold" : "") }, b.text)
+                      );
+                    })
+                  )
+                )
+              )
+            ),
+
+            rebuiltOpen
+              ? e(
+                  "div",
+                  { className: "rebuilt-panel", id: "rebuilt-panel", role: "region", "aria-label": "Qué significa un título rebuilt" },
+                  e("b", null, "Título rebuilt. "),
+                  "Indica que el vehículo fue reparado después de haber sido declarado pérdida total. En Car Haus te explicamos el historial y las reparaciones para que sepas exactamente qué estás comprando."
+                )
+              : null,
+
+            e(
+              "div",
+              { className: "cta-row" },
+              whatsappCta("Cotizar por WhatsApp", "hero"),
+              callCta("Llamar al " + CONFIG.phoneDisplay, "hero")
+            ),
+            e(
+              "p",
+              { className: "cta-note" },
+              sold
+                ? "Esta unidad ya se vendió. Escríbenos y te avisamos cuando entre una parecida."
+                : "Financiamiento mediante financieras, sujeto a aprobación de crédito. No somos Buy Here Pay Here."
+            )
+          ),
+
+          /* ----- Escena 3D ----- */
+          e(
+            "section",
+            { className: "vehicle-visual" },
+            e(
+              "div",
+              { className: "scene" },
+              e(
+              "div",
+              { className: "camera", ref: cameraRef },
+
+              e("div", { className: "floor", "aria-hidden": "true" }),
+              e("div", { className: "floor-edge", "aria-hidden": "true" }),
+              e("div", { className: "beam", "aria-hidden": "true" }),
+              e("div", { className: "halo", ref: haloRef, "aria-hidden": "true" }),
+
+              /* Año de la unidad activa, al fondo del escenario */
+              e(
+                TransitionGroup,
+                { component: null },
+                e(
+                  CSSTransition,
+                  { key: vehicle.id, classNames: "year", timeout: 820 },
+                  e("div", { className: "ghost-year", "aria-hidden": "true" }, vehicle.year)
+                )
+              ),
+
+              /* Carrusel: las cinco unidades sobre una circunferencia.
+                 turn avanza o retrocede sin límite, así el giro siempre
+                 sigue la dirección del gesto.                            */
+              e(
+                "div",
+                { className: "ring", style: { "--turn": turn } },
+                vehicles.map(function (v, i) {
+                  var total = vehicles.length;
+                  var d = (i - activeSlot + total) % total;
+                  var depth = Math.min(d, total - d); // 0 = al frente, 2 = al fondo
+                  return e(
+                    "div",
+                    {
+                      key: v.id,
+                      className: "slot",
+                      "data-depth": depth,
+                      "aria-hidden": depth === 0 ? undefined : "true",
+                      style: { "--i": i }
+                    },
+                    e(
+                      "div",
+                      { className: "slot-face", style: { "--turn": turn } },
+                      e("div", { className: "contact-shadow" }),
+                      e(UnitPhoto, { vehicle: v, priority: i === initialIndex, decorative: depth !== 0 })
+                    )
+                  );
+                })
+              ),
+
+              /* Datos comerciales */
+              e(
+                "div",
+                { className: "facts-slot" },
+                e(
+                  TransitionGroup,
+                  { component: null },
+                  e(
+                    CSSTransition,
+                    { key: vehicle.id, classNames: "facts", timeout: 660 },
+                    e(
+                      "ul",
+                      { className: "vehicle-facts" },
+                      facts.map(function (f) {
+                        return e(
+                          "li",
+                          { key: f.key },
+                          e(
+                            "span",
+                            { className: "fact-value" },
+                            typeof f.count === "number"
+                              ? e(
+                                  React.Fragment,
+                                  null,
+                                  f.prefix || "",
+                                  e(Counter, { value: f.count }),
+                                  f.suffix ? e("span", { className: "unit-suffix" }, f.suffix) : null
+                                )
+                              : f.text
+                          ),
+                          e("span", { className: "fact-label" }, f.label)
+                        );
+                      })
+                    )
+                  )
+                )
+              )
+              )
+            )
+          )
+        ),
+
+        /* ----- Navegación ----- */
+        e(
+          "nav",
+          { className: "vehicle-navigation", "aria-label": "Unidades disponibles" },
+          vehicles.map(function (v, i) {
+            return e(
+              "button",
+              {
+                key: v.id,
+                type: "button",
+                className: "nav-item",
+                "aria-current": i === index ? "true" : "false",
+                onClick: function () { setPaused(true); goTo(i, "nav"); }
+              },
+              v.available === false ? e("span", { className: "nav-sold" }, "Vendida") : null,
+              e("span", { className: "nav-year" }, isRepeatedTrim(v) ? v.year : ""),
+              e("span", null, shortName(v))
+            );
+          }),
+          e(
+            "div",
+            { className: "nav-arrows" },
+            e("button", {
+              type: "button", className: "nav-arrow", "aria-label": "Unidad anterior",
+              onClick: function () { setPaused(true); prev("arrow"); }
+            }, "←"),
+            e("button", {
+              type: "button", className: "nav-arrow", "aria-label": "Unidad siguiente",
+              onClick: function () { setPaused(true); next("arrow"); }
+            }, "→")
+          ),
+          e(
+            "p",
+            { className: "scroll-hint", "aria-hidden": "true" },
+            e("span", { className: "scroll-mouse" }),
+            "Rueda o flechas"
+          )
+        )
+      ),
+
+      /* ---------- Franja de confianza ---------- */
+      e(
+        "aside",
+        { className: "trust-band", "aria-label": "Por qué comprar en Car Haus" },
+        e(
+          "ul",
+          { className: "trust-strip" },
+          e("li", null, "Vehículos inspeccionados"),
+          e("li", null, "Tipo de título a la vista"),
+          e("li", null, "Financiamiento con crédito aprobado"),
+          e(
+            "li",
+            { className: "strip-address" },
+            e(
+              "a",
+              {
+                href: CONFIG.mapsUrl,
+                target: "_blank",
+                rel: "noopener noreferrer",
+                onClick: function () { track("location_click", vehicle, { source: "strip" }); }
+              },
+              CONFIG.address
+            )
+          )
+        )
+      ),
+
+      ),
+
+      /* ---------- Landing ---------- */
+      e(
+        "main",
+        { className: "landing" },
+        e(BrandTicker, null),
+        e(InventorySection, { onShow: showInStage }),
+        e(GallerySection, null),
+        e(TrustSection, null),
+        e(HowToSection, null),
+        e(RebuiltSection, null),
+        e(LocationSection, { vehicle: vehicle })
+      ),
+
+      e(SiteFooter, null),
+
+      /* ---------- CTA fijo móvil ---------- */
+      e(
+        "div",
+        { className: "sticky-cta" },
+        whatsappCta("WhatsApp", "sticky"),
+        callCta("Llamar", "sticky")
+      ),
+
+      /* ---------- Menú ---------- */
+      e(
+        TransitionGroup,
+        { component: null },
+        menuOpen
+          ? e(
+              CSSTransition,
+              { key: "menu", classNames: "menu", timeout: 420 },
+              e(MenuPanel, {
+                vehicle: vehicle,
+                onClose: closeMenu,
+                onNavigate: function (hash) {
+                  closeMenu();
+                  var target = document.querySelector(hash);
+                  if (target && target.scrollIntoView) {
+                    target.scrollIntoView({ behavior: reduceMotion() ? "auto" : "smooth", block: "start" });
+                  }
+                }
+              })
+            )
+          : null
+      )
+    );
+  }
+
+  ReactDOM.render(e(App, null), document.getElementById("root"));
+})();

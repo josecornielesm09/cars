@@ -1,0 +1,118 @@
+COMO SE USA ESTE MATERIAL AHORA
+================================
+
+1) EL VIDEO  ->  seccion #giro, justo debajo del hero
+   -----------------------------------------------------
+   giro.mp4 / giro-movil.mp4, a sangre y pantalla completa.
+   El scroll controla la reproduccion: bajas y el dron avanza de la
+   carretera al lote al letrero. Titulo: "Asi se llega".
+
+     Escritorio  giro.mp4        4.8 MB   1280x720  (resolucion nativa)
+     Telefono    giro-movil.mp4  2.0 MB    854x480
+
+   El corte esta en 767 px. Se cambia buscando "max-width: 767px" en
+   script.js, dentro de buildFilm.
+
+
+2) LAS 12 FOTOS  ->  repartidas por la seccion #capacidades
+   ---------------------------------------------------------
+   Ya NO viven en una seccion propia dando la vuelta de golpe. Ahora la
+   camioneta gira POCO A POCO mientras bajas por los cuatro bloques de
+   "Hechas para aguantar":
+
+     bloque 1  ->  cuadros 1 a 3
+     bloque 2  ->  cuadros 4 a 6
+     bloque 3  ->  cuadros 7 a 9
+     bloque 4  ->  cuadros 10 a 12
+
+   El giro es consecuencia de recorrer la pagina, no un truco encerrado
+   en una pantalla.
+
+     frame-01..12.webp   490 KB entre todos · 1024x1024 · CON transparencia
+
+   De frame-01 tambien sale la "lona" del hero (assets/hero/).
+
+
+POR QUE SE RECODIFICA EL VIDEO Y NO SE USA EL ORIGINAL
+--------------------------------------------------------
+hero_video.mp4 trae solo 2 keyframes en 240 cuadros. Para mostrar el
+segundo 7, el navegador tendria que decodificar desde el principio: atarlo
+al scroll es imposible.
+
+La recodificacion mete un keyframe cada 8 cuadros. Eso es lo que permite
+saltar a cualquier punto. Cuesta peso, y por eso el archivo pesa mas que
+el original aunque la imagen sea igual.
+
+CALIDAD: se codifica a 1280x720, la resolucion NATIVA del original. Antes
+se escalaba a 1600x900 y por eso se veia pixelado — ampliar no agrega
+detalle, solo estira los pixeles.
+
+
+SI CAMBIAS EL VIDEO
+-------------------
+Genera las DOS versiones desde tu archivo original, SIN escalar hacia
+arriba. Cambia 1280x720 si tu original tiene otra medida:
+
+  ffmpeg -y -i TU_VIDEO.mp4 -an -c:v libx264 -preset slower -crf 20     -pix_fmt yuv420p -g 8 -keyint_min 8 -sc_threshold 0     -movflags +faststart giro.mp4
+
+  ffmpeg -y -i TU_VIDEO.mp4 -an -c:v libx264 -preset slower -crf 24     -pix_fmt yuv420p -g 8 -keyint_min 8 -sc_threshold 0     -vf "scale=854:-2:flags=lanczos" -movflags +faststart giro-movil.mp4
+
+  -an        quita el audio (no se usa y pesa)
+  -crf 20    calidad alta. Numero mas bajo = mejor imagen y mas peso
+  -g 8       keyframe cada 8 cuadros, para que el scroll pueda buscar
+  +faststart empieza a reproducir antes de terminar de bajar
+
+REGLA: nunca pongas en -vf una medida MAYOR que la del original.
+
+
+UNA COSA QUE CONVIENE MEJORAR EN LOS RECORTES
+----------------------------------------------
+Los PNG vienen en paleta de 256 colores (pal8). En carroceria azul eso se
+ve como escalones de color en vez de degradado limpio.
+
+Al reexportar, elegir "PNG-24" o "32 bits", no "PNG-8" ni "colores
+indexados". El peso en WebP sube poco y se ve bastante mejor.
+
+
+PARA COMPLETAR LA VUELTA
+------------------------
+Los 12 cuadros cubren unos 180 grados. Cuando tengas los otros 12:
+
+  1. Nombralos frame-13.webp ... frame-24.webp y ponlos aqui.
+  2. En script.js, bloque CONFIG.spin: framesCount: 24
+
+La seccion #capacidades reparte automaticamente los cuadros que existan
+entre sus bloques. No hay que tocar nada mas.
+
+
+CONVERTIR PNG RECORTADOS A WEBP CON TRANSPARENCIA
+--------------------------------------------------
+  for i in $(seq -w 1 24); do
+    ffmpeg -y -i "tacoma-360-$i.png"       -vf "format=rgba,scale=1024:1024:flags=lanczos"       -c:v libwebp -pix_fmt yuva420p -lossless 0 -quality 86       -compression_level 6 "frame-$i.webp"
+  done
+
+El -pix_fmt yuva420p es lo que conserva la transparencia. Sin eso el fondo
+sale negro.
+
+TRATAMIENTO APLICADO A LOS 12 CUADROS
+--------------------------------------
+Los PNG fuente vienen en paleta de 256 colores (modo P). Eso produce
+escalones de color en la carroceria azul en vez de degradado.
+
+El pipeline que se aplico, en este orden:
+
+  1. Recorte al bbox COMUN de los 12 (no al de cada uno: si cada cuadro se
+     recorta a su medida, la camioneta brinca al girar).
+  2. Desenfoque suave mezclado al 62% -> aplana los escalones.
+  3. Mascara de enfoque -> devuelve la definicion que el paso 2 se llevo.
+  4. Grano fino (sigma 2.1) -> rompe las bandas que queden. El ojo lo lee
+     como textura de foto, no como escalones.
+  5. El canal alfa NO se toca en ningun paso: la silueta queda limpia.
+  6. Escalado 1.6x y WebP calidad 90 con transparencia.
+
+Resultado: de 181 colores unicos a ~119.000.
+
+Esto es maquillaje, no cirugia: no recupera detalle que el archivo no
+tiene. Si algun dia reexportas los PNG en 24 bits (no PNG-8, no "colores
+indexados"), se puede saltar los pasos 2 a 4 y se vera bastante mejor.
+El script vive en el historial; pidelo y se vuelve a correr.

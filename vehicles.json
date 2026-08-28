@@ -1,0 +1,108 @@
+[
+  {
+    "id": "tacoma-2025-sr-red",
+    "year": 2025,
+    "make": "Toyota",
+    "model": "Tacoma",
+    "trim": "SR",
+    "color": "Rojo",
+    "mileage": 9299,
+    "engine": "2.4L Turbo",
+    "transmission": "Automática",
+    "cab": "Crew Cab",
+    "titleType": "Rebuilt",
+    "titleDisclosure": "Título rebuilt — bien reparada",
+    "highlights": [
+      "Lista para uso diario o para el trabajo"
+    ],
+    "image": "assets/vehicles/tacoma-2025-sr-red.png"
+  },
+  {
+    "id": "tacoma-2021-trd-sport-white",
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Tacoma",
+    "trim": "TRD Sport",
+    "color": "Blanco",
+    "mileage": 49524,
+    "engine": "V6 3.5L",
+    "transmission": "Automática",
+    "drivetrain": "2WD",
+    "cab": "Double Cab",
+    "titleType": "Rebuilt",
+    "titleDisclosure": "Título rebuilt — bien reparada",
+    "highlights": [
+      "Asientos eléctricos",
+      "Cámara de reversa",
+      "Pantalla táctil",
+      "Estribos laterales",
+      "Tapa rígida para caja"
+    ],
+    "image": "assets/vehicles/tacoma-2021-trd-sport-white.png"
+  },
+  {
+    "id": "tacoma-2017-trd-off-road-beige",
+    "year": 2017,
+    "make": "Toyota",
+    "model": "Tacoma",
+    "trim": "TRD Off Road",
+    "color": "Beige",
+    "mileage": 57429,
+    "engine": "V6 3.5L",
+    "transmission": "Automática",
+    "drivetrain": "4x4",
+    "cab": "Access Cab",
+    "titleType": "Rebuilt",
+    "titleDisclosure": "Título rebuilt — bien reparada profesionalmente",
+    "highlights": [],
+    "image": "assets/vehicles/tacoma-2017-trd-off-road-beige.png"
+  },
+  {
+    "id": "tacoma-2021-trd-off-road-gray",
+    "year": 2021,
+    "make": "Toyota",
+    "model": "Tacoma",
+    "trim": "TRD Off Road",
+    "color": "Gris",
+    "mileage": 95626,
+    "engine": "V6 3.5L",
+    "transmission": "Automática",
+    "drivetrain": "4x4",
+    "cab": "Double Cab",
+    "titleType": "Rebuilt",
+    "titleDisclosure": "Título rebuilt — muy bien reparada",
+    "highlights": [
+      "Cámara de reversa",
+      "Pantalla táctil",
+      "Estribos laterales",
+      "Lista para el trabajo, la aventura o el uso diario"
+    ],
+    "image": "assets/vehicles/tacoma-2021-trd-off-road-gray.png"
+  },
+  {
+    "id": "tacoma-2019-trd-pro-blue",
+    "year": 2019,
+    "make": "Toyota",
+    "model": "Tacoma",
+    "trim": "TRD Pro",
+    "color": "Azul",
+    "mileage": 46101,
+    "engine": "V6 3.5L",
+    "drivetrain": "4x4",
+    "titleType": "Rebuilt",
+    "titleDisclosure": "Título rebuilt — bien reparada",
+    "highlights": [
+      "Quemacocos",
+      "Navegación",
+      "Asientos de piel con calefacción",
+      "Sonido Premium JBL",
+      "Monitor de punto ciego",
+      "Radar Cruise Control",
+      "Crawl Control",
+      "Multi-Terrain Select",
+      "Snorkel",
+      "Bolsas de aire intactas"
+    ],
+    "image": "assets/vehicles/tacoma-2019-trd-pro-blue.png"
+  }
+]

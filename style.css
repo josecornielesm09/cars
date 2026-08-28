@@ -1,0 +1,1525 @@
+/* ==========================================================================
+   CAR HAUS LLC — Landing inmersiva con scroll
+   Paleta tomada del logo: azul noche + hielo. Sin librerías.
+
+   ORDEN DEL ARCHIVO
+   00 Reset y tokens        05 Giro 360
+   01 Tipografía            06 Capacidades (sección invertida)
+   02 Navegación            07 Inventario
+   03 Hero                  08 Rebuilt / Cómo comprar / Ubicación
+   04 Ticker y cifras       09 Footer, responsive, accesibilidad
+   ========================================================================== */
+
+/* ============================ 00 · RESET Y TOKENS ========================= */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  /* Superficies */
+  --night:      #04060F;
+  --night-2:    #080D1E;
+  --night-3:    #0E1530;
+  --ice:        #EDF1FA;
+  --ice-2:      #DCE3F3;
+  --ice-3:      #C6D0E8;
+
+  /* Marca — del logo */
+  --blue:       #2F44C8;
+  --blue-hi:    #4E66F0;
+  --blue-glow:  #6D86FF;
+
+  /* Texto */
+  --on-night:   #F2F5FD;
+  --on-night-2: rgba(242, 245, 253, 0.62);
+  --on-night-3: rgba(242, 245, 253, 0.34);
+  --on-ice:     #060B1C;
+  --on-ice-2:   rgba(6, 11, 28, 0.66);
+  --on-ice-3:   rgba(6, 11, 28, 0.38);
+
+  --line-night: rgba(242, 245, 253, 0.13);
+  --line-ice:   rgba(6, 11, 28, 0.14);
+
+  /* Tipografía */
+  --display: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --body:    "Barlow", system-ui, -apple-system, sans-serif;
+  --cond:    "Barlow Condensed", "Arial Narrow", sans-serif;
+  --mono:    "Roboto Mono", ui-monospace, monospace;
+
+  /* Ritmo */
+  --gutter: clamp(20px, 5vw, 88px);
+  --maxw: 1440px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-io: cubic-bezier(0.65, 0, 0.35, 1);
+
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--on-night);
+  font-family: var(--body);
+  font-weight: 300;
+  font-size: clamp(15px, 1.05vw, 17px);
+  line-height: 1.62;
+  overflow-x: clip;                /* clip, no hidden: hidden convierte a body en contenedor de scroll */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg, video { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+/* El navegador pinta el fondo del documento; sin esto el rebote del scroll
+   en iOS enseña blanco debajo del hero. */
+html { background: var(--night); }
+
+.skip {
+  position: fixed; top: -100px; left: 16px; z-index: 200;
+  background: var(--on-night); color: var(--night);
+  padding: 12px 20px; font-family: var(--mono); font-size: 12px;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.skip:focus { top: 16px; }
+
+/* ============================== 01 · TIPOGRAFÍA ========================== */
+
+.display {
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 0.82;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+/* El gesto que define la referencia: la palabra del medio en itálica.
+   Big Shoulders no trae itálica real, así que se inclina y se aligera un
+   punto para que el oblicuo no se vea como un error de render. */
+.display em {
+  font-style: normal;
+  font-weight: 600;
+  display: inline-block;
+  transform: skewX(-11deg);
+}
+
+/* Bajadas respecto al primer corte: a 190px el titular se comia la pantalla
+   y se metia debajo de la barra. Estos tamanos siguen siendo grandes pero
+   dejan respirar la composicion. */
+.h-xl { font-size: clamp(44px, 7.4vw, 104px); }
+.h-lg { font-size: clamp(38px, 5.8vw, 88px); }
+.h-md { font-size: clamp(31px, 4.2vw, 62px); }
+
+/* Etiqueta monoespaciada: el detalle que separa una landing con criterio
+   de una plantilla. Se repite en cada sección. */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--on-night-3);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 26px;
+}
+.eyebrow::before {
+  content: "";
+  width: 28px; height: 1px;
+  background: currentColor;
+  flex: none;
+}
+.on-ice .eyebrow { color: var(--on-ice-3); }
+
+.lede {
+  font-size: clamp(16px, 1.4vw, 20px);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--on-night-2);
+  max-width: 46ch;
+  margin: 0;
+}
+.on-ice .lede { color: var(--on-ice-2); }
+
+/* ============================== 02 · NAVEGACIÓN ========================== */
+
+/* Barra flotante de vidrio esmerilado. El desenfoque de fondo mas un
+   borde claro arriba es lo que da la sensacion de cristal: el borde simula
+   el canto iluminado de una lamina. */
+.nav {
+  position: fixed;
+  top: 12px; left: var(--gutter); right: var(--gutter);
+  z-index: 90;
+  display: flex; align-items: center; gap: 28px;
+  padding: 11px 12px 11px 18px;
+  border-radius: 100px;
+
+  background: rgba(16, 22, 44, 0.42);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
+  transition: background 0.4s var(--ease), border-color 0.4s var(--ease),
+              box-shadow 0.4s var(--ease), top 0.4s var(--ease);
+  isolation: isolate;
+}
+
+/* Al bajar se cierra un poco y se pega mas al borde. */
+.nav.is-stuck {
+  top: 8px;
+  background: rgba(10, 14, 30, 0.62);
+  box-shadow:
+    0 10px 36px rgba(0, 0, 0, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Sobre las secciones claras el cristal se invierte. */
+.nav.on-ice {
+  background: rgba(255, 255, 255, 0.52);
+  border-color: rgba(6, 11, 28, 0.10);
+  color: var(--on-ice);
+  box-shadow:
+    0 8px 30px rgba(6, 11, 28, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+/* Borde plateado que recorre la barra.
+
+   Como funciona: un pseudo-elemento un pelo mas grande que la barra lleva
+   un degradado conico que gira. Una mascara deja ver solo el grosor del
+   borde, asi que lo que se ve es un reflejo dando la vuelta al contorno,
+   no un halo. Discreto a proposito: la barra no debe competir con el
+   contenido. */
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--giro, 0deg),
+    transparent 0deg,
+    rgba(255, 255, 255, 0.10) 40deg,
+    rgba(214, 222, 240, 0.85) 78deg,
+    rgba(255, 255, 255, 0.35) 104deg,
+    transparent 150deg,
+    transparent 360deg
+  );
+  /* La mascara vacia el centro: solo queda el canto. */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: recorrerBorde 6s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Sobre fondo claro el plateado se apaga: ahi el brillo seria invisible y
+   solo ensuciaria el borde. */
+.nav.on-ice::before {
+  background: conic-gradient(
+    from var(--giro, 0deg),
+    transparent 0deg,
+    rgba(6, 11, 28, 0.05) 40deg,
+    rgba(6, 11, 28, 0.28) 78deg,
+    rgba(6, 11, 28, 0.10) 104deg,
+    transparent 150deg,
+    transparent 360deg
+  );
+}
+
+/* --giro se anima como angulo; hace falta declararlo para que el navegador
+   lo interpole en vez de saltar de 0 a 360. */
+@property --giro {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes recorrerBorde {
+  to { --giro: 360deg; }
+}
+
+/* Respaldo para navegadores sin @property: gira el elemento entero. En ese
+   caso el efecto es mas simple pero sigue leyendose como un reflejo. */
+@supports not (background: conic-gradient(from var(--giro, 0deg), red, blue)) {
+  .nav::before { animation: none; }
+}
+
+/* El contenido de la barra va por encima del borde. */
+.nav > * { position: relative; z-index: 2; }
+
+.nav__brand { display: flex; align-items: center; gap: 11px; margin-right: auto; }
+.nav__brand img { width: 40px; height: 40px; object-fit: contain; }
+.nav__brand span {
+  font-family: var(--display); font-weight: 800; font-size: 21px;
+  letter-spacing: 0.02em; text-transform: uppercase; line-height: 1;
+}
+
+/* Direccion con punto latiendo. Oculta en escritorio, donde ese espacio
+   lo ocupan los enlaces y el boton de catalogo. */
+.nav__here {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-right: auto;
+  padding: 4px 2px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: rgba(242, 245, 253, 0.72);
+  white-space: nowrap;
+}
+.nav.on-ice .nav__here { color: rgba(6, 11, 28, 0.66); }
+
+.nav__dot {
+  position: relative;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--blue-glow);
+  flex: none;
+}
+/* El anillo que se expande y se apaga: es el gesto que la gente asocia con
+   "ubicacion en vivo". */
+.nav__dot::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: var(--blue-glow);
+  animation: latido 2.2s var(--ease-io) infinite;
+}
+@keyframes latido {
+  0%   { transform: scale(1);   opacity: 0.65; }
+  70%  { transform: scale(3.4); opacity: 0; }
+  100% { transform: scale(3.4); opacity: 0; }
+}
+
+.nav__links { display: flex; gap: 30px; }
+.nav__links a {
+  font-family: var(--cond); font-weight: 600; font-size: 15px;
+  letter-spacing: 0.11em; text-transform: uppercase;
+  opacity: 0.66; transition: opacity 0.25s;
+  position: relative; padding: 4px 0;
+}
+.nav__links a::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  width: 100%; height: 1px; background: currentColor;
+  transform: scaleX(0); transform-origin: right;
+  transition: transform 0.35s var(--ease);
+}
+.nav__links a:hover { opacity: 1; }
+.nav__links a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+.nav__toggle { display: none; width: 44px; height: 44px; align-items: center; justify-content: center; }
+.nav__toggle span {
+  display: block; width: 22px; height: 1.5px; background: currentColor;
+  position: relative;
+}
+.nav__toggle span::before, .nav__toggle span::after {
+  content: ""; position: absolute; left: 0; width: 22px; height: 1.5px; background: currentColor;
+  transition: transform 0.3s var(--ease);
+}
+.nav__toggle span::before { top: -7px; }
+.nav__toggle span::after  { top: 7px; }
+.nav.is-open .nav__toggle span { background: transparent; }
+.nav.is-open .nav__toggle span::before { transform: translateY(7px) rotate(45deg); }
+.nav.is-open .nav__toggle span::after  { transform: translateY(-7px) rotate(-45deg); }
+
+/* ================================ BOTONES ================================ */
+
+.btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 15px 26px;
+  font-family: var(--cond); font-weight: 600; font-size: 15px;
+  letter-spacing: 0.13em; text-transform: uppercase;
+  border: 1px solid transparent;
+  transition: transform 0.3s var(--ease), background 0.3s, color 0.3s, border-color 0.3s;
+  will-change: transform;
+}
+.btn svg { flex: none; transition: transform 0.3s var(--ease); }
+.btn:hover svg { transform: translateX(5px); }
+
+.btn--solid { background: var(--on-night); color: var(--night); }
+.btn--solid:hover { background: var(--blue-hi); color: #fff; }
+
+.btn--ghost { border-color: var(--line-night); color: var(--on-night); }
+.btn--ghost:hover { border-color: var(--on-night); background: rgba(242,245,253,0.06); }
+
+.on-ice .btn--solid { background: var(--on-ice); color: var(--ice); }
+.on-ice .btn--solid:hover { background: var(--blue); color: #fff; }
+.on-ice .btn--ghost { border-color: var(--line-ice); color: var(--on-ice); }
+.on-ice .btn--ghost:hover { border-color: var(--on-ice); background: rgba(6,11,28,0.05); }
+
+.btn--wa { background: #1FA855; color: #fff; }
+.nav .btn { border-radius: 100px; padding: 12px 22px; }
+.btn--wa:hover { background: #17843F; }
+
+/* ================================= 03 · HERO =============================
+   El hero es el recorrido de dron a sangre. El scroll controla la
+   reproduccion: bajas y el dron avanza de la carretera al lote al letrero.
+   ========================================================================= */
+
+/* Cuatro pantallas de scroll para los 10 segundos de video: menos y el
+   recorrido pasa demasiado rapido para leer el titular encima. */
+/* 280vh para 10 segundos de recorrido. Antes eran 400: la pagina completa
+   medía 19 pantallas y el visitante no llegaba nunca al final. */
+.hero { position: relative; height: 280vh; }
+
+.hero__stage {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  overflow: hidden;
+}
+
+.hero__video,
+.hero__still,
+.hero__seq img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* Secuencia de telefono: todas apiladas, solo una encendida. Sin
+   transicion, el cambio tiene que sentirse como reproduccion. */
+.hero__seq { position: absolute; inset: 0; z-index: 1; }
+.hero__seq img { opacity: 0; }
+.hero__seq img.is-on { opacity: 1; }
+
+/* LA PIXELACION EN VERTICAL, Y POR QUE ESTA BANDA MIDE LO QUE MIDE.
+   La toma es horizontal 16:9. Llenarla a pantalla completa en vertical
+   obliga a recortar los lados y ampliar unas cuatro veces: de ahi venia el
+   pixelado.
+
+   La solucion no es dejarla diminuta en formato buzon, sino darle una banda
+   de 3:2. Con ese alto el recorte lateral es minimo: se usa cerca del 85%
+   del ancho original, o sea unos 1080 pixeles reales para los 1125 que pide
+   una pantalla de 375 puntos a 3x. Practicamente sin ampliar, y la banda
+   queda mucho mas alta que un buzon 16:9. */
+
+.hero.is-seq {
+  /* Banda 10:9. Es el punto de equilibrio medido: con la fuente a 1600px se
+     aprovechan unos 1000 pixeles reales para los 1125 que pide una pantalla
+     de 375 puntos a 3x, o sea apenas 1.12x de ampliacion. Mas alta que esto
+     y la ampliacion crece rapido y vuelve el pixelado. */
+  --band: calc(100vw * 0.9);
+}
+
+.hero.is-seq .hero__stage { background: var(--night); }
+
+/* Arranca en el borde superior, por DEBAJO de la barra: asi el cristal del
+   menu tiene imagen que desenfocar y se le ve el efecto. */
+.hero.is-seq .hero__seq,
+.hero.is-seq .hero__still {
+  top: 0;
+  bottom: auto;
+  height: var(--band);
+}
+.hero.is-seq .hero__seq img,
+.hero.is-seq .hero__still {
+  object-fit: cover;
+  background: var(--night);
+}
+
+.hero.is-seq .hero__scrim {
+  top: 0;
+  height: var(--band);
+  /* Oscurece la franja de arriba para que la barra de vidrio se lea sobre
+     cielo claro. */
+  background: linear-gradient(to bottom, rgba(4,6,15,0.62) 0%, rgba(4,6,15,0.10) 16%, transparent 62%, rgba(4,6,15,0.55) 100%);
+}
+
+/* Fila justo debajo de la banda: senal de scroll a la izquierda,
+   porcentaje a la derecha. */
+.hero.is-seq .hero__cue,
+.hero.is-seq .hero__deg {
+  top: calc(var(--band) + 22px);
+  bottom: auto;
+}
+
+.hero.is-seq .hero__cue {
+  left: var(--gutter);
+  right: auto;
+  transform: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.hero.is-seq .hero__cue span { max-width: 9ch; line-height: 1.35; }
+.hero.is-seq .hero__cue-chev { display: none; }
+
+.hero.is-seq .hero__deg { right: var(--gutter); }
+.hero.is-seq .hero__deg b { font-size: 46px; }
+/* La foto queda debajo por si el video no carga: nunca un rectangulo negro. */
+.hero__still { z-index: 0; }
+.hero__video { z-index: 1; }
+
+/* Sin este velo el texto blanco cae sobre cielo azul claro y no se lee.
+   Oscurece arriba, abajo y el flanco izquierdo, y respeta el centro. */
+.hero__scrim {
+  position: absolute; inset: 0; z-index: 2;
+  /* Sin texto encima el velo solo tiene que asentar los bordes y empatar
+     el final de la toma con el fondo de la seccion siguiente. */
+  background:
+    linear-gradient(to bottom, rgba(4,6,15,0.58) 0%, transparent 22%, transparent 62%, rgba(4,6,15,0.92) 100%);
+  pointer-events: none;
+}
+
+/* El hero ya no lleva titular ni ficha: la toma se defiende sola y el
+   scroll la recorre completa. Solo quedan el velo, la senal de bajar y la
+   barra de avance. */
+
+/* --- Indicador de scroll ---
+   Raton con la ruedita bajando mas dos flechas. La gente lo reconoce sin
+   tener que leer el texto. */
+.hero__cue {
+  position: absolute; left: 50%; bottom: 28px;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: rgba(242,245,253,0.82);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.6);
+  will-change: opacity;
+}
+.hero__cue-mouse { color: rgba(242,245,253,0.9); }
+.cue-dot { animation: cueDot 1.9s var(--ease-io) infinite; }
+@keyframes cueDot {
+  0%   { transform: translateY(0);    opacity: 0; }
+  22%  { opacity: 1; }
+  70%  { transform: translateY(11px); opacity: 0; }
+  100% { transform: translateY(11px); opacity: 0; }
+}
+
+.hero__cue-chev { display: grid; gap: 2px; color: rgba(242,245,253,0.55); }
+.hero__cue-chev svg:first-child { animation: cueChev 1.9s var(--ease-io) infinite; }
+.hero__cue-chev svg:last-child  { animation: cueChev 1.9s var(--ease-io) 0.18s infinite; }
+@keyframes cueChev {
+  0%, 100% { opacity: 0.25; transform: translateY(-2px); }
+  50%      { opacity: 1;    transform: translateY(2px); }
+}
+
+/* Porcentaje del recorrido, arriba a la derecha bajo la barra. */
+.hero__deg {
+  position: absolute; right: var(--gutter); top: clamp(92px, 14vh, 138px);
+  z-index: 5;
+  text-align: right;
+  text-shadow: 0 2px 14px rgba(0,0,0,0.55);
+}
+
+/* ============================ 04 · TICKER Y CIFRAS ======================= */
+
+.ticker {
+  border-block: 1px solid var(--line-night);
+  overflow: hidden;
+  padding: 15px 0;
+  background: var(--night-2);
+  position: relative; z-index: 5;
+}
+.ticker__track {
+  display: flex; width: max-content;
+  animation: slide 42s linear infinite;
+}
+.ticker:hover .ticker__track { animation-play-state: paused; }
+.ticker span {
+  font-family: var(--display); font-weight: 700; font-size: 22px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 0 26px; color: var(--on-night-3);
+  display: flex; align-items: center; gap: 26px;
+  white-space: nowrap;
+}
+.ticker span::after {
+  content: ""; width: 5px; height: 5px; border-radius: 50%;
+  background: var(--blue-hi); flex: none;
+}
+@keyframes slide { to { transform: translateX(-50%); } }
+
+.stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line-night);
+  background: var(--night-2);
+  position: relative; z-index: 5;
+}
+.stats__item {
+  padding: clamp(34px, 5vw, 60px) var(--gutter);
+  border-left: 1px solid var(--line-night);
+}
+.stats__item:first-child { border-left: 0; }
+.stats__item b {
+  font-family: var(--display); font-weight: 900;
+  font-size: clamp(46px, 6vw, 88px); line-height: 0.86;
+  display: block; letter-spacing: -0.02em;
+}
+.stats__item i {
+  font-style: normal; font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--on-night-3); display: block; margin-top: 14px;
+}
+
+/* ================================ 05 · GIRO 360 ========================== */
+
+/* ALTURA Y FLUIDEZ.
+   Antes eran 420vh para 12 cuadros: 35vh de scroll por cada cambio de foto.
+   Eso se siente atorado — deslizas media pantalla y la camioneta no se
+   mueve. A 170vh cada cuadro recibe unos 14vh, que es donde el giro empieza
+   a sentirse como rotacion y no como diapositivas.
+
+   La regla practica: mientras menos cuadros haya, MENOS scroll debe cubrir
+   la seccion, no mas. */
+.spin { position: relative; height: 170vh; background: var(--night); }
+
+.spin__stage {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  overflow: hidden;
+  display: grid; place-items: center;
+}
+
+.spin__glow {
+  position: absolute; left: 50%; top: 50%;
+  width: 74vmin; height: 74vmin;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(78,102,240,0.20) 0%, transparent 66%);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+/* Anillo de referencia: comunica que el objeto gira sobre su eje. */
+.spin__ring {
+  position: absolute; left: 50%; top: 56%;
+  width: 62vmin; height: 62vmin;
+  transform: translate(-50%, -50%) rotateX(74deg);
+  border: 1px solid rgba(120,150,255,0.20);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.spin__ring::before {
+  content: ""; position: absolute; inset: 13%;
+  border: 1px solid rgba(120,150,255,0.10);
+  border-radius: 50%;
+}
+
+/* La caja sigue la forma REAL del recorte (5:3), no un cuadrado.
+   Antes la mitad de la caja era transparencia: la camioneta se dibujaba a
+   la mitad de su tamano posible y por eso se veia de baja resolucion. */
+.spin__frames {
+  position: relative;
+  width: min(92vw, 1100px);
+  aspect-ratio: 1657 / 995;
+  max-height: 62vh;
+  display: grid; place-items: center;
+}
+.spin__frames img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  filter: drop-shadow(0 40px 50px rgba(0,0,0,0.66));
+  /* Cruce muy corto: con solo 12 cuadros el salto entre angulos se nota.
+     90ms lo suavizan sin llegar a verse dos camionetas encimadas. */
+  transition: opacity 0.09s linear;
+}
+.spin__frames img.is-on { opacity: 1; }
+
+/* Los recortes vienen sin fondo, así que la camioneta queda flotando: sin
+   una sombra que la asiente se ve pegada encima, no parada sobre el piso.
+   Esta elipse difuminada va debajo del cuadro activo y hace el contacto. */
+.spin.is-cutout .spin__frames::after {
+  content: "";
+  position: absolute;
+  left: 50%; bottom: 12%;
+  width: 62%; height: 7%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.62) 0%, transparent 72%);
+  filter: blur(9px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Sin fondo propio, el recorte necesita su propia caída de luz. */
+.spin.is-cutout .spin__frames img {
+  filter: drop-shadow(0 26px 34px rgba(0,0,0,0.55));
+}
+
+/* Con video la sección cambia de naturaleza: deja de ser un objeto sobre
+   fondo negro y pasa a ser una toma a sangre. Por eso el video va a pantalla
+   completa y no dentro de una caja centrada. */
+.spin__video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* Sin este velo el texto blanco cae sobre cielo claro y no se lee.
+   Oscurece los bordes y respeta el centro de la toma. */
+.spin.is-film .spin__stage::after {
+  content: "";
+  position: absolute; inset: 0; z-index: 2;
+  background:
+    linear-gradient(to bottom, rgba(4,6,15,0.80) 0%, rgba(4,6,15,0.18) 34%, rgba(4,6,15,0.20) 58%, rgba(4,6,15,0.88) 100%),
+    linear-gradient(to right, rgba(4,6,15,0.62) 0%, transparent 42%);
+  pointer-events: none;
+}
+
+/* Con video sobran los adornos de estudio del modo secuencia. */
+.spin.is-film .spin__glow,
+.spin.is-film .spin__ring { display: none; }
+
+.spin__title {
+  position: absolute; left: var(--gutter); top: clamp(84px, 13vh, 130px);
+  z-index: 3; pointer-events: none;
+}
+
+/* Los cuatro textos que entran por cuarto de vuelta. */
+.spin__notes { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.spin__note {
+  position: absolute;
+  width: min(310px, 62vw);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.spin__note b {
+  display: block;
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(30px, 3.6vw, 52px); line-height: 0.9;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.spin__note p { margin: 0; font-size: 14.5px; color: var(--on-night-2); line-height: 1.5; }
+
+.spin__note:nth-child(1) { left: var(--gutter);  top: 34%; }
+.spin__note:nth-child(2) { right: var(--gutter); top: 30%; text-align: right; }
+.spin__note:nth-child(3) { right: var(--gutter); bottom: 22%; text-align: right; }
+.spin__note:nth-child(4) { left: var(--gutter);  bottom: 20%; }
+
+/* Grados girados: refuerza que el scroll controla la rotación. */
+.spin__deg {
+  position: absolute; right: var(--gutter); top: clamp(84px, 13vh, 130px);
+  z-index: 3;
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em;
+  color: var(--on-night-3);
+  text-align: right;
+}
+.spin__deg b {
+  display: block; font-family: var(--display); font-size: 54px;
+  font-weight: 800; color: var(--on-night); line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+
+.spin__progress {
+  position: absolute; left: var(--gutter); right: var(--gutter); bottom: 34px;
+  height: 1px; background: var(--line-night); z-index: 3;
+}
+.spin__progress i {
+  display: block; height: 100%; width: 0;
+  background: var(--blue-glow);
+  transform-origin: left;
+}
+
+/* ============ 06 · CAPACIDADES — la inversión a fondo claro ============== */
+
+/* El golpe visual de la página: el fondo se invierte y la camioneta viaja
+   pegada mientras cambian los paneles. */
+.caps {
+  position: relative;
+  background: var(--ice);
+  color: var(--on-ice);
+}
+.caps__stage {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  overflow: hidden;
+}
+
+.caps__head {
+  position: absolute; left: var(--gutter); top: clamp(80px, 12vh, 124px);
+  z-index: 3; max-width: 50vw;
+}
+
+/* La camioneta que se desplaza con el scroll. */
+/* SE DIMENSIONA POR ALTO, NO POR ANCHO.
+
+   Antes iba a min(62vw, 780px) de ancho con caja cuadrada: en una pantalla
+   de portatil, con unos 600px utiles de alto, esa caja de 780 se salia de
+   la seccion y tapaba el titular y el panel de texto.
+
+   Atarla al alto disponible garantiza que siempre quepa, sea cual sea la
+   ventana. Y como se muestra mas chica, el mismo archivo se ve mas nitido:
+   menos ampliacion con los mismos bytes. */
+.caps__truck {
+  position: absolute;
+  left: 50%; top: 54%;
+  height: min(44vh, 380px);
+  width: auto;
+  max-width: 58vw;
+  aspect-ratio: 1637 / 1000;      /* la forma real del recorte */
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  z-index: 2;
+}
+.caps__truck img {
+  width: 100%; height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 34px 42px rgba(6,11,28,0.30));
+  transition: opacity 0.35s var(--ease);
+}
+.caps__truck--single img { opacity: 1; }
+.caps__truck--single img.is-out { opacity: 0; }
+
+/* Los recortes no traen piso. Esta elipse los asienta. */
+.caps__truck::after {
+  content: "";
+  position: absolute;
+  left: 50%; bottom: 13%;
+  width: 58%; height: 6%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(6,11,28,0.30) 0%, transparent 72%);
+  filter: blur(10px);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.caps__panels { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+.caps__panel {
+  position: absolute;
+  right: var(--gutter);
+  bottom: clamp(60px, 12vh, 130px);
+  width: min(390px, 76vw);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+.caps__panel .n {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+  color: var(--on-ice-3); display: block; margin-bottom: 14px;
+}
+.caps__panel b {
+  display: block; font-family: var(--display); font-weight: 800;
+  font-size: clamp(32px, 4vw, 58px); line-height: 0.88;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.caps__panel p { margin: 0; color: var(--on-ice-2); font-size: 15.5px; }
+
+/* Puntos de progreso del recorrido */
+.caps__dots {
+  position: absolute; left: var(--gutter); bottom: clamp(60px, 12vh, 130px);
+  z-index: 4; display: flex; flex-direction: column; gap: 13px;
+}
+.caps__dots i {
+  width: 26px; height: 2px; background: var(--line-ice);
+  transition: background 0.4s var(--ease), width 0.4s var(--ease);
+}
+.caps__dots i.is-on { background: var(--blue); width: 46px; }
+
+/* ========================= BASE DE SECCIONES =============================
+   Espaciado y fondos comunes. Estas reglas las usan #giro, #titulo,
+   #comprar y #ubicacion; sin ellas las secciones pierden el aire y las
+   claras se quedan transparentes, dejando texto oscuro sobre fondo oscuro.
+   ========================================================================= */
+
+.section {
+  padding: clamp(76px, 11vw, 168px) var(--gutter);
+  position: relative;
+}
+
+/* Inversion a fondo hielo. El .on-ice que acompania en el HTML cambia los
+   colores de texto, borde y botones dentro. */
+.section--ice {
+  background: var(--ice);
+  color: var(--on-ice);
+}
+
+.section__inner { max-width: var(--maxw); margin: 0 auto; }
+
+.section__head { margin-bottom: clamp(42px, 6vw, 82px); max-width: 900px; }
+.section__head .lede { margin-top: 24px; }
+
+/* ============================== 07 · INVENTARIO ==========================
+   "Lo que hay hoy". Seccion fija: al bajar cambia de camioneta con su foto
+   real del lote a pantalla completa y la ficha al lado.
+   ========================================================================= */
+
+.inv { position: relative; background: var(--night); }
+
+.inv__stage {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  overflow: hidden;
+}
+
+.inv__frame { position: absolute; inset: 0; }
+
+.inv__shot {
+  position: absolute; inset: 0;
+  opacity: 0;
+  transform: scale(1.05);
+  transition: opacity 0.7s var(--ease), transform 1.5s var(--ease);
+}
+.inv__shot.is-on { opacity: 1; transform: scale(1); }
+.inv__shot img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Las fotos son de mediodia: sin velo la ficha blanca no se lee. */
+.inv__scrim {
+  position: absolute; inset: 0; z-index: 2;
+  background:
+    linear-gradient(to bottom, rgba(4,6,15,0.76) 0%, rgba(4,6,15,0.10) 30%, rgba(4,6,15,0.30) 58%, rgba(4,6,15,0.94) 100%),
+    linear-gradient(to right, transparent 0%, transparent 38%, rgba(4,6,15,0.86) 78%);
+  pointer-events: none;
+}
+
+.inv__head {
+  position: absolute; left: var(--gutter); top: clamp(88px, 13vh, 132px);
+  z-index: 3;
+}
+
+/* Las fichas se cruzan en el mismo hueco. */
+.inv__cards {
+  position: absolute;
+  right: var(--gutter);
+  top: 50%; transform: translateY(-50%);
+  z-index: 3;
+  width: min(420px, 78vw);
+}
+.inv__card {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.5s var(--ease), transform 0.6s var(--ease);
+  pointer-events: none;
+}
+.inv__cards { display: grid; }
+.inv__card.is-on { opacity: 1; transform: none; pointer-events: auto; }
+
+.inv__card-top { display: flex; align-items: baseline; gap: 12px; }
+.inv__yr {
+  font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em;
+  color: var(--on-night-3); flex: none;
+}
+.inv__name {
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(30px, 3.6vw, 54px); line-height: 0.92;
+  text-transform: uppercase; margin: 0;
+}
+
+.inv__meta {
+  display: flex; flex-wrap: wrap; gap: 7px 16px;
+  margin-top: 12px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--on-night-2); text-transform: uppercase;
+}
+
+.inv__tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+.inv__tags span {
+  font-family: var(--cond); font-size: 13px; font-weight: 500;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  border: 1px solid var(--line-night);
+  background: rgba(4,6,15,0.42);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 5px 11px; color: var(--on-night-2);
+}
+.inv__tags span.is-rebuilt { border-color: rgba(255,190,90,0.42); color: #FFC96B; }
+
+.inv__note { margin: 16px 0 0; font-size: 14px; color: var(--on-night-2); }
+
+.inv__cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+
+.inv__num {
+  position: absolute; left: var(--gutter); bottom: clamp(52px, 9vh, 92px);
+  z-index: 3;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.inv__num b {
+  font-family: var(--display); font-size: clamp(44px, 6vw, 76px);
+  font-weight: 900; line-height: 0.86; letter-spacing: -0.02em;
+}
+.inv__num span {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  color: var(--on-night-3); text-transform: uppercase;
+}
+
+.inv__dots {
+  position: absolute; left: var(--gutter); bottom: clamp(120px, 17vh, 172px);
+  z-index: 3; display: flex; gap: 8px;
+}
+.inv__dots i {
+  width: 22px; height: 2px;
+  background: rgba(242,245,253,0.28);
+  transition: background 0.4s var(--ease), width 0.4s var(--ease);
+}
+.inv__dots i.is-on { background: var(--blue-glow); width: 40px; }
+
+@media (max-width: 860px) {
+  .inv__cards {
+    left: var(--gutter); right: var(--gutter);
+    width: auto;
+    top: auto; bottom: clamp(96px, 17vh, 150px);
+    transform: none;
+  }
+  .inv__scrim {
+    background: linear-gradient(to bottom, rgba(4,6,15,0.72) 0%, rgba(4,6,15,0.12) 26%, rgba(4,6,15,0.62) 58%, rgba(4,6,15,0.96) 100%);
+  }
+  .inv__num { bottom: clamp(30px, 5vh, 52px); }
+  .inv__dots { bottom: clamp(96px, 13vh, 120px); }
+  .inv__note { display: none; }
+}
+
+/* Sin movimiento: deja de ser fija y se apilan todas las unidades. */
+/* Con "reducir movimiento" el inventario NO se desarma.
+
+   Antes se desapilaba en una lista con cinco fotos a tamano completo: se
+   perdia el efecto y la seccion se volvia interminable. Pero cambiar de
+   unidad al bajar no es movimiento gratuito, lo dirige el scroll del
+   visitante. Lo que se apaga es el acercamiento de la foto y el
+   desplazamiento de la ficha; el cruce por opacidad se queda. */
+html.no-motion .inv__shot {
+  transform: none;
+  transition: opacity 0.25s linear;
+}
+html.no-motion .inv__shot.is-on { transform: none; }
+html.no-motion .inv__card {
+  transform: none;
+  transition: opacity 0.22s linear;
+}
+html.no-motion .inv__card.is-on { transform: none; }
+
+
+/* ================= 08 · REBUILT / CÓMO COMPRAR / UBICACIÓN ============== */
+
+/* Sección honesta: fondo claro para que se lea como documento, no como venta. */
+.rebuilt { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: start; }
+.rebuilt__qa { border-top: 1px solid var(--line-ice); }
+.rebuilt__qa dt {
+  font-family: var(--display); font-weight: 800; font-size: clamp(22px, 2.2vw, 32px);
+  text-transform: uppercase; padding-top: 24px; line-height: 1;
+}
+.rebuilt__qa dd {
+  margin: 12px 0 26px; color: var(--on-ice-2);
+  border-bottom: 1px solid var(--line-ice); padding-bottom: 26px;
+}
+.rebuilt__note {
+  background: var(--on-ice); color: var(--ice);
+  padding: clamp(26px, 3vw, 42px);
+}
+.rebuilt__note b {
+  font-family: var(--display); font-size: clamp(26px, 2.6vw, 40px);
+  font-weight: 800; text-transform: uppercase; display: block;
+  line-height: 0.92; margin-bottom: 16px;
+}
+.rebuilt__note p { margin: 0 0 20px; color: rgba(237,241,250,0.72); }
+
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line-night); }
+.steps__item { background: var(--night); padding: clamp(28px, 3.4vw, 50px); }
+.steps__item b {
+  font-family: var(--display); font-size: 68px; font-weight: 900;
+  line-height: 0.8; color: var(--blue-hi); display: block; margin-bottom: 22px;
+}
+.steps__item h3 {
+  font-family: var(--display); font-weight: 800; font-size: 27px;
+  text-transform: uppercase; margin: 0 0 12px; line-height: 1;
+}
+.steps__item p { margin: 0; color: var(--on-night-2); font-size: 15px; }
+
+.place { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 4vw, 64px); align-items: center; }
+.place__map {
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--line-night);
+  background: var(--night-2);
+  position: relative; overflow: hidden;
+}
+.place__map iframe {
+  width: 100%; height: 100%; border: 0;
+  /* El mapa de Google llega en claro y desentona con la pagina. Invertirlo
+     y girar el tono lo pasa a oscuro sin pedir una version de pago. */
+  filter: invert(0.92) hue-rotate(185deg) saturate(0.75) contrast(0.92);
+}
+.place__map-link {
+  position: absolute; left: 14px; bottom: 14px;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(4,6,15,0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--line-night);
+  padding: 10px 16px;
+  font-family: var(--cond); font-weight: 600; font-size: 13px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  transition: background 0.3s;
+}
+.place__map-link:hover { background: var(--blue); border-color: var(--blue); }
+.place__rows { border-top: 1px solid var(--line-night); margin-top: 30px; }
+.place__row {
+  display: grid; grid-template-columns: 110px 1fr; gap: 18px;
+  padding: 17px 0; border-bottom: 1px solid var(--line-night);
+  align-items: baseline;
+}
+.place__row i {
+  font-style: normal; font-family: var(--mono); font-size: 10.5px;
+  letter-spacing: 0.16em; text-transform: uppercase; color: var(--on-night-3);
+}
+
+/* ================================= 09 · FOOTER =========================== */
+
+.foot {
+  border-top: 1px solid var(--line-night);
+  padding: clamp(56px, 7vw, 96px) var(--gutter) 34px;
+  position: relative; overflow: hidden;
+}
+/* La montaña del logo como marca de agua: cierra el círculo con la identidad. */
+.foot__mark {
+  position: absolute; right: -6%; bottom: -32%;
+  width: min(520px, 56vw); opacity: 0.05; pointer-events: none;
+}
+.foot__grid {
+  max-width: var(--maxw); margin: 0 auto;
+  display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 40px;
+  position: relative;
+}
+.foot h4 {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--on-night-3);
+  margin: 0 0 18px; font-weight: 500;
+}
+.foot ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 11px; }
+.foot a:hover { color: var(--blue-glow); }
+.foot__legal {
+  max-width: var(--maxw); margin: clamp(44px, 6vw, 76px) auto 0;
+  padding-top: 24px; border-top: 1px solid var(--line-night);
+  display: flex; flex-wrap: wrap; gap: 14px 30px; justify-content: space-between;
+  font-size: 12.5px; color: var(--on-night-3);
+}
+
+/* WhatsApp flotante */
+.fab {
+  position: fixed; right: 18px; bottom: 18px; z-index: 80;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #1FA855; color: #fff;
+  display: grid; place-items: center;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.42);
+  transform: translateY(90px);
+  transition: transform 0.45s var(--ease), background 0.25s;
+}
+.fab.is-on { transform: none; }
+.fab:hover { background: #17843F; }
+
+/* ============================ REVELADO AL ENTRAR ========================= */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.75s var(--ease), transform 0.75s var(--ease);
+}
+.reveal.is-in { opacity: 1; transform: none; }
+
+/* ================================ RESPONSIVE ============================= */
+
+@media (max-width: 1080px) {
+  .inv { grid-template-columns: 1fr; }
+  .inv__viewer { position: relative; top: 0; max-height: 52vh; }
+  .rebuilt, .place { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 860px) {
+  .nav {
+    left: 10px; right: 10px;
+    padding: 9px 10px 9px 14px;
+    gap: 10px;
+  }
+  .nav__here { display: flex; }
+  /* La marca deja de empujar: el hueco libre pasa a la direccion. */
+  .nav__brand { margin-right: 0; }
+  .nav__brand span { font-size: 18px; }
+  .nav__brand img { width: 32px; height: 32px; }
+  .nav__links { display: none; }
+  .nav__toggle { display: flex; }
+  .nav > .btn { display: none; }
+
+  /* En pantalla vertical el texto no cabe al lado de la camioneta:
+     pasa arriba y la unidad baja. */
+  .hero { height: 200vh; }
+
+  .stats { grid-template-columns: 1fr; }
+  .stats__item { border-left: 0; border-top: 1px solid var(--line-night); }
+  .stats__item:first-child { border-top: 0; }
+
+  .spin { height: 150vh; }
+  .spin__note { position: static; width: auto; }
+  .spin__notes {
+    display: grid; align-content: end;
+    padding: 0 var(--gutter) 76px;
+  }
+  .spin__note { grid-area: 1 / 1; text-align: left !important; }
+  .spin__deg { top: auto; bottom: 60px; }
+
+  .caps__head { max-width: none; right: var(--gutter); }
+  .caps__truck {
+    height: min(30vh, 240px);
+    max-width: 92vw;
+    top: 40%;
+  }
+  .caps__panel { left: var(--gutter); right: var(--gutter); width: auto; }
+  .caps__dots { flex-direction: row; bottom: 30px; }
+
+  .steps { grid-template-columns: 1fr; }
+  .foot__grid { grid-template-columns: 1fr; }
+}
+
+/* ======================= REDUCIR MOVIMIENTO ==============================
+   Se maneja con la clase html.no-motion, que pone el JavaScript, en vez de
+   una media query combinada con un atributo.
+
+   Por que: la combinacion anterior dependia de que el navegador reevaluara
+   una media query al cambiar un atributo del html, y en la practica no
+   siempre ganaba la regla correcta. Eso dejaba menus invisibles y fotos
+   apiladas a tamano completo sin motivo aparente. Una clase no tiene esa
+   ambiguedad: esta o no esta.
+   ======================================================================== */
+
+/* ============================== ACCESIBILIDAD ============================ */
+
+:where(a, button):focus-visible {
+  outline: 2px solid var(--blue-glow);
+  outline-offset: 3px;
+}
+
+/* Sin movimiento: las secciones fijas se vuelven bloques normales y todo
+   queda legible. La página nunca depende del scroll para tener sentido. */
+/* `html:not([data-motion="on"])` deja que ?motion=on muestre los efectos aun
+   con la preferencia del sistema activada. Sin ese parámetro manda el sistema. */
+/* Preferencia de "reducir movimiento".
+   Lo que se apaga: lo que se mueve solo sin que el usuario lo pida — la
+   cinta infinita, la flecha que late, el parpadeo del velo.
+   Lo que se CONSERVA: el diseno completo. Las secciones siguen fijas, los
+   textos en su lugar y el giro sigue cambiando de cuadro con el scroll,
+   porque eso lo controla la mano del usuario, no la pagina. Aplanar el
+   maquetado aqui no ayudaba a nadie: dejaba la pagina desarmada. */
+html.no-motion { scroll-behavior: auto; }
+
+html.no-motion .ticker__track,
+html.no-motion :is(.cue-dot, .hero__cue-chev svg) {
+  animation: none;
+}
+html.no-motion .ticker__track { transform: none; }
+
+/* Los cambios de estado se quedan, pero instantaneos. */
+html.no-motion :is(.reveal, .inv__viewer img, .caps__truck img, .btn, .nav) {
+  transition-duration: 0.08s;
+}
+html.no-motion .reveal { opacity: 1; transform: none; }
+
+
+
+/* ============================== PRECARGA ================================
+   La pagina se retiene hasta que el hero esta completo. Sin esto el primer
+   scroll cae sobre cuadros que aun no llegaron y el recorrido salta justo
+   en el peor momento: la primera impresion.
+   ======================================================================== */
+
+/* Mientras carga no se puede hacer scroll: evita que el visitante entre al
+   recorrido antes de tiempo. */
+html.is-loading, html.is-loading body { overflow: hidden; }
+
+.load {
+  position: fixed; inset: 0; z-index: 300;
+  background: var(--night);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 26px;
+  transition: opacity 0.6s var(--ease);
+}
+.load.is-done { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.load__logo {
+  width: clamp(84px, 15vw, 132px);
+  height: auto;
+  animation: loadPulse 2.4s var(--ease-io) infinite;
+}
+@keyframes loadPulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.98); }
+  50%      { opacity: 1;    transform: scale(1); }
+}
+
+.load__bar {
+  width: min(240px, 56vw);
+  height: 2px;
+  background: rgba(242,245,253,0.14);
+  overflow: hidden;
+}
+.load__bar i {
+  display: block; height: 100%; width: 100%;
+  background: var(--blue-glow);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.3s linear;
+}
+
+.load__pct {
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; color: var(--on-night-3);
+}
+
+html.no-motion .load__logo { animation: none; }
+/* El punto deja de latir, pero se queda: sigue marcando la ubicacion. */
+html.no-motion .nav__dot::after { animation: none; opacity: 0; }
+/* El reflejo del borde se detiene, pero se queda puesto en una posicion
+   que se lee bien: sigue dando el acabado metalico. */
+html.no-motion .nav::before { animation: none; --giro: 300deg; }
+
+
+
+/* ========================= SLIDER DE UNIDADES ===========================
+   Las camionetas van pasando solas. Los recortes no traen fondo, asi que la
+   seccion pone el suyo: resplandor detras y sombra de contacto debajo.
+   ======================================================================== */
+
+.spec { background: var(--night-2); border-block: 1px solid var(--line-night); }
+
+.spec__grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+}
+
+.spec__label { transition: opacity 0.3s var(--ease); }
+
+.spec__stage { position: relative; }
+
+.spec__viewer {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+.spec__viewer::before {
+  content: "";
+  position: absolute; left: 50%; top: 52%;
+  width: 92%; height: 76%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(78,102,240,0.22) 0%, transparent 68%);
+  filter: blur(30px);
+}
+.spec__viewer::after {
+  content: "";
+  position: absolute; left: 50%; bottom: 9%;
+  width: 60%; height: 6%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.62) 0%, transparent 72%);
+  filter: blur(11px);
+}
+
+/* Cada unidad entra deslizando desde la derecha y sale hacia la izquierda:
+   es el gesto que hace que se lea como carrusel y no como parpadeo. */
+.spec__slide {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  opacity: 0;
+  transform: translateX(9%) scale(0.97);
+  transition: opacity 0.55s var(--ease), transform 0.7s var(--ease);
+  pointer-events: none;
+}
+.spec__slide.is-on {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.spec__slide img {
+  position: relative;
+  width: 100%; height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 26px 34px rgba(0,0,0,0.55));
+}
+
+.spec__arrow {
+  position: absolute; top: 50%; z-index: 3;
+  transform: translateY(-50%);
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line-night);
+  background: rgba(4,6,15,0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: var(--on-night);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease), background 0.3s, border-color 0.3s;
+}
+.spec__viewer:hover .spec__arrow,
+.spec__arrow:focus-visible { opacity: 1; }
+.spec__arrow:hover { background: var(--blue); border-color: var(--blue); }
+.spec__arrow:first-of-type { left: 0; }
+.spec__arrow:last-of-type { right: 0; }
+
+.spec__dots { display: flex; justify-content: center; gap: 9px; margin-top: 18px; }
+.spec__dot {
+  width: 26px; height: 3px;
+  background: rgba(242,245,253,0.20);
+  padding: 0;
+  transition: background 0.4s var(--ease), width 0.4s var(--ease);
+}
+.spec__dot:hover { background: rgba(242,245,253,0.45); }
+.spec__dot.is-on { background: var(--blue-glow); width: 46px; }
+
+.spec__list { list-style: none; margin: 0; padding: 0; display: grid; }
+
+.spec__item {
+  padding: clamp(18px, 2.2vw, 26px) 0;
+  border-top: 1px solid var(--line-night);
+}
+.spec__item:last-child { border-bottom: 1px solid var(--line-night); }
+.spec__item b {
+  display: block;
+  font-family: var(--display); font-weight: 800;
+  font-size: clamp(24px, 2.6vw, 38px); line-height: 0.95;
+  text-transform: uppercase; margin-bottom: 8px;
+}
+.spec__item p { margin: 0; color: var(--on-night-2); font-size: 14.5px; }
+
+@media (max-width: 860px) {
+  .spec__grid { grid-template-columns: 1fr; }
+  .spec__viewer { aspect-ratio: 16 / 11; }
+  /* En tactil no hay cursor que revele las flechas: se quedan puestas. */
+  .spec__arrow { opacity: 1; width: 40px; height: 40px; }
+}
+
+/* Con "reducir movimiento" el carrusel NO se apaga: sigue enseniando el
+   inventario, pero cambia por fundido en vez de deslizar. */
+html.no-motion .spec__slide {
+  transform: none;
+  transition: opacity 0.28s linear;
+}
+html.no-motion .spec__slide.is-on { transform: none; }
+
+
+
+/* ========================= MENU DE TELEFONO =============================
+   Hoja de vidrio que se despliega DESDE la barra, no desde el borde de la
+   pantalla: se lee como que la barra crece, no como una capa que aterriza
+   encima. Los renglones entran escalonados.
+   ======================================================================== */
+
+.sheet {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  padding: 10px;
+  border-radius: 26px;
+
+  background: rgba(12, 17, 36, 0.72);
+  backdrop-filter: blur(26px) saturate(180%);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+
+  /* Nace desde el borde superior: crece hacia abajo. */
+  transform-origin: top center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px) scaleY(0.94);
+  /* visibility NO va en la transicion. Una transicion que se queda a medias
+     (pestana en segundo plano, navegador que no compone) dejaria el menu
+     invisible y sin forma de abrirlo. Al conmutarla en seco, el menu
+     siempre aparece; lo unico que se pierde es el fundido de salida. */
+  transition:
+    opacity 0.32s var(--ease),
+    transform 0.42s var(--ease);
+}
+.nav.is-open .sheet {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.sheet__list { display: grid; }
+
+.sheet__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 14px;
+  border-radius: 16px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 27px;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--on-night);
+
+  /* Cada renglon entra desde la izquierda. El retraso lo pone el JS, para
+     que el escalonado siga el orden real de la lista. */
+  opacity: 0;
+  transform: translateX(-14px);
+  transition: opacity 0.34s var(--ease), transform 0.34s var(--ease), background 0.2s;
+}
+.nav.is-open .sheet__row { opacity: 1; transform: none; }
+.sheet__row:active { background: rgba(255, 255, 255, 0.07); }
+
+.sheet__row i {
+  font-style: normal;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--blue-glow);
+  flex: none;
+  padding-top: 4px;
+}
+.sheet__row span { flex: 1; }
+.sheet__row em { display: flex; color: var(--on-night-3); }
+
+.sheet__foot {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+.sheet__foot .btn {
+  display: flex;
+  justify-content: center;
+  border-radius: 100px;
+  padding: 14px 20px;
+}
+
+.sheet__addr {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 14px 6px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--on-night-2);
+  line-height: 1.4;
+}
+
+/* Fondo que apaga la pagina detras. Cerrar tocando fuera es el gesto que
+   todo el mundo intenta primero. */
+.sheet__back {
+  position: fixed;
+  inset: 0;
+  z-index: 85;
+  background: rgba(4, 6, 15, 0.55);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.34s var(--ease);
+}
+.sheet__back.is-on { opacity: 1; visibility: visible; }
+
+@media (max-width: 860px) {
+  .sheet { display: block; }
+}
+
+/* Sin movimiento la hoja aparece y desaparece, sin crecer ni deslizarse. */
+html.no-motion .sheet { transform: none; }
+html.no-motion .sheet__row { opacity: 1; transform: none; }
+
