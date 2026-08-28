@@ -201,14 +201,14 @@
   /* Recorrido de la sección clara. Cada panel trae su propia unidad, así el
      visitante ve variedad de inventario sin salir del efecto. */
   var CAPS = [
-    { n: "01", t: "Tracción 4x4",   d: "Cuatro de las cinco unidades traen 4x4 real. En el Valle eso es la diferencia entre llegar y quedarte.", v: vehicles[4] },
-    { n: "02", t: "Motor probado",  d: "V6 3.5L y 2.4L Turbo. Refacción disponible en cualquier lado y mecánico que las conoce.", v: vehicles[3] },
-    { n: "03", t: "Cabina doble",   d: "Double Cab y Crew Cab: caben cinco y la caja queda libre para la herramienta.", v: vehicles[1] },
-    { n: "04", t: "Listas ya",      d: "Inspeccionadas y en el lote. Te la llevas manejando el mismo día.", v: vehicles[0] }
+    { n: "01", t: "TRD Pro",      tag: "Solar Octane · Concepto visual", d: "Una Tacoma creada para abrir camino, con presencia agresiva y carácter TRD.", image: "assets/features/card-2023-tacoma-trd-pro-solar-octane.webp" },
+    { n: "02", t: "Trailhunter",  tag: "Bronze Oxide · Concepto visual", d: "Equipo overland, postura elevada y una estética preparada para salir del pavimento.", image: "assets/features/card-2025-tacoma-trailhunter-bronze-oxide.webp" },
+    { n: "03", t: "Limited",      tag: "Pearl White · Concepto visual", d: "Comodidad premium y diseño limpio para quien quiere Tacoma todos los días.", image: "assets/features/card-2024-tacoma-limited-white.webp" },
+    { n: "04", t: "TRD Sport",    tag: "Army Green · Concepto visual", d: "Actitud deportiva, cabina doble y el look inconfundible de una Tacoma moderna.", image: "assets/features/card-2022-tacoma-trd-sport-army-green.webp" }
   ];
 
   var STEPS = [
-    { n: "01", t: "Escoge", d: "Mira el inventario aquí o en el catálogo de WhatsApp. Pregunta lo que sea: te contestamos nosotros, no un robot." },
+    { n: "01", t: "Escoge", d: "Mira el catálogo actualizado de WhatsApp. Pregunta lo que sea: te contestamos nosotros, no un robot." },
     { n: "02", t: "Aplica", d: "Identificación, comprobante de ingresos y enganche. Trabajamos con crédito aprobado." },
     { n: "03", t: "Maneja", d: "Firmas, te entregamos placas y papeles en regla, y te la llevas." }
   ];
@@ -347,9 +347,7 @@
 
   function buildNav() {
     var DESTINOS = [
-      ["#giro", "La unidad"],
-      ["#capacidades", "Capacidades"],
-      ["#inventario", "Inventario"],
+      ["#capacidades", "Tacomas"],
       ["#titulo", "Título rebuilt"],
       ["#comprar", "Cómo comprar"],
       ["#ubicacion", "Ubicación"]
@@ -569,7 +567,6 @@
   }
 
   function buildStats() {
-    var fourByFour = vehicles.filter(function (v) { return v.drivetrain === "4x4"; }).length;
     /* Los anios de experiencia van primero: es el dato que mas pesa en un
        lote de titulos rebuilt, y el unico que un competidor nuevo no puede
        copiar. Confirmado en la propia pagina de Facebook del negocio.
@@ -578,9 +575,9 @@
        unidades el campo warranty sigue en "Actualizar", asi que la pagina
        estaba prometiendo algo sin confirmar. Cuando se confirme, vuelve. */
     var data = [
-      { n: 30,              suf: "+", label: "Años de experiencia" },
-      { n: vehicles.length, suf: "",  label: "Tacomas disponibles" },
-      { n: fourByFour,      suf: "",  label: "Con tracción 4x4" }
+      { n: 4,  suf: "",   label: "Estilos Tacoma destacados" },
+      { n: 1,  suf: "",   label: "Catálogo actualizado" },
+      { n: 24, suf: "/7", label: "Catálogo disponible" }
     ];
 
     var items = data.map(function (d, i) {
@@ -773,29 +770,32 @@
      ====================================================================== */
 
   function buildCaps() {
-    var truckImg = h("img", { src: CAPS[0].v.image, alt: altText(CAPS[0].v) });
+    var truckImg = h("img", { src: CAPS[0].image, alt: "Toyota Tacoma " + CAPS[0].t + " en estudio azul" });
     var truck = h("div.caps__truck.caps__truck--single", null, truckImg);
 
     var panels = CAPS.map(function (c) {
       return h("article.caps__panel", null,
-        h("span.n", null, c.n),
-        h("b", null, c.t),
-        h("p", null, c.d));
+        h("img.caps__thumb", { src: c.image, alt: "", loading: "lazy", decoding: "async" }),
+        h("div.caps__copy", null,
+          h("span.n", null, c.n + " · " + c.tag),
+          h("b", null, c.t),
+          h("p", null, c.d),
+          link(CONFIG.catalogUrl, "caps__link", "Ver catálogo actual", ARROW)));
     });
 
     var dots = CAPS.map(function () { return h("i"); });
 
     var stage = h("div.caps__stage", null,
       h("div.caps__head", null,
-        h("p.eyebrow", null, "Por qué una Tacoma"),
-        h("h2.display.h-lg", null, "Hechas ", h("em", null, "para"), " aguantar")),
+        h("p.eyebrow", null, "Diseñadas para destacar"),
+        h("h2.display.h-lg", null, "Elige tu ", h("em", null, "actitud"))),
       truck,
       h("div.caps__panels", null, panels),
       h("div.caps__dots", { "aria-hidden": "true" }, dots)
     );
 
     /* Una pantalla de scroll por bloque, más una de entrada y otra de salida. */
-    var section = h("section.caps.on-ice#capacidades", {
+    var section = h("section.caps#capacidades", {
       style: "height:" + (CAPS.length * 80 + 60) + "vh"
     }, stage);
 
@@ -811,11 +811,11 @@
         /* Cambio de unidad con un parpadeo corto: sustituir el src en seco
            enseña el hueco mientras carga la siguiente foto. */
         truckImg.classList.add("is-out");
-        var next = CAPS[idx].v;
+        var next = CAPS[idx];
         setTimeout(function () {
           if (current !== idx) return;
           truckImg.src = next.image;
-          truckImg.alt = altText(next);
+          truckImg.alt = "Toyota Tacoma " + next.t + " en estudio azul";
           truckImg.classList.remove("is-out");
         }, 180);
         dots.forEach(function (d, i) { d.classList.toggle("is-on", i === idx); });
@@ -828,7 +828,7 @@
       var x = lerp(-22 * dir, 16 * dir, easeOut(local));
       var y = lerp(6, -6, local);
       var rot = lerp(-1.6 * dir, 1.6 * dir, local);
-      var pulse = 1 + Math.sin(Math.PI * local) * 0.05;
+      var pulse = 0.92 + local * 0.13;
 
       truck.style.transform =
         "translate(calc(-50% + " + mv(x) + "vw), calc(-50% + " + mv(y) + "vh)) " +
@@ -947,7 +947,7 @@
           dl,
           h("aside.rebuilt__note.reveal", null,
             h("b", null, "Te lo decimos antes de que preguntes"),
-            h("p", null, "Las cinco unidades traen título rebuilt. No está escondido en el contrato ni aparece al final: está aquí, en la página, antes de que nos escribas."),
+            h("p", null, "Las unidades publicadas por Car Haus pueden incluir título rebuilt. No lo escondemos: consulta el historial y las condiciones de cada Tacoma directamente con nosotros."),
             h("p", null, "Llevamos más de 30 años haciendo esto en el Valle. Un lote que piensa quedarse no puede permitirse esconderle nada a un cliente."),
             h("p", null, "Si eso no es para ti, lo entendemos. Si lo que buscas es una Tacoma bien equipada a un precio que existe, ven a verla."),
             link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo", ARROW)))));
@@ -1087,7 +1087,6 @@
     var nav = buildNav();
     var hero = buildHero();
     var stats = buildStats();
-    var spec = buildSpec();
     var caps = buildCaps();
 
     root.appendChild(nav);
@@ -1095,10 +1094,7 @@
     root.appendChild(hero);
     root.appendChild(buildTicker());
     root.appendChild(stats);
-    root.appendChild(spec);   /* ficha de la unidad estrella */
     root.appendChild(caps);
-    var inv = buildInventory();
-    root.appendChild(inv);
     root.appendChild(buildRebuilt());
     root.appendChild(buildSteps());
     root.appendChild(buildPlace());
@@ -1110,8 +1106,8 @@
     document.documentElement.classList.add("is-loading");
 
     var criticos = (hero._preload || []).slice();
-    /* La primera foto del inventario tambien, que es la siguiente parada. */
-    if (vehicles[0] && vehicles[0].photo) criticos.push(vehicles[0].photo);
+    /* La primera imagen del showcase llega mientras el hero termina. */
+    if (CAPS[0] && CAPS[0].image) criticos.push(CAPS[0].image);
 
     preload(criticos, loader._set).then(function () {
       document.documentElement.classList.remove("is-loading");
@@ -1125,10 +1121,7 @@
          cuando el visitante llegue abajo ya estan, y el cambio de unidad no
          ensena el hueco mientras carga. */
       var despues = [];
-      vehicles.forEach(function (v) {
-        if (v.image) despues.push(v.image);
-        if (v.photo) despues.push(v.photo);
-      });
+      CAPS.forEach(function (c) { if (c.image) despues.push(c.image); });
       preload(despues);
     });
 
