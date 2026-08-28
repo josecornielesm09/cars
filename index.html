@@ -28,12 +28,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Barlow:wght@200;300;400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- Primeros cuadros del recorrido: el navegador los pide antes de leer el
-     script, asi el hero aparece casi de inmediato al abrir. -->
-<link rel="preload" as="image" href="assets/360/film/f-001.webp" fetchpriority="high">
-<link rel="preload" as="image" href="assets/360/film/f-002.webp">
-<link rel="preload" as="image" href="assets/360/film/f-003.webp">
-<link rel="preload" as="image" href="assets/360/giro-poster.webp">
+<!-- El nuevo recorrido del hero es un solo MP4 optimizado. Evitamos cargar
+     las 80 imagenes de la secuencia anterior antes de mostrar la pagina. -->
+<link rel="preload" as="video" href="assets/hero/hero_video.mp4" type="video/mp4">
 <link rel="stylesheet" href="style.css">
 
 <script type="application/ld+json">
