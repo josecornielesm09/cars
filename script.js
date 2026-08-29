@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787990631";
+  var ASSETS_V = "1787991618";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1454,8 +1454,14 @@
      ====================================================================== */
 
   function buildFooter() {
+    /* La que recorre el pie es la 2025: es la generacion nueva, se distingue
+       de un vistazo de las anteriores, y en rojo se despega del fondo oscuro
+       mucho mas que el azul, que se fundia con el. Ademas es una unidad real
+       del lote —lleva la placa de Car Haus en el paragolpes—, que es
+       justamente lo que este pie tiene que probar. */
     var truck = h("img.foot__truck", {
-      src: HERO.image, alt: "", "aria-hidden": "true", loading: "lazy", decoding: "async"
+      src: vehicles[0].image, alt: "", "aria-hidden": "true",
+      loading: "lazy", decoding: "async"
     });
 
     /* LA RAYITA LLEGA AL MAPA.
@@ -1667,28 +1673,34 @@
 
        El anillo se dibuja con stroke-dashoffset, que el navegador resuelve
        sin recalcular layout. */
-    var FLECHA_ARRIBA =
-      '<svg width="13" height="13" viewBox="0 0 15 15" fill="none" aria-hidden="true">' +
-      '<path d="M7.5 13V2M2.5 7l5-5 5 5" stroke="currentColor" stroke-width="1.7" ' +
-      'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    /* Una sola flecha, dibujada entera y sin ninguna ventana que la recorte.
 
-    var RADIO = 19;
+       La version anterior tenia dos flechas dentro de una caja de 13px con
+       overflow oculto, para que se relevaran al pasar el raton. El gesto era
+       bonito y el resultado no: bastaba un pixel de descuadre para que se
+       viera media flecha, que se lee como una raya y no como "arriba". */
+    var FLECHA_ARRIBA =
+      '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">' +
+      '<path d="M8 13.5V3.2M3.2 8L8 3.2 12.8 8" stroke="currentColor" ' +
+      'stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    var RADIO = 16;
     var VUELTA = 2 * Math.PI * RADIO;
 
     var aro = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    aro.setAttribute("cx", "22"); aro.setAttribute("cy", "22");
+    aro.setAttribute("cx", "19"); aro.setAttribute("cy", "19");
     aro.setAttribute("r", String(RADIO));
     aro.setAttribute("class", "subir__aro");
     aro.style.strokeDasharray = VUELTA;
     aro.style.strokeDashoffset = VUELTA;
 
     var pista = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    pista.setAttribute("cx", "22"); pista.setAttribute("cy", "22");
+    pista.setAttribute("cx", "19"); pista.setAttribute("cy", "19");
     pista.setAttribute("r", String(RADIO));
     pista.setAttribute("class", "subir__pista");
 
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 44 44");
+    svg.setAttribute("viewBox", "0 0 38 38");
     svg.setAttribute("aria-hidden", "true");
     svg.appendChild(pista); svg.appendChild(aro);
 
@@ -1698,11 +1710,7 @@
       onclick: function () {
         window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
       }
-    }, h("span.subir__flecha", { html:
-      /* Dos flechas iguales, una encima de otra. Al pasar el raton la de
-         arriba sale por el techo y la de abajo ocupa su sitio: el gesto
-         cuenta lo que hace el boton sin escribirlo. */
-      FLECHA_ARRIBA + FLECHA_ARRIBA }));
+    }, h("span.subir__flecha", { html: FLECHA_ARRIBA }));
     subir.appendChild(svg);
     document.body.appendChild(subir);
 
