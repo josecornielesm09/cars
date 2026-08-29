@@ -130,6 +130,9 @@
       promotion: "Actualizar", promotionActive: false, available: true,
       image: "assets/vehicles/tacoma-2021-trd-sport-white.webp",
       photo: "assets/gallery/galeria-04.webp",
+      /* La foto original de esta unidad era de 590 px y se veia estirada.
+         Se usa una de referencia con licencia comercial, y la ficha lo dice. */
+      fotoReferencia: true,
       frame: { contact: 0.698, scale: 0.93, top: 0.212 }
     },
     {
@@ -143,6 +146,9 @@
       promotion: "Actualizar", promotionActive: false, available: true,
       image: "assets/vehicles/tacoma-2017-trd-off-road-beige.webp",
       photo: "assets/gallery/galeria-03.webp",
+      /* La foto original de esta unidad era de 590 px y se veia estirada.
+         Se usa una de referencia con licencia comercial, y la ficha lo dice. */
+      fotoReferencia: true,
       frame: { contact: 0.72, scale: 1.0, top: 0.25 }
     },
     {
@@ -273,7 +279,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "7";
+  var ASSETS_V = "8";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1027,6 +1033,10 @@
           h("span.inv__yr", null, String(v.year)),
           h("h3.inv__name", null, v.trim)),
         h("div.inv__meta", null, metaOf(v).map(function (m) { return h("span", null, m); })),
+        /* Si la imagen no es de la unidad, se dice. Un lote que declara el
+           titulo de frente no puede callar esto. */
+        v.fotoReferencia ? h("p.inv__ref", null,
+          "Foto de referencia · pide fotos reales de esta unidad por WhatsApp") : null,
         h("div.inv__tags", null, tags),
         h("p.inv__note", null, v.titleDisclosure),
         h("div.inv__cta", null,

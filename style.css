@@ -1870,3 +1870,23 @@ html.no-motion .sheet__row { opacity: 1; transform: none; }
 /* Con "reducir movimiento" el recorrido se conserva: lo dirige el scroll.
    Lo unico que se apaga es el latido del punto, que corre solo. */
 html.no-motion .foot__pin::after { animation: none; opacity: 0; }
+
+/* Aviso de foto de referencia. Discreto pero legible: no se esconde, pero
+   tampoco compite con el nombre de la unidad. */
+.inv__ref {
+  margin: 12px 0 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  color: #FFC96B;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.inv__ref::before {
+  content: "";
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
