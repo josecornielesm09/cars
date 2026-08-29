@@ -286,7 +286,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787978695";
+  var ASSETS_V = "1787979123";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -549,6 +549,17 @@
       media.appendChild(img);
     }
     imgs[0].classList.add("is-on");
+    /* La primera toma queda SIEMPRE de fondo. Si el cuadro que toca aun no
+       se ha decodificado, por debajo se ve la imagen y no el negro de la
+       seccion. De ahi venian los saltos en negro al hacer scroll. */
+    imgs[0].classList.add("is-base");
+
+    /* Cargar no es poder pintar: una imagen descargada todavia tiene que
+       decodificarse, y ese trabajo cae justo cuando se le pide mostrarla.
+       decode() lo adelanta y el cambio de cuadro deja de tener coste. */
+    imgs.forEach(function (im) {
+      if (im.decode) im.decode().catch(function () {});
+    });
 
     var last = 0;
 
@@ -565,7 +576,7 @@
       }
 
       if (idx === last) return;
-      imgs[last].classList.remove("is-on");
+      if (last !== 0) imgs[last].classList.remove("is-on");
       imgs[idx].classList.add("is-on");
       last = idx;
     };
@@ -979,7 +990,10 @@
     /* Se intercalan las unidades reales del lote entre las de referencia:
        las fotos propias son las que dan credibilidad. */
     vehicles.forEach(function (v, k) {
-      if (v.photo) MURO.splice(2 + k * 3, 0, v.photo);
+      /* Version de muro (900x600). Las fichas miden como mucho 320px, asi
+         que servir la de 2048 era mandar seis veces mas pixeles de los que
+         la pantalla puede ensenar. */
+      if (v.photo) MURO.splice(2 + k * 3, 0, v.photo.replace(/\.webp$/, "-w.webp"));
     });
 
     function fila(desde, hasta, clase) {
@@ -1160,7 +1174,13 @@
 
     pie._tick = function (p) {
       var avance = easeOut(range(p, 0.05, 0.68));
-      truck.style.transform = "translateX(" + (avance * 100 - 100) + "%)";
+      /* Recorrido COMPLETO, no solo el ancho de la camioneta. left avanza
+         sobre el ancho de la calle y translateX corrige por el tamano
+         propio: asi el morro llega al borde derecho justo cuando termina el
+         scroll, que es donde esta el mapa. Antes recorria unicamente su
+         propio ancho y parecia que no llegaba a ningun lado. */
+      truck.style.left = (avance * 100) + "%";
+      truck.style.transform = "translateX(" + (-avance * 100) + "%)";
       camino.style.setProperty("--avance", avance);
       mapa.classList.toggle("is-on", avance > 0.9);
     };
@@ -1291,10 +1311,9 @@
       }
       vehicles.forEach(function (v) {
         if (v.image) despues.push(v.image);
-        if (v.photo) {
-          /* Se precarga la que el navegador va a usar de verdad, no las dos. */
-          despues.push(window.innerWidth <= 767 ? v.photo.replace(/\.webp$/, "-m.webp") : v.photo);
-        }
+        /* Solo la version de muro: es la unica que la pagina muestra desde
+           que el inventario dejo de listar unidades. */
+        if (v.photo) despues.push(v.photo.replace(/\.webp$/, "-w.webp"));
       });
       despues.push("assets/features/blue-scroll/frame-03.webp");
       despues.push("assets/features/blue-scroll/frame-04.webp");

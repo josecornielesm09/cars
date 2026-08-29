@@ -2597,3 +2597,11 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
   .panel__cuerpo p { opacity: 1; transform: none; }
   .panel.is-on { border-color: rgba(109,134,255,.45); }
 }
+
+/* La primera toma del hero se queda de fondo: si un cuadro tarda en
+   decodificarse, por debajo se ve la imagen y no el negro de la seccion. */
+.hero__seq img.is-base { opacity: 1; z-index: 0; }
+.hero__seq img.is-on { z-index: 1; }
+
+/* La camioneta del pie recorre toda la calle. */
+.foot__truck { left: 0; }

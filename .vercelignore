@@ -25,3 +25,8 @@ assets/360/frame-*.webp
 assets/360/giro.mp4
 assets/360/giro-movil.mp4
 assets/360/giro-poster.webp
+
+# Las fotos del lote solo se usan como fichas del muro (900x600). Las
+# versiones de 2048 y las de movil quedaron sin uso al quitar el inventario.
+assets/gallery/galeria-0?.webp
+assets/gallery/galeria-0?-m.webp
