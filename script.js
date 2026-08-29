@@ -257,6 +257,25 @@
     return s !== "" && s.toLowerCase() !== "actualizar";
   }
 
+  /* ======================= VERSION DE MATERIAL ==========================
+     vercel.json sirve /assets/ con "immutable" y un ano de cache. Eso es
+     correcto SIEMPRE QUE la URL cambie cuando cambia el contenido; si no,
+     un archivo reemplazado con el mismo nombre se queda congelado en el
+     navegador del visitante durante un ano.
+
+     Es exactamente lo que pasaba: se publicaba material nuevo y quien ya
+     habia entrado seguia viendo el viejo.
+
+     SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
+     conservando su nombre. Es la unica forma de que el cambio llegue.
+     ====================================================================== */
+  var ASSETS_V = "4";
+
+  function asset(u) {
+    if (!u || u.indexOf("assets/") !== 0) return u;
+    return u + (u.indexOf("?") === -1 ? "?v=" : "&v=") + ASSETS_V;
+  }
+
   /* Constructor de elementos. h("div.clase.otra#id", {attr}, hijos...)
      Una clase puede traer varios nombres separados por espacio, como en
      h("a.btn btn--wa"): se reparten en tokens antes de agregarlos. */
@@ -279,6 +298,9 @@
         if (v === null || v === undefined || v === false) continue;
         if (k === "html") el.innerHTML = v;
         else if (k === "text") el.textContent = v;
+        /* Toda ruta a assets/ sale versionada, sin tener que acordarse en
+           cada llamada. */
+        else if (k === "src" || k === "poster") el.setAttribute(k, asset(v));
         else if (k.slice(0, 2) === "on") el.addEventListener(k.slice(2).toLowerCase(), v);
         else el.setAttribute(k, v);
       }
@@ -795,17 +817,28 @@
     });
     frames[0].classList.add("is-on");
 
+    /* ESTILOS DE REFERENCIA, NO INVENTARIO.
+
+       Antes eran cuatro renders con ano y version concretos: 2022 Army
+       Green, 2023 Solar Octane, 2024 Limited, 2025 Trailhunter. Ninguna de
+       esas camionetas esta en el lote, y poner ano y version junto a una
+       foto hace que se lea como una unidad a la venta.
+
+       Ahora son fotografias reales de Tacoma, descargadas de Unsplash
+       (licencia de uso comercial, sin atribucion obligatoria), etiquetadas
+       por ESTILO y no por ano. El pie de la seccion aclara que lo que esta
+       disponible vive en el catalogo de WhatsApp. */
     var options = [
-      { img: "assets/features/card-2022-tacoma-trd-sport-army-green.webp", year: "2022", name: "TRD Sport", color: "Army Green" },
-      { img: "assets/features/card-2023-tacoma-trd-pro-solar-octane.webp", year: "2023", name: "TRD Pro", color: "Solar Octane" },
-      { img: "assets/features/card-2024-tacoma-limited-white.webp", year: "2024", name: "Limited", color: "Wind Chill Pearl" },
-      { img: "assets/features/card-2025-tacoma-trailhunter-bronze-oxide.webp", year: "2025", name: "Trailhunter", color: "Bronze Oxide" }
+      { img: "assets/features/card-tacoma-arena.webp",  year: "Off Road",  name: "Arena",  color: "Para brecha y terraceria" },
+      { img: "assets/features/card-tacoma-blanca.webp", year: "Cabina",    name: "Blanca", color: "Clasica, de trabajo" },
+      { img: "assets/features/card-tacoma-plata.webp",  year: "Equipada",  name: "Plata",  color: "Lista para viaje largo" },
+      { img: "assets/features/card-tacoma-negra.webp",  year: "TRD",       name: "Negra",  color: "Presencia en carretera" }
     ];
 
     var cards = options.map(function (o, i) {
       return h("article.blue-card.blue-card--" + (i + 1), null,
         h("span.blue-card__num", null, "0" + (i + 1)),
-        h("img", { src: o.img, alt: o.year + " Toyota Tacoma " + o.name + " " + o.color, loading: "lazy", decoding: "async" }),
+        h("img", { src: o.img, alt: "Toyota Tacoma " + o.name + ", estilo " + o.year, loading: "lazy", decoding: "async" }),
         h("div", null,
           h("small", null, o.year + " · " + o.color),
           h("b", null, o.name)));
@@ -816,11 +849,14 @@
       h("div.blue-run__copy", null,
         h("p.eyebrow", null, "Toyota Tacoma · Car Haus"),
         h("h2.display", null, "Más cerca. ", h("em", null, "Más Tacoma.")),
-        h("p", null, "Desliza para verla llegar. Explora estilos y consulta el catálogo actualizado por WhatsApp.")),
+        /* Sin parrafo aqui: tapaba la toma justo cuando la camioneta se
+           acerca, que es lo unico que esta seccion tiene que ensenar. La
+           invitacion a deslizar y el enlace al catalogo ya viven en el pie
+           de la seccion. */),
       h("div.blue-run__frames", null, frames),
       h("div.blue-run__cards", null, cards),
       h("div.blue-run__foot", null,
-        h("span", null, "Desliza para acercar"),
+        h("span", null, "Estilos de referencia · el inventario actual está en el catálogo"),
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo actual", ARROW)),
       h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
 
@@ -912,7 +948,7 @@
         var next = CAPS[idx].v;
         setTimeout(function () {
           if (current !== idx) return;
-          truckImg.src = next.image;
+          truckImg.src = asset(next.image);
           truckImg.alt = altText(next);
           truckImg.classList.remove("is-out");
         }, 180);
@@ -1153,7 +1189,7 @@
         var im = new Image();
         im.onload = step;
         im.onerror = step;      /* un error no puede dejar la pagina colgada */
-        im.src = u;
+        im.src = asset(u);
       });
 
       setTimeout(function () { if (!settled) { settled = true; resolve(); } }, 15000);
