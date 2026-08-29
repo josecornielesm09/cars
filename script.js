@@ -288,9 +288,25 @@
     for (var i = 1; i < imgs.length; i++) imgs[i]._real = imgs[i].getAttribute("src");
     var cargada = true;
 
+    /* Los dos margenes son distintos a proposito.
+
+       Lo que viene por delante necesita aviso: pide pantalla y media, que a
+       velocidad normal de dedo son varios segundos. Lo que ya quedo atras se
+       suelta casi de inmediato —basta media pantalla— porque para volver a
+       verlo hay que subir, y subiendo se recupera con el mismo aviso.
+
+       Con dos pantallas de margen en ambos lados, al cruzar de una secuencia
+       a la otra las dos estaban cargadas y el pico llegaba a 262 MB: justo lo
+       que habia que evitar.
+
+       Las cifras de recuperar son mas estrechas que las de soltar para que un
+       temblor del dedo sobre el limite no encienda y apague la secuencia en
+       bucle. */
     seccion._memoria = function (vh) {
       var r = seccion.getBoundingClientRect();
-      var lejos = r.top > vh * 2 || r.bottom < -vh * 2;
+      var lejos = cargada
+        ? (r.top > vh * 1.5 || r.bottom < -vh * 0.5)
+        : (r.top > vh * 1.1 || r.bottom < -vh * 0.2);
       if (lejos !== cargada) return;          /* ya esta como toca */
       cargada = !lejos;
       for (var k = 1; k < imgs.length; k++) {
@@ -395,7 +411,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787987971";
+  var ASSETS_V = "1787988079";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
