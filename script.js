@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787989555";
+  var ASSETS_V = "1787990088";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1027,24 +1027,31 @@
 
        El telefono recibe la version de 1100px, que es lo que su pantalla
        puede mostrar. */
-    var PLANOS = 40;
     var chico = window.matchMedia("(max-width: 767px)").matches;
+    var PLANOS = chico ? 16 : 26;
     var carpetaD = chico ? "assets/features/dolly-m/" : "assets/features/dolly/";
 
     /* En telefono se toma uno de cada dos planos y la seccion se acorta en
        la misma proporcion. La densidad no cambia —la camioneta avanza lo
        mismo por cada centimetro de dedo— pero son veinte mapas de bits a
        pantalla completa menos en memoria. */
-    var listaD = reparto(PLANOS, chico ? 16 : 27);
+    /* Las dos carpetas ya traen EXACTAMENTE los planos que se usan, y no
+       estan repartidos por numero de archivo sino por cuanto se acerca la
+       camara en cada uno.
 
+       Midiendo los sesenta originales, el acercamiento va de 1.00x a 3.40x
+       pero no a ritmo parejo: habia tramos donde dos planos seguidos eran
+       practicamente el mismo encuadre y otros con saltos. Al tomar uno de
+       cada dos por numero, esa irregularidad se notaba como "planos muy
+       parecidos que no avanzan". Elegidos por acercamiento, cada paso
+       agranda la camioneta lo mismo que el anterior. */
     var frames = [];
-    for (var qd = 0; qd < listaD.length; qd++) {
-      var fi = listaD[qd];
-      var num = String(fi);
+    for (var qd = 1; qd <= PLANOS; qd++) {
+      var num = String(qd);
       while (num.length < 3) num = "0" + num;
       frames.push(h("img.blue-run__frame", {
         src: carpetaD + "d-" + num + ".webp",
-        alt: qd === 0 ? "Toyota Tacoma azul acercándose en estudio" : "",
+        alt: qd === 1 ? "Toyota Tacoma azul acercándose en estudio" : "",
         /* SIN loading="lazy". En una secuencia de scroll es una trampa: el
            navegador no sabe que van a hacer falta todos, asi que deja los
            elementos con complete=false aunque el archivo este en cache. La
@@ -1053,7 +1060,7 @@
 
            No cuesta datos de mas: la precarga en dos tandas ya los trae. */
         decoding: "async",
-        "aria-hidden": qd === 0 ? null : "true"
+        "aria-hidden": qd === 1 ? null : "true"
       }));
     }
     frames[0].classList.add("is-on");
@@ -1142,8 +1149,23 @@
 
       /* Micro movimiento entre cuadros: el acercamiento nunca se siente
          como cuatro diapositivas separadas. */
-      var scale = lerp(1.015, 1.075, travel);
-      var y = lerp(1.5, -1.2, travel);
+      /* EL ACERCAMIENTO NO SALE SOLO DE LOS PLANOS.
+
+         Los sesenta originales empiezan con la camioneta ya llenando el
+         encuadre: son un acercamiento de 1.00x a 3.40x, pero nunca hay un
+         momento en que se vea lejos. Por eso, aunque los planos avancen, no
+         se lee como "viene hacia mi".
+
+         En telefono la camara pone su parte: los planos se muestran enteros
+         —sin recortar por los lados— y arrancan pequenos, centrados en el
+         estudio oscuro, para terminar desbordando la banda. Ese recorrido
+         multiplica al de los propios planos, y ahi si aparece la camioneta
+         que entra de lejos y se te viene encima.
+
+         El limite de 2.05 no es al azar: por encima de ahi el navegador
+         tendria que estirar el archivo y volveria lo pixelado. */
+      var scale = chico ? lerp(0.78, 2.05, travel) : lerp(1.015, 1.10, travel);
+      var y = chico ? lerp(4.5, -3.5, travel) : lerp(1.5, -1.2, travel);
       stage.style.setProperty("--truck-scale", sc(scale));
       stage.style.setProperty("--truck-y", mv(y) + "vh");
 

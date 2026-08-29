@@ -1414,11 +1414,20 @@ html.no-motion .inv__card.is-on { transform: none; }
      se ve entera en vez de recortada por los lados, y la ampliacion baja a
      0.9. Las tarjetas ya vivian abajo, asi que la composicion no cambia. */
   .blue-run__frames {
-    inset: 11vh 0 auto 0;
-    height: 46vh;
-    transform-origin: 50% 58%;
+    inset: 9vh 0 auto 0;
+    height: 52vh;
+    transform-origin: 50% 52%;
   }
-  .blue-run__frame { object-position: 50% center; }
+  /* SIN RECORTE.
+
+     Con cover el telefono recortaba los lados de la camioneta y ademas
+     obligaba a estirar la foto para tapar el alto. Con contain se ve el
+     plano entero, la ampliacion la pone la camara del scroll y nunca pasa
+     de lo que el archivo aguanta. */
+  .blue-run__frame {
+    object-fit: contain;
+    object-position: 50% center;
+  }
 
   /* Los bordes de la banda se funden con el fondo de la escena para que no
      se lea como un recorte pegado encima. */
