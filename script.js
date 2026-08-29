@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787991618";
+  var ASSETS_V = "1787991707";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1701,6 +1701,7 @@
 
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 38 38");
+    svg.setAttribute("class", "subir__anillo");
     svg.setAttribute("aria-hidden", "true");
     svg.appendChild(pista); svg.appendChild(aro);
 

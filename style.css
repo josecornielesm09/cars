@@ -2837,8 +2837,14 @@ html.no-motion .foot__enlaces a::after { transition: none; }
 html.no-motion .subir__flecha svg { transition: none; transform: none; }
 html.no-motion .subir:hover .subir__flecha svg { transform: none; }
 
-/* El anillo va por encima, girado para que empiece arriba. */
-.subir svg {
+/* El anillo va por encima, girado para que empiece arriba.
+
+   OJO CON EL SELECTOR. Esto era ".subir svg", que alcanzaba tambien al svg
+   de la flecha: se la llevaba a position absolute, la estiraba a todo el
+   boton y —lo peor— le aplicaba el rotate(-90deg) pensado para el anillo.
+   La flecha llevaba semanas apuntando a la izquierda, y mirando el trazado
+   del svg parecia correcta. Va por clase, no por etiqueta. */
+.subir__anillo {
   position: absolute;
   inset: 0;
   width: 100%; height: 100%;
@@ -2862,7 +2868,9 @@ html.no-motion .subir:hover .subir__flecha svg { transform: none; }
   .subir {
     left: 14px;
     bottom: calc(14px + env(safe-area-inset-bottom, 0px));
-    width: 46px; height: 46px;
+    /* Dos pixeles mas que en escritorio: con el dedo hace falta algo de
+       margen, pero sigue siendo un boton discreto. */
+    width: 40px; height: 40px;
   }
 }
 
