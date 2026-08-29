@@ -608,7 +608,7 @@ html { background: var(--night); }
   height: 1px; margin-top: 16px;
   background: linear-gradient(90deg, var(--blue-glow), transparent);
   transform: scaleX(0); transform-origin: left center;
-  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+  transition: transform 0.9s var(--ease) 0.15s;
 }
 .stats__item.is-in .stats__linea { transform: scaleX(1); }
 .stats__item i {
@@ -881,10 +881,11 @@ html.no-motion .stats__linea { transition: none; transform: scaleX(1); }
   z-index: 4; display: flex; flex-direction: column; gap: 13px;
 }
 .caps__dots i {
-  width: 26px; height: 2px; background: var(--line-ice);
-  transition: background 0.4s var(--ease), width 0.4s var(--ease);
+  width: 46px; height: 2px; background: var(--line-ice);
+  transform: scaleX(0.565); transform-origin: left center;
+  transition: background 0.25s var(--ease), transform 0.25s var(--ease);
 }
-.caps__dots i.is-on { background: var(--blue); width: 46px; }
+.caps__dots i.is-on { background: var(--blue); transform: scaleX(1); }
 
 /* ========================= BASE DE SECCIONES =============================
    Espaciado y fondos comunes. Estas reglas las usan #giro, #titulo,
@@ -1018,11 +1019,12 @@ html.no-motion .stats__linea { transition: none; transform: scaleX(1); }
   z-index: 3; display: flex; gap: 8px;
 }
 .inv__dots i {
-  width: 22px; height: 2px;
+  width: 40px; height: 2px;
   background: rgba(242,245,253,0.28);
-  transition: background 0.4s var(--ease), width 0.4s var(--ease);
+  transform: scaleX(0.55); transform-origin: left center;
+  transition: background 0.25s var(--ease), transform 0.25s var(--ease);
 }
-.inv__dots i.is-on { background: var(--blue-glow); width: 40px; }
+.inv__dots i.is-on { background: var(--blue-glow); transform: scaleX(1); }
 
 @media (max-width: 860px) {
   .inv__cards {
@@ -1687,13 +1689,14 @@ html.no-motion .nav::before { animation: none; --giro: 300deg; }
 
 .spec__dots { display: flex; justify-content: center; gap: 9px; margin-top: 18px; }
 .spec__dot {
-  width: 26px; height: 3px;
+  width: 46px; height: 3px;
   background: rgba(242,245,253,0.20);
   padding: 0;
-  transition: background 0.4s var(--ease), width 0.4s var(--ease);
+  transform: scaleX(0.565); transform-origin: left center;
+  transition: background 0.25s var(--ease), transform 0.25s var(--ease);
 }
 .spec__dot:hover { background: rgba(242,245,253,0.45); }
-.spec__dot.is-on { background: var(--blue-glow); width: 46px; }
+.spec__dot.is-on { background: var(--blue-glow); transform: scaleX(1); }
 
 .spec__list { list-style: none; margin: 0; padding: 0; display: grid; }
 
@@ -2236,12 +2239,13 @@ html.no-motion .muro__pieza:hover img { transform: none; }
 }
 .aguanta__punto i {
   display: block;
-  width: 26px; height: 2px;
+  width: 44px; height: 2px;
   background: rgba(242,245,253,0.26);
-  transition: background 0.35s var(--ease), width 0.35s var(--ease);
+  transform: scaleX(0.59); transform-origin: left center;
+  transition: background 0.25s var(--ease), transform 0.25s var(--ease);
 }
 .aguanta__punto.is-on { color: var(--on-night); }
-.aguanta__punto.is-on i { background: var(--blue-glow); width: 44px; }
+.aguanta__punto.is-on i { background: var(--blue-glow); transform: scaleX(1); }
 .aguanta__punto:hover i { background: rgba(242,245,253,0.55); }
 
 @media (max-width: 860px) {
@@ -2727,7 +2731,7 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
   display: inline-block;
   font-style: inherit;
   transform: translateY(105%);
-  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.85s var(--ease);
 }
 .titulo-anim.is-in .pal > i { transform: none; }
 
@@ -2738,7 +2742,9 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
 /* 2 · BOTONES MAGNETICOS.
    El desplazamiento lo escribe el JavaScript; aqui solo se define como
    vuelve a su sitio. */
-.btn--wa { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s; }
+/* El tiron magnetico sigue al raton: 0.4s se sentia como arrastrar algo
+   con retraso. A 0.25s el boton va con el cursor, no detras. */
+.btn--wa { transition: transform 0.25s var(--ease), background 0.3s; }
 
 /* 3 · LUZ QUE SIGUE AL CURSOR EN LOS PANELES.
    Refuerza cual esta activo sin necesidad de mas texto ni bordes. */
@@ -2829,7 +2835,7 @@ html.no-motion .foot__enlaces a::after { transition: none; }
   line-height: 0;
 }
 .subir__flecha svg {
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.3s var(--ease);
 }
 .subir:hover .subir__flecha svg,
 .subir:focus-visible .subir__flecha svg { transform: translateY(-2px); }
@@ -2950,3 +2956,57 @@ html.no-motion .nav__wa { transition: none; }
 /* Sin movimiento las flechas se quedan quietas, pero la pista se queda: es
    una instruccion, no un adorno. */
 html.no-motion .pista__chev svg { animation: none; opacity: 0.6; }
+
+/* ================= PULIDO DE MOVIMIENTO (auditoria de craft) =============
+   Cuatro cosas que salieron al medir el movimiento contra el listón de Emil
+   Kowalski. Las tres primeras se notan; la cuarta es higiene. */
+
+/* 1 · RESPUESTA AL PULSAR EN LOS BOTONES.
+
+   Toda la pagina existe para que alguien toque el boton de WhatsApp, y al
+   tocarlo no pasaba nada hasta que cargaba la otra app. En movil, medio
+   segundo sin confirmacion se siente como que no registro el toque.
+
+   0.97 y 140ms: lo justo para que el dedo lo note y no parezca un juguete. */
+.btn:active,
+.fab:active,
+.sheet__row:active,
+.foot__mapa-link:active { transform: scale(0.97); }
+.btn, .fab, .foot__mapa-link { transition: transform 0.14s var(--ease); }
+/* En escritorio el magnetico manda sobre el boton de catalogo: ahi la
+   respuesta ya la da el propio tiron siguiendo al cursor. */
+@media (hover: hover) {
+  .btn--wa { transition: transform 0.25s var(--ease), background 0.3s; }
+}
+.sheet__row { transition: transform 0.14s var(--ease), background 0.2s; }
+
+html.no-motion .btn:active,
+html.no-motion .fab:active,
+html.no-motion .sheet__row:active,
+html.no-motion .foot__mapa-link:active { transform: none; }
+
+/* 2 · EL HOVER NO ES PARA DEDOS.
+
+   Ninguna regla de hover estaba protegida. En una pantalla tactil el toque
+   dispara el hover y el estado se queda pegado hasta que tocas otra cosa:
+   una foto del muro se quedaba agrandada, el icono de WhatsApp inflado. Solo
+   se apagan los que MUEVEN algo; los cambios de color se quedan, que ahi el
+   hover pegado no molesta. */
+@media (hover: none) {
+  .muro__pieza:hover img { transform: none; }
+  .nav__wa:hover { transform: none; }
+  .btn:hover svg { transform: none; }
+  .subir:hover .subir__flecha svg { transform: none; }
+  .nav__links a:hover::after,
+  .foot__enlaces a:hover::after { transform: scaleX(0); }
+}
+
+/* 3 · LO QUE SE MIRO Y SE DEJO COMO ESTABA.
+
+   La etiqueta del boton flotante anima max-width y margin-left, y el
+   acordeon del movil anima height. Las dos son propiedades de maquetado, que
+   normalmente es un hallazgo. Aqui no: las dos se disparan UNA vez —al
+   cruzar el 28% del scroll y al tocar un panel—, no en cada fotograma. Un
+   maquetado puntual no se nota, y las alternativas sin maquetado obligaban a
+   fijar anchos que rompen el estado cerrado. Queda anotado para que no se
+   vuelva a "arreglar".
