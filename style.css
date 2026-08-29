@@ -161,14 +161,19 @@ html { background: var(--night); }
   padding: 11px 12px 11px 18px;
   border-radius: 100px;
 
-  background: rgba(16, 22, 44, 0.42);
-  backdrop-filter: blur(22px) saturate(180%);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  /* ARRIBA DEL TODO NO HAY BARRA, HAY TEXTO SOBRE EL VIDEO.
 
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+     El cristal esmerilado estaba tapando justo la parte de la toma donde se
+     ve el cartel del negocio, que es lo que esa toma tiene que ensenar. En
+     el hero la barra desaparece y solo quedan las letras, sostenidas por su
+     propia sombra. El cristal vuelve en cuanto empiezas a bajar, que es
+     cuando hace falta separar el menu del contenido que pasa por debajo. */
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  border: 1px solid transparent;
+  box-shadow: none;
 
   transition: background 0.4s var(--ease), border-color 0.4s var(--ease),
               box-shadow 0.4s var(--ease), top 0.4s var(--ease);
@@ -179,6 +184,9 @@ html { background: var(--night); }
 .nav.is-stuck {
   top: 8px;
   background: rgba(10, 14, 30, 0.62);
+  backdrop-filter: blur(22px) saturate(180%);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  border-color: rgba(255, 255, 255, 0.14);
   box-shadow:
     0 10px 36px rgba(0, 0, 0, 0.44),
     inset 0 1px 0 rgba(255, 255, 255, 0.14);
@@ -3197,8 +3205,14 @@ body::after {
   opacity: 0;
   will-change: opacity, transform;
 }
-.hero__di--uno { bottom: 27vh; max-width: 17ch; }
-.hero__di--dos { bottom: 24vh; max-width: 34ch; }
+/* MAS ABAJO Y MAS ANCHO.
+
+   A 108px y 17ch el titular salia a tres lineas, y desde bottom:27vh esas
+   tres lineas se salian por arriba: la primera palabra quedaba cortada por
+   el borde de la pantalla, detras del menu. Dandole ancho baja a dos lineas,
+   y desde ahi cabe holgado en la mitad inferior sin tocar la barra. */
+.hero__di--uno { bottom: 15vh; max-width: 26ch; }
+.hero__di--dos { bottom: 15vh; max-width: 34ch; }
 
 .hero__marca {
   font-family: var(--mono);
@@ -3209,8 +3223,8 @@ body::after {
 .hero__titular {
   margin-top: 12px;
   font-family: var(--display); font-weight: 900;
-  font-size: clamp(46px, 12vw, 108px);
-  line-height: 0.86; letter-spacing: -0.02em;
+  font-size: clamp(44px, 7.6vw, 88px);
+  line-height: 0.88; letter-spacing: -0.02em;
   color: var(--on-night);
   text-shadow: 0 3px 26px rgba(0, 0, 0, 0.6);
   text-wrap: balance;
@@ -3243,7 +3257,7 @@ body::after {
    y el titular bajaba en cascada, una palabra por linea. */
 @media (max-width: 767px) {
   .hero__di {
-    top: calc(var(--band, 90vw) + 128px);
+    top: calc(var(--band, 90vw) + 148px);
     bottom: auto;
     max-width: none;
   }
