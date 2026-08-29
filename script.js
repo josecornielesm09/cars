@@ -265,6 +265,52 @@
   /* Una imagen se puede pintar cuando el navegador ya la decodifico. */
   function pintable(im) { return !!im && im.complete && im.naturalWidth > 0; }
 
+  /* Un pixel transparente. Al ponerlo de src, el navegador puede tirar el
+     mapa de bits decodificado de esa imagen. */
+  var VACIO = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+
+  /* MEMORIA, no peso de descarga.
+
+     Una secuencia de 40 cuadros a pantalla completa ocupa unos 100 MB ya
+     descomprimidos, y el navegador no puede tirarlos mientras esten en un
+     <img> con src. Con dos secuencias mas el muro se pasaban los 330 MB: un
+     iPhone mata la pestana bastante antes de eso, y la pagina se cerraba
+     sola a media bajada.
+
+     La solucion no es bajar la calidad, es no tenerlo todo a la vez. Una
+     secuencia a mas de dos pantallas de distancia suelta sus cuadros y los
+     recupera con dos pantallas de aviso: da tiempo de sobra, y ademas salen
+     del cache del navegador sin volver a la red.
+
+     El primer cuadro nunca se suelta: es el fondo que evita los huecos. */
+  function secuenciaLigera(seccion, imgs) {
+    if (!seccion || imgs.length < 8) return;
+    for (var i = 1; i < imgs.length; i++) imgs[i]._real = imgs[i].getAttribute("src");
+    var cargada = true;
+
+    seccion._memoria = function (vh) {
+      var r = seccion.getBoundingClientRect();
+      var lejos = r.top > vh * 2 || r.bottom < -vh * 2;
+      if (lejos !== cargada) return;          /* ya esta como toca */
+      cargada = !lejos;
+      for (var k = 1; k < imgs.length; k++) {
+        imgs[k].setAttribute("src", cargada ? imgs[k]._real : VACIO);
+      }
+    };
+  }
+
+  /* Decodificar por adelantado quita el tiron al cambiar de cuadro, pero
+     hacerlo con los 40 de golpe es justo lo que llena la memoria. Se hace
+     con una ventana que viaja con el dedo. */
+  function decodificarCerca(imgs, idx) {
+    for (var i = idx; i < Math.min(idx + 4, imgs.length); i++) {
+      var im = imgs[i];
+      if (im._pedido || !im.decode) continue;
+      im._pedido = true;
+      im.decode().catch(function () {});
+    }
+  }
+
   function thousands(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
 
   /* Un campo pendiente nunca llega al visitante. */
@@ -349,7 +395,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787987564";
+  var ASSETS_V = "1787987829";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -630,9 +676,7 @@
     /* Cargar no es poder pintar: una imagen descargada todavia tiene que
        decodificarse, y ese trabajo cae justo cuando se le pide mostrarla.
        decode() lo adelanta y el cambio de cuadro deja de tener coste. */
-    imgs.forEach(function (im) {
-      if (im.decode) im.decode().catch(function () {});
-    });
+    decodificarCerca(imgs, 0);
 
     var last = 0;
 
@@ -649,6 +693,7 @@
       }
 
       if (idx === last) return;
+      decodificarCerca(imgs, idx);
       if (last !== 0) imgs[last].classList.remove("is-on");
       imgs[idx].classList.add("is-on");
       last = idx;
@@ -681,6 +726,7 @@
        48 significaba esperar 3 MB antes de ver nada, y eso se sentia como
        un tiron al abrir. */
     hero._preload = imgs.slice(0, 8).map(function (im) { return im.getAttribute("src"); });
+    secuenciaLigera(hero, imgs);
 
     hero._tick = function (p) {
       var t = range(p, 0.03, 0.97);
@@ -931,9 +977,7 @@
        la toma y no el fondo de la seccion. */
     frames[0].classList.add("is-base");
 
-    frames.forEach(function (im) {
-      if (im.decode) im.decode().catch(function () {});
-    });
+    decodificarCerca(frames, 0);
 
     /* ESTILOS DE REFERENCIA, NO INVENTARIO.
 
@@ -979,6 +1023,7 @@
       h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
 
     var section = h("section.blue-run#experiencia", { style: "height:380vh" }, stage);
+    secuenciaLigera(section, frames);
 
     section._tick = function (p) {
       var travel = range(p, 0.04, 0.96);
@@ -994,6 +1039,7 @@
         while (j > 0 && !pintable(frames[j])) j--;
         idx = pintable(frames[j]) ? j : 0;
       }
+      decodificarCerca(frames, idx);
       frames.forEach(function (img, i) {
         var on = i === idx;
         img.classList.toggle("is-on", on || i === 0);
@@ -1124,13 +1170,20 @@
      ====================================================================== */
 
   function buildMuro() {
+    /* En telefono la tira lleva menos piezas. Cada una se duplica para que
+       no se vea el final, asi que doce fuentes son veinticuatro imagenes
+       decodificadas y el muro solo se ve de reojo mientras pasa. Seis
+       cuentan lo mismo por la mitad de memoria. */
+    var enTelefono = window.matchMedia("(max-width: 767px)").matches;
+    var cuantas = enTelefono ? 6 : 12;
+
     var MURO = [];
-    for (var i = 1; i <= 12; i++) {
+    for (var i = 1; i <= cuantas; i++) {
       MURO.push("assets/muro/t-" + (i < 10 ? "0" + i : i) + ".webp");
     }
     /* Se intercalan las unidades reales del lote entre las de referencia:
        las fotos propias son las que dan credibilidad. */
-    vehicles.forEach(function (v, k) {
+    (enTelefono ? vehicles.slice(0, 2) : vehicles).forEach(function (v, k) {
       /* Version de muro (900x600). Las fichas miden como mucho 320px, asi
          que servir la de 2048 era mandar seis veces mas pixeles de los que
          la pantalla puede ensenar. */
@@ -1588,6 +1641,13 @@
         /* Fuera de pantalla no se pinta: ahorra trabajo en móvil. */
         if (r.bottom < -vh || r.top > vh * 2) continue;
         s._tick(p);
+      }
+
+      /* Cada secuencia decide si suelta o recupera sus cuadros segun lo
+         lejos que este. Es lo que mantiene la memoria bajo control en
+         telefono. */
+      for (var mi = 0; mi < scenes.length; mi++) {
+        if (scenes[mi]._memoria) scenes[mi]._memoria(vh);
       }
 
       if (porRevelar.length) revisarRevelados(vh);
