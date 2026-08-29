@@ -349,7 +349,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787980967";
+  var ASSETS_V = "1787982448";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -875,16 +875,49 @@
      ====================================================================== */
 
   function buildBlueJourney() {
-    var frames = [1, 2, 3, 4].map(function (n, i) {
-      return h("img.blue-run__frame", {
-        src: "assets/features/blue-scroll/frame-0" + n + ".webp",
-        alt: i === 0 ? "Toyota Tacoma azul acercándose en estudio" : "",
-        loading: i < 2 ? "eager" : "lazy",
+    /* CUARENTA PLANOS, NO CUATRO.
+
+       Los cuatro originales se leian como cuatro saltos: entre el primero y
+       el segundo la camioneta pegaba un brinco. Con cuarenta tomas de un
+       recorrido continuo de camara el ojo lo lee como movimiento, no como
+       diapositivas.
+
+       Se eligieron 40 de las 60 generadas, repartidas parejo. A 40 cada
+       plano recibe unos 85px de scroll: por debajo de eso se notan escalones
+       y por encima solo se gastan datos.
+
+       El telefono recibe la version de 1100px, que es lo que su pantalla
+       puede mostrar. */
+    var PLANOS = 40;
+    var chico = window.matchMedia("(max-width: 767px)").matches;
+    var carpetaD = chico ? "assets/features/dolly-m/" : "assets/features/dolly/";
+
+    var frames = [];
+    for (var fi = 1; fi <= PLANOS; fi++) {
+      var num = String(fi);
+      while (num.length < 3) num = "0" + num;
+      frames.push(h("img.blue-run__frame", {
+        src: carpetaD + "d-" + num + ".webp",
+        alt: fi === 1 ? "Toyota Tacoma azul acercándose en estudio" : "",
+        /* SIN loading="lazy". En una secuencia de scroll es una trampa: el
+           navegador no sabe que van a hacer falta todos, asi que deja los
+           elementos con complete=false aunque el archivo este en cache. La
+           proteccion contra huecos los daba por no listos y el acercamiento
+           se quedaba clavado en el sexto plano.
+
+           No cuesta datos de mas: la precarga en dos tandas ya los trae. */
         decoding: "async",
-        "aria-hidden": i === 0 ? null : "true"
-      });
-    });
+        "aria-hidden": fi === 1 ? null : "true"
+      }));
+    }
     frames[0].classList.add("is-on");
+    /* La primera queda de fondo: si un plano llega tarde, por debajo se ve
+       la toma y no el fondo de la seccion. */
+    frames[0].classList.add("is-base");
+
+    frames.forEach(function (im) {
+      if (im.decode) im.decode().catch(function () {});
+    });
 
     /* ESTILOS DE REFERENCIA, NO INVENTARIO.
 
@@ -935,12 +968,20 @@
       var travel = range(p, 0.04, 0.96);
       var framePos = travel * (frames.length - 1);
 
+      /* Con 40 planos ya no hace falta cruzar opacidades entre vecinos: el
+         salto entre uno y otro es tan pequeno que el cruce solo emborrona.
+         Se enciende el que toca, y si aun no esta listo se queda el ultimo
+         que si lo esta. */
+      var idx = clamp(Math.round(framePos), 0, frames.length - 1);
+      if (!pintable(frames[idx])) {
+        var j = idx;
+        while (j > 0 && !pintable(frames[j])) j--;
+        idx = pintable(frames[j]) ? j : 0;
+      }
       frames.forEach(function (img, i) {
-        var distance = Math.abs(framePos - i);
-        var opacity = clamp(1 - distance, 0, 1);
-        img.style.opacity = String(opacity);
-        img.classList.toggle("is-on", opacity > 0.02);
-        img.setAttribute("aria-hidden", opacity > 0.02 ? "false" : "true");
+        var on = i === idx;
+        img.classList.toggle("is-on", on || i === 0);
+        img.setAttribute("aria-hidden", on ? "false" : "true");
       });
 
       /* Micro movimiento entre cuadros: el acercamiento nunca se siente
@@ -1375,8 +1416,10 @@
       criticos.push(vehicles[0].photo.replace(/\.webp$/, "-w.webp"));
     /* Los dos primeros planos evitan un destello cuando comienza el
        acercamiento; los dos cercanos se precargan despues. */
-    criticos.push("assets/features/blue-scroll/frame-01.webp");
-    criticos.push("assets/features/blue-scroll/frame-02.webp");
+    var carpetaBJ = window.innerWidth <= 767 ? "assets/features/dolly-m/" : "assets/features/dolly/";
+    for (var bi = 1; bi <= 6; bi++) {
+      criticos.push(carpetaBJ + "d-00" + bi + ".webp");
+    }
 
     preload(criticos, loader._set).then(function () {
       document.documentElement.classList.remove("is-loading");
@@ -1407,8 +1450,10 @@
            que el inventario dejo de listar unidades. */
         if (v.photo) despues.push(v.photo.replace(/\.webp$/, "-w.webp"));
       });
-      despues.push("assets/features/blue-scroll/frame-03.webp");
-      despues.push("assets/features/blue-scroll/frame-04.webp");
+      for (var bj = 7; bj <= 40; bj++) {
+        var bn = String(bj); while (bn.length < 3) bn = "0" + bn;
+        despues.push(carpetaBJ + "d-" + bn + ".webp");
+      }
       preload(despues);
     });
 

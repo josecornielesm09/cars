@@ -30,3 +30,6 @@ assets/360/giro-poster.webp
 # versiones de 2048 y las de movil quedaron sin uso al quitar el inventario.
 assets/gallery/galeria-0?.webp
 assets/gallery/galeria-0?-m.webp
+
+# Los 60 originales quedan como fuente; se sirven los 40 elegidos
+assets/features/blue-scroll
