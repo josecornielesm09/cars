@@ -349,7 +349,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787987158";
+  var ASSETS_V = "1787987564";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -716,36 +716,42 @@
        estaba prometiendo algo sin confirmar. Cuando se confirme, vuelve. */
     /* Ya no se cuentan unidades: esta pagina dejo de ser un inventario y
        ese numero envejecia solo. Queda lo que no caduca. */
+    /* Se retiro "5 versiones que manejamos": era un dato de catalogo, y el
+       catalogo vive en WhatsApp, no aqui. Quedan los dos que no caducan y
+       una tercera casilla que dice la especialidad con una palabra. */
     var data = [
-      { n: 30,  suf: "+", label: "Años en el Valle" },
-      { n: 5,   suf: "",  label: "Versiones que manejamos" },
-      { n: 100, suf: "%", label: "Títulos declarados de frente" }
+      { n: 30,  suf: "+",  label: "Años en el Valle" },
+      { txt: "Tacoma",     label: "Nuestra especialidad" },
+      { n: 100, suf: "%",  label: "Títulos declarados de frente" }
     ];
 
-
     var items = data.map(function (d, i) {
-      /* Arranca con el valor FINAL escrito, no con un cero.
+      /* La cifra se escribe con su valor FINAL desde el principio.
 
-         Antes empezaba en 0 y solo se llenaba cuando el navegador avisaba
-         que la seccion habia entrado en pantalla. Si ese aviso no llegaba
+         Antes empezaba en cero y solo se llenaba cuando llegaba el aviso de
+         que la franja habia entrado en pantalla. Si ese aviso no llegaba
          —pestana en segundo plano, navegador que no compone— la cifra se
          quedaba en cero para siempre. Un dato de portada no puede depender
-         de eso: se escribe primero, y la animacion solo lo adorna. */
-      var b = h("b", null, d.n + d.suf);
-      var item = h("div.stats__item.reveal", { style: "transition-delay:" + (i * 110) + "ms" },
-        b, h("i", null, d.label));
-      item._target = d.n; item._suf = d.suf; item._b = b; item._done = false;
+         de eso: se escribe primero y la animacion solo lo adorna. */
+      var b = h("b", null, d.txt ? d.txt : d.n + d.suf);
+      if (d.txt) b.classList.add("stats__palabra");
+
+      var linea = h("span.stats__linea", { "aria-hidden": "true" });
+      var item = h("div.stats__item.reveal", { style: "transition-delay:" + (i * 120) + "ms" },
+        h("span.stats__num", null, b), linea, h("i", null, d.label));
+
+      item._target = d.n; item._suf = d.suf; item._b = b;
+      item._texto = !!d.txt; item._done = false;
       return item;
     });
 
     var section = h("div.stats", null, items);
 
-    /* Los números suben cuando la franja entra en pantalla, una sola vez. */
     section._enter = function () {
       items.forEach(function (item) {
         if (item._done) return;
         item._done = true;
-        if (reduceMotion) return;          /* ya trae el valor escrito */
+        if (reduceMotion || item._texto) return;   /* ya trae el valor escrito */
         var start = null, dur = 1100;
         (function step(ts) {
           if (start === null) start = ts;
@@ -754,6 +760,16 @@
           if (t < 1) requestAnimationFrame(step);
         })(performance.now());
       });
+    };
+
+    /* La franja tambien responde al scroll: un brillo horizontal la recorre
+       segun donde este respecto al centro de la pantalla. Es lo unico que la
+       separa de un pie de pagina con tres numeros. */
+    section._tick = function () {
+      var r = section.getBoundingClientRect();
+      var vh = window.innerHeight || 1;
+      var centro = (r.top + r.height / 2) / vh;          /* 1 arriba, 0 al centro */
+      section.style.setProperty("--paso", String(clamp(1 - centro, 0, 1)));
     };
 
     return section;
@@ -1468,23 +1484,28 @@
 
        El anillo se dibuja con stroke-dashoffset, que el navegador resuelve
        sin recalcular layout. */
-    var RADIO = 22;
+    var FLECHA_ARRIBA =
+      '<svg width="13" height="13" viewBox="0 0 15 15" fill="none" aria-hidden="true">' +
+      '<path d="M7.5 13V2M2.5 7l5-5 5 5" stroke="currentColor" stroke-width="1.7" ' +
+      'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    var RADIO = 19;
     var VUELTA = 2 * Math.PI * RADIO;
 
     var aro = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    aro.setAttribute("cx", "26"); aro.setAttribute("cy", "26");
+    aro.setAttribute("cx", "22"); aro.setAttribute("cy", "22");
     aro.setAttribute("r", String(RADIO));
     aro.setAttribute("class", "subir__aro");
     aro.style.strokeDasharray = VUELTA;
     aro.style.strokeDashoffset = VUELTA;
 
     var pista = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-    pista.setAttribute("cx", "26"); pista.setAttribute("cy", "26");
+    pista.setAttribute("cx", "22"); pista.setAttribute("cy", "22");
     pista.setAttribute("r", String(RADIO));
     pista.setAttribute("class", "subir__pista");
 
     var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 52 52");
+    svg.setAttribute("viewBox", "0 0 44 44");
     svg.setAttribute("aria-hidden", "true");
     svg.appendChild(pista); svg.appendChild(aro);
 
@@ -1495,8 +1516,10 @@
         window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
       }
     }, h("span.subir__flecha", { html:
-      '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">' +
-      '<path d="M7.5 13V2M2.5 7l5-5 5 5" stroke="currentColor" stroke-width="1.6"/></svg>' }));
+      /* Dos flechas iguales, una encima de otra. Al pasar el raton la de
+         arriba sale por el techo y la de abajo ocupa su sitio: el gesto
+         cuenta lo que hace el boton sin escribirlo. */
+      FLECHA_ARRIBA + FLECHA_ARRIBA }));
     subir.appendChild(svg);
     document.body.appendChild(subir);
 
@@ -1515,31 +1538,29 @@
     Array.prototype.forEach.call(document.querySelectorAll(".btn--wa"), botonMagnetico);
 
     /* --- Revelado al entrar en pantalla --------------------------------- */
-    if ("IntersectionObserver" in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (!en.isIntersecting) return;
-          en.target.classList.add("is-in");
-          if (en.target._enter) en.target._enter();
-          io.unobserve(en.target);
-        });
-      }, { rootMargin: "0px 0px -12% 0px" });
+    /* Lo revisa el mismo bucle de scroll que mueve el resto, no un aviso del
+       navegador.
 
-      Array.prototype.forEach.call(document.querySelectorAll(".reveal"), function (el) { io.observe(el); });
-      io.observe(stats);
+       Con el aviso del navegador el titular se daba por "visto" en cuanto el
+       borde de su seccion asomaba. Como varias secciones miden tres o cuatro
+       pantallas, para cuando el visitante llegaba a leer el titular la
+       animacion habia terminado hacia rato: el efecto existia y nadie lo
+       veia nunca. Ahora entra cuando el texto esta de verdad enfrente. */
+    var porRevelar = Array.prototype.slice.call(document.querySelectorAll(".reveal"));
+    porRevelar.push(stats);
 
-      /* Red de seguridad: si a los 4 segundos algo sigue oculto esperando un
-         aviso que no llego, se muestra igual. Vale mas una entrada sin
-         animacion que contenido invisible. */
-      setTimeout(function () {
-        Array.prototype.forEach.call(document.querySelectorAll(".reveal:not(.is-in)"), function (el) {
-          var r = el.getBoundingClientRect();
-          if (r.top < window.innerHeight * 1.5) el.classList.add("is-in");
-        });
-      }, 4000);
-    } else {
-      Array.prototype.forEach.call(document.querySelectorAll(".reveal"), function (el) { el.classList.add("is-in"); });
-      if (stats._enter) stats._enter();
+    function revisarRevelados(vh) {
+      for (var i = porRevelar.length - 1; i >= 0; i--) {
+        var el = porRevelar[i];
+        var r = el.getBoundingClientRect();
+        /* Dispara cuando su parte alta ha subido por encima del 82% de la
+           pantalla y todavia no salio por arriba. */
+        if (r.top < vh * 0.82 && r.bottom > 0) {
+          el.classList.add("is-in");
+          if (el._enter) el._enter();
+          porRevelar.splice(i, 1);
+        }
+      }
     }
 
     /* El bucle corre SIEMPRE, también con "reducir movimiento" activado.
@@ -1549,7 +1570,7 @@
        desplazamientos y las escalas, que son lo que marea. */
 
     /* --- Bucle único ----------------------------------------------------- */
-    var scenes = [hero, blueJourney, caps, inv, pie].filter(function (s) { return s && s._tick; });
+    var scenes = [hero, stats, blueJourney, caps, inv, pie].filter(function (s) { return s && s._tick; });
     var iceZones = [caps];
     var raf = null;
 
@@ -1568,6 +1589,8 @@
         if (r.bottom < -vh || r.top > vh * 2) continue;
         s._tick(p);
       }
+
+      if (porRevelar.length) revisarRevelados(vh);
 
       var y = window.pageYOffset || document.documentElement.scrollTop;
       nav.classList.toggle("is-stuck", y > 40);
