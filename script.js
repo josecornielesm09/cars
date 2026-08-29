@@ -88,7 +88,8 @@
 
        Si algún día hay foto real de la lona, se sustituye aquí y ya. */
     heroImage: "assets/360/frame-01.webp",
-    heroCover: "assets/hero/hero-cover.webp"
+    heroVideo: "assets/hero/hero_video.mp4",
+    heroVideoFallback: "assets/hero/hero-cover.webm"
   };
 
   /* ============================= 02 · DATOS ==============================
@@ -489,57 +490,41 @@
 
     var bar = h("i");
 
-    var media, tickMedia;
-    var imgs = [];
+    /* Un solo video reemplaza los 80 WebP antiguos. El MP4 es la fuente
+       principal; WebM queda como respaldo para navegadores compatibles. */
+    var media = h("video.hero__video", {
+      muted: true,
+      playsinline: true,
+      preload: "auto",
+      "aria-label": "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas"
+    });
+    media.muted = true;
+    media.playsInline = true;
+    media.appendChild(h("source", { src: CONFIG.heroVideo, type: "video/mp4" }));
+    media.appendChild(h("source", { src: CONFIG.heroVideoFallback, type: "video/webm" }));
 
-    /* Secuencia en las dos pantallas. Lo unico que cambia es de que carpeta
-       salen los archivos. */
-    var carpeta = small ? CONFIG.spin.filmDir : CONFIG.spin.filmDirHd;
-
-    media = h("div.hero__seq");
-
-    for (var i = 1; i <= CONFIG.spin.filmCount; i++) {
-      var num = String(i);
-      while (num.length < 3) num = "0" + num;
-      var img = h("img", {
-        src: carpeta + "f-" + num + ".webp",
-        alt: i === 1 ? "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas" : "",
-        "aria-hidden": i === 1 ? null : "true",
-        decoding: "async"
-      });
-      imgs.push(img);
-      media.appendChild(img);
-    }
-    imgs[0].classList.add("is-on");
-
-    var last = 0;
-
-    tickMedia = function (t) {
-      var idx = clamp(Math.floor(t * imgs.length), 0, imgs.length - 1);
-
-      /* Si ese cuadro todavia no llega, se queda el ultimo que si esta.
-         Congelar un instante se ve mucho mejor que un hueco en blanco. */
-      if (!pintable(imgs[idx])) {
-        var j = idx;
-        while (j > last && !pintable(imgs[j])) j--;
-        if (!pintable(imgs[j])) return;
-        idx = j;
-      }
-
-      if (idx === last) return;
-      imgs[last].classList.remove("is-on");
-      imgs[idx].classList.add("is-on");
-      last = idx;
-    };
-
-    var still = h("img.hero__still", {
-      /* Respaldo detras de la secuencia: el primer cuadro, no el poster de
-         960px, que se veia blando en escritorio. */
-      src: carpeta + "f-001.webp", alt: "", "aria-hidden": "true"
+    var duration = 0;
+    var wantedTime = 0;
+    media.addEventListener("loadedmetadata", function () {
+      duration = isFinite(media.duration) ? media.duration : 0;
+      media.currentTime = 0.01;
+    });
+    media.addEventListener("canplay", function () {
+      media.classList.add("is-ready");
     });
 
+    function tickMedia(t) {
+      if (!duration || media.readyState < 2) return;
+      wantedTime = clamp(t, 0, 0.999) * duration;
+      /* Un umbral corto evita ordenar el mismo seek docenas de veces por
+         segundo, que era la causa principal de los destellos al hacer scroll. */
+      if (Math.abs(media.currentTime - wantedTime) > 0.045) {
+        media.currentTime = wantedTime;
+      }
+    }
+
     var stage = h("div.hero__stage", null,
-      still, media,
+      media,
       h("div.hero__scrim", { "aria-hidden": "true" }),
       deg, cue,
       h("div.spin__progress", { "aria-hidden": "true" }, bar)
@@ -547,9 +532,9 @@
 
     /* is-seq marca el modo vertical: la toma se muestra completa, sin
        estirar. Es la diferencia entre nitido y pixelado en telefono. */
-    var hero = h("section.hero.is-film#top", { class: small ? "hero is-film is-seq" : null }, stage);
+    var hero = h("section.hero.is-film#top", null, stage);
     hero.id = "top";
-    hero.className = "hero is-film" + (small ? " is-seq" : "");
+    hero.className = "hero is-film is-video";
 
     /* Lista de archivos que el precargador debe traer antes de soltar la
        pagina: sin esto el primer scroll cae sobre cuadros que aun no estan
@@ -558,7 +543,7 @@
        por detras mientras el visitante ya esta viendo el hero: bloquear los
        48 significaba esperar 3 MB antes de ver nada, y eso se sentia como
        un tiron al abrir. */
-    hero._preload = imgs.slice(0, 8).map(function (im) { return im.getAttribute("src"); });
+    hero._preload = [];
 
     hero._tick = function (p) {
       var t = range(p, 0.03, 0.97);
@@ -778,7 +763,6 @@
     return seccion;
   }
 
-  /* ===================== 07 · TACOMA AZUL EN SCROLL =====================
      La protagonista avanza hacia la camara mientras cuatro referencias de
      la familia Tacoma aparecen como tarjetas secundarias. Los cuatro planos
      ya traen el mismo estudio y se cruzan suavemente para evitar tirones.
@@ -863,6 +847,22 @@
   }
 
   /* ========================== 08 · CAPACIDADES ===========================
+     La inversión a fondo claro. La camioneta viaja pegada al scroll y va
+     cambiando de unidad en cada bloque, así el visitante ve variedad de
+     inventario sin salir del efecto.
+
+     El giro vive en su propia sección (#giro); aquí lo que cambia es la
+     unidad, no el ángulo.
+     ====================================================================== */
+
+  function buildCaps() {
+    var truckImg = h("img", { src: CAPS[0].v.image, alt: altText(CAPS[0].v) });
+    var truck = h("div.caps__truck.caps__truck--single", null, truckImg);
+
+    var panels = CAPS.map(function (c) {
+      return h("article.caps__panel", null,
+
+  /* ========================== 07 · CAPACIDADES ===========================
      La inversión a fondo claro. La camioneta viaja pegada al scroll y va
      cambiando de unidad en cada bloque, así el visitante ve variedad de
      inventario sin salir del efecto.
@@ -1213,8 +1213,6 @@
     var criticos = (hero._preload || []).slice();
     /* La primera foto del inventario tambien, que es la siguiente parada. */
     if (vehicles[0] && vehicles[0].photo) criticos.push(vehicles[0].photo);
-    /* Los dos primeros planos evitan un destello cuando comienza el
-       acercamiento; los dos cercanos se precargan despues. */
     criticos.push("assets/features/blue-scroll/frame-01.webp");
     criticos.push("assets/features/blue-scroll/frame-02.webp");
 
