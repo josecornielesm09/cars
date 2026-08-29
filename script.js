@@ -87,7 +87,6 @@
        pantalla completa se ven blandas.
 
        Si algún día hay foto real de la lona, se sustituye aquí y ya. */
-    heroImage: "assets/360/frame-01.webp",
     heroCover: "assets/hero/hero-cover.webp"
   };
 
