@@ -1755,3 +1755,118 @@ html.no-motion .spec__slide.is-on { transform: none; }
 html.no-motion .sheet { transform: none; }
 html.no-motion .sheet__row { opacity: 1; transform: none; }
 
+
+/* ========================== EL ULTIMO TRAMO =============================
+   El pie cierra el viaje que abre la pagina: se entra por la carretera y
+   aqui se llega al local. La calle cruza el ancho, la Tacoma la recorre
+   con el scroll y al final aparece la direccion.
+   ======================================================================== */
+
+.foot { position: relative; }
+
+.foot__viaje {
+  max-width: var(--maxw);
+  margin: 0 auto clamp(56px, 7vw, 92px);
+  position: relative;
+}
+
+/* La calle. El degradado de los lados la desvanece en vez de cortarla en
+   seco: sugiere que sigue mas alla de la pantalla. */
+.foot__road {
+  --avance: 0;
+  position: relative;
+  height: clamp(96px, 13vw, 150px);
+  margin: clamp(26px, 4vw, 44px) 0 clamp(18px, 2.5vw, 30px);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.foot__road-line {
+  position: absolute;
+  left: 0; right: 0; bottom: 26%;
+  height: 2px;
+  background: rgba(242, 245, 253, 0.16);
+}
+/* La raya discontinua del centro. Se dibuja con un degradado repetido en
+   vez de con elementos: una sola capa, cero nodos extra. */
+.foot__road-line::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: repeating-linear-gradient(
+    to right,
+    var(--blue-glow) 0 34px,
+    transparent 34px 74px
+  );
+  opacity: 0.5;
+  /* Se ilumina el tramo ya recorrido. */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(var(--avance) * 100%), transparent 0);
+  mask-image: linear-gradient(to right, #000 calc(var(--avance) * 100%), transparent 0);
+}
+
+.foot__truck {
+  position: absolute;
+  left: 0;
+  bottom: 8%;
+  width: clamp(150px, 20vw, 260px);
+  height: auto;
+  will-change: transform;
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.55));
+}
+
+/* La direccion se lee SIEMPRE. Antes empezaba al 42% y subia con una
+   transicion al llegar la camioneta, pero una transicion que se queda a
+   medias dejaria el dato mas importante del pie medio borrado. Lo que
+   celebra la llegada es el destello del punto, no la legibilidad. */
+.foot__destino {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+.foot__destino.is-on .foot__pin {
+  box-shadow: 0 0 0 5px rgba(109, 134, 255, 0.20);
+}
+.foot__destino b {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(22px, 2.4vw, 34px);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.foot__destino > span:last-child {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  color: var(--on-night-2);
+}
+
+/* El punto de destino, con el mismo latido que el de la barra: es el gesto
+   que la gente asocia con "aqui estas". */
+.foot__pin {
+  position: relative;
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--blue-glow);
+  flex: none;
+  align-self: center;
+}
+.foot__pin::after {
+  content: "";
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: var(--blue-glow);
+  animation: latido 2.2s var(--ease-io) infinite;
+}
+
+@media (max-width: 860px) {
+  .foot__truck { width: 46vw; }
+  .foot__road { height: 88px; }
+}
+
+/* Con "reducir movimiento" el recorrido se conserva: lo dirige el scroll.
+   Lo unico que se apaga es el latido del punto, que corre solo. */
+html.no-motion .foot__pin::after { animation: none; opacity: 0; }
