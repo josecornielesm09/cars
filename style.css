@@ -740,8 +740,8 @@ html { background: var(--night); }
    pegada mientras cambian los paneles. */
 .caps {
   position: relative;
-  background: #030713;
-  color: var(--on-night);
+  background: var(--ice);
+  color: var(--on-ice);
 }
 .caps__stage {
   position: sticky; top: 0;
@@ -751,10 +751,8 @@ html { background: var(--night); }
 
 .caps__head {
   position: absolute; left: var(--gutter); top: clamp(80px, 12vh, 124px);
-  z-index: 5; max-width: 52vw;
+  z-index: 3; max-width: 50vw;
 }
-.caps__head .eyebrow { color: rgba(242,245,253,.64); }
-.caps__head em { color: #4f8fff; }
 
 /* La camioneta que se desplaza con el scroll. */
 /* SE DIMENSIONA POR ALTO, NO POR ANCHO.
@@ -769,19 +767,18 @@ html { background: var(--night); }
 .caps__truck {
   position: absolute;
   left: 50%; top: 54%;
-  height: min(66vh, 720px);
-  width: min(78vw, 1180px);
-  max-width: none;
-  aspect-ratio: 16 / 10;
+  height: min(44vh, 380px);
+  width: auto;
+  max-width: 58vw;
+  aspect-ratio: 1637 / 1000;      /* la forma real del recorte */
   transform: translate(-50%, -50%);
   will-change: transform;
   z-index: 2;
 }
 .caps__truck img {
   width: 100%; height: 100%;
-  object-fit: cover;
-  border-radius: 30px;
-  box-shadow: 0 44px 120px rgba(0,0,0,.58), 0 0 0 1px rgba(94,150,255,.18);
+  object-fit: contain;
+  filter: drop-shadow(0 34px 42px rgba(6,11,28,0.30));
   transition: opacity 0.35s var(--ease);
 }
 .caps__truck--single img { opacity: 1; }
@@ -794,7 +791,7 @@ html { background: var(--night); }
   left: 50%; bottom: 13%;
   width: 58%; height: 6%;
   transform: translateX(-50%);
-  background: radial-gradient(ellipse at center, rgba(61,125,255,.38) 0%, transparent 72%);
+  background: radial-gradient(ellipse at center, rgba(6,11,28,0.30) 0%, transparent 72%);
   filter: blur(10px);
   z-index: -1;
   pointer-events: none;
@@ -805,30 +802,20 @@ html { background: var(--night); }
   position: absolute;
   right: var(--gutter);
   bottom: clamp(60px, 12vh, 130px);
-  width: min(420px, 82vw);
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 22px;
-  overflow: hidden;
-  background: rgba(4,9,24,.78);
-  box-shadow: 0 24px 70px rgba(0,0,0,.42);
-  backdrop-filter: blur(18px);
+  width: min(390px, 76vw);
   opacity: 0;
   will-change: transform, opacity;
 }
-.caps__thumb { width: 100%; height: 132px; object-fit: cover; display: block; }
-.caps__copy { padding: 18px 20px 20px; }
 .caps__panel .n {
   font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
-  color: rgba(242,245,253,.58); display: block; margin-bottom: 12px;
+  color: var(--on-ice-3); display: block; margin-bottom: 14px;
 }
 .caps__panel b {
   display: block; font-family: var(--display); font-weight: 800;
-  font-size: clamp(30px, 3.5vw, 52px); line-height: 0.9;
+  font-size: clamp(32px, 4vw, 58px); line-height: 0.88;
   text-transform: uppercase; margin-bottom: 14px;
 }
-.caps__panel p { margin: 0 0 16px; color: rgba(242,245,253,.76); font-size: 15px; }
-.caps__link { color: #8db5ff; font: 600 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-.caps__link span { margin-left: 8px; }
+.caps__panel p { margin: 0; color: var(--on-ice-2); font-size: 15.5px; }
 
 /* Puntos de progreso del recorrido */
 .caps__dots {
@@ -836,10 +823,10 @@ html { background: var(--night); }
   z-index: 4; display: flex; flex-direction: column; gap: 13px;
 }
 .caps__dots i {
-  width: 26px; height: 2px; background: rgba(255,255,255,.2);
+  width: 26px; height: 2px; background: var(--line-ice);
   transition: background 0.4s var(--ease), width 0.4s var(--ease);
 }
-.caps__dots i.is-on { background: #72a6ff; width: 46px; }
+.caps__dots i.is-on { background: var(--blue); width: 46px; }
 
 /* ========================= BASE DE SECCIONES =============================
    Espaciado y fondos comunes. Estas reglas las usan #giro, #titulo,
@@ -1182,15 +1169,11 @@ html.no-motion .inv__card.is-on { transform: none; }
 
   .caps__head { max-width: none; right: var(--gutter); }
   .caps__truck {
-    width: 92vw;
-    height: 52vh;
-    max-width: none;
-    top: 43%;
+    height: min(30vh, 240px);
+    max-width: 92vw;
+    top: 40%;
   }
-  .caps__panel { left: var(--gutter); right: var(--gutter); bottom: 58px; width: auto; }
-  .caps__thumb { height: 96px; }
-  .caps__copy { padding: 14px 16px 16px; }
-  .caps__panel p { display: none; }
+  .caps__panel { left: var(--gutter); right: var(--gutter); width: auto; }
   .caps__dots { flex-direction: row; bottom: 30px; }
 
   .steps { grid-template-columns: 1fr; }
@@ -1547,3 +1530,4 @@ html.no-motion .spec__slide.is-on { transform: none; }
 /* Sin movimiento la hoja aparece y desaparece, sin crecer ni deslizarse. */
 html.no-motion .sheet { transform: none; }
 html.no-motion .sheet__row { opacity: 1; transform: none; }
+
