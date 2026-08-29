@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787990192";
+  var ASSETS_V = "1787990286";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1162,9 +1162,9 @@
          multiplica al de los propios planos, y ahi si aparece la camioneta
          que entra de lejos y se te viene encima.
 
-         El limite de 2.05 no es al azar: por encima de ahi el navegador
+         El limite de 1.95 no es al azar: por encima de ahi el navegador
          tendria que estirar el archivo y volveria lo pixelado. */
-      var scale = chico ? lerp(0.78, 2.05, travel) : lerp(1.015, 1.10, travel);
+      var scale = chico ? lerp(0.78, 1.95, travel) : lerp(1.015, 1.10, travel);
       var y = chico ? lerp(4.5, -3.5, travel) : lerp(1.5, -1.2, travel);
       /* En telefono el acercamiento NO se apaga con "reducir movimiento".
          Ahi no es un adorno que corre solo: es el contenido de la seccion, y
