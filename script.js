@@ -208,11 +208,18 @@
 
   /* Recorrido de la sección clara. Cada panel trae su propia unidad, así el
      visitante ve variedad de inventario sin salir del efecto. */
+  /* Cada capacidad con una fotografia que la demuestre, no con un recorte
+     sobre fondo liso. Una Tacoma embarrada dice "aguanta" mejor que
+     cualquier frase. */
   var CAPS = [
-    { n: "01", t: "Tracción 4x4",   d: "Cuatro de las cinco unidades traen 4x4 real. En el Valle eso es la diferencia entre llegar y quedarte.", v: vehicles[4] },
-    { n: "02", t: "Motor probado",  d: "V6 3.5L y 2.4L Turbo. Refacción disponible en cualquier lado y mecánico que las conoce.", v: vehicles[3] },
-    { n: "03", t: "Cabina doble",   d: "Double Cab y Crew Cab: caben cinco y la caja queda libre para la herramienta.", v: vehicles[1] },
-    { n: "04", t: "Listas ya",      d: "Inspeccionadas y en el lote. Te la llevas manejando el mismo día.", v: vehicles[0] }
+    { n: "01", t: "Aguanta el barro",  d: "Tracción 4x4 real. En el Valle eso es la diferencia entre llegar y quedarte tirado.",
+      img: "assets/aguantar/barro" },
+    { n: "02", t: "Aguanta el frío",   d: "Motor V6 3.5L probado durante décadas. Arranca, jala y se repara en cualquier taller.",
+      img: "assets/aguantar/nieve" },
+    { n: "03", t: "Aguanta la sierra", d: "Suspensión y despeje pensados para camino de terracería, no para folleto.",
+      img: "assets/aguantar/montana" },
+    { n: "04", t: "Aguanta el viaje",  d: "Double Cab y Crew Cab: caben cinco y la caja queda libre para la herramienta.",
+      img: "assets/aguantar/desierto" }
   ];
 
   var STEPS = [
@@ -279,7 +286,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "9";
+  var ASSETS_V = "10";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -682,131 +689,85 @@
      - Flechas y puntos para manejarlo a mano, y flechas del teclado.
      ====================================================================== */
 
+  /* ==================== LO QUE TRAE UNA TACOMA ==========================
+     Antes: un carrusel de recortes sobre fondo liso, con autoplay. Se veia
+     como catalogo de refacciones.
+
+     Ahora son cuatro paneles verticales de fotografia. El activo se abre y
+     los otros se comprimen: en una mirada se entiende que hay cuatro cosas
+     y cual estas viendo. Se cambia pasando el cursor, tocando, con el
+     teclado, o dejando que el scroll lo lleve.
+
+     El acordeon es el patron correcto aqui porque el contenido es
+     comparable: cuatro caracteristicas del mismo nivel.
+     ====================================================================== */
+
   function buildSpec() {
-    var INTERVALO = 3800;
+    var PANELES = [
+      { img: "assets/paneles/4x4.webp",    n: "01", t: "4x4 real",
+        d: "Tracción en las cuatro llantas. Terracería, brecha y lluvia sin pensarlo." },
+      { img: "assets/paneles/motor.webp",  n: "02", t: "V6 3.5L",
+        d: "El motor que le dio fama. Probado, y con refacción en cualquier taller." },
+      { img: "assets/paneles/cabina.webp", n: "03", t: "Doble cabina",
+        d: "Caben cinco y la caja queda libre. Familia entre semana, trabajo el sábado." },
+      { img: "assets/paneles/caja.webp",   n: "04", t: "Caja de trabajo",
+        d: "Para herramienta, material o campamento. La misma camioneta, otro uso." }
+    ];
 
-    var slides = vehicles.map(function (v, i) {
-      return h("div.spec__slide", { "aria-hidden": i === 0 ? null : "true" },
-        h("img", {
-          src: v.image, alt: altText(v),
-          loading: i === 0 ? "eager" : "lazy", decoding: "async"
-        }));
+    var actual = 0;
+    var paneles = PANELES.map(function (x, i) {
+      var el = h("article.panel", {
+        tabindex: "0", role: "button",
+        "aria-label": x.t + ". " + x.d
+      },
+        h("img", { src: x.img, alt: x.t + " en una Toyota Tacoma",
+                   loading: i < 2 ? "eager" : "lazy", decoding: "async" }),
+        h("div.panel__velo", { "aria-hidden": "true" }),
+        h("div.panel__cuerpo", null,
+          h("span.panel__n", null, x.n),
+          h("b", null, x.t),
+          h("p", null, x.d)));
+
+      function activar() { pinta(i); }
+      el.addEventListener("mouseenter", activar);
+      el.addEventListener("focus", activar);
+      el.addEventListener("click", activar);
+      return el;
     });
-    slides[0].classList.add("is-on");
+    paneles[0].classList.add("is-on");
 
-    var etiqueta = h("p.eyebrow.spec__label", null,
-      vehicles[0].year + " · " + vehicles[0].trim);
-
-    var puntos = vehicles.map(function (v, i) {
-      return h("button.spec__dot", {
-        type: "button",
-        "aria-label": "Ver " + fullName(v),
-        onclick: function () { ir(i, true); }
-      });
-    });
-    puntos[0].classList.add("is-on");
-
-    var notas = SPIN_NOTES.map(function (n, i) {
-      return h("li.spec__item.reveal", { style: "transition-delay:" + (i * 90) + "ms" },
-        h("b", null, n.t),
-        h("p", null, n.d));
-    });
-
-    function flecha(dir, etiquetaTxt) {
-      return h("button.spec__arrow", {
-        type: "button", "aria-label": etiquetaTxt,
-        onclick: function () { ir(actual + dir, true); }
-      }, h("span", { html: dir < 0 ? ARROW_L : ARROW }));
-    }
-
-    var visor = h("div.spec__viewer", null,
-      slides,
-      flecha(-1, "Unidad anterior"),
-      flecha(1, "Unidad siguiente"));
-
-    var actual = 0, timer = null, detenido = false;
-
-    function ir(i, manual) {
-      i = ((i % vehicles.length) + vehicles.length) % vehicles.length;
+    function pinta(i) {
       if (i === actual) return;
-      slides[actual].classList.remove("is-on");
-      slides[actual].setAttribute("aria-hidden", "true");
-      puntos[actual].classList.remove("is-on");
+      paneles[actual].classList.remove("is-on");
       actual = i;
-      slides[i].classList.add("is-on");
-      slides[i].removeAttribute("aria-hidden");
-      puntos[i].classList.add("is-on");
-      etiqueta.textContent = vehicles[i].year + " · " + vehicles[i].trim;
-      /* Un toque manual reinicia el reloj: si no, la siguiente puede saltar
-         medio segundo despues de que el visitante eligio. */
-      if (manual) arrancar();
+      paneles[i].classList.add("is-on");
     }
 
-    function arrancar() {
-      parar();
-      if (detenido) return;
-      timer = setInterval(function () { ir(actual + 1); }, INTERVALO);
-    }
-    function parar() { if (timer) { clearInterval(timer); timer = null; } }
-
-    var seccion = h("section.section.spec#giro", null,
+    var section = h("section.section.paneles#giro", null,
       h("div.section__inner", null,
         h("div.section__head.reveal", null,
-          etiqueta,
+          h("p.eyebrow", null, "Toyota Tacoma"),
           h("h2.display.h-md", null, "Lo que ", h("em", null, "trae"), " una Tacoma")),
-        h("div.spec__grid", null,
-          h("div.spec__stage", null, visor, h("div.spec__dots", null, puntos)),
-          h("ul.spec__list", null, notas))));
+        h("div.paneles__fila", null, paneles)));
 
-    /* Pausa mientras alguien lo esta mirando o usando.
+    /* Mientras la seccion cruza la pantalla, el foco avanza solo. Si el
+       visitante toca o pasa el cursor, manda el. */
+    var tocado = false;
+    section.addEventListener("pointerdown", function () { tocado = true; });
+    section.addEventListener("mouseenter", function () { tocado = true; });
 
-       El caso tactil necesita trato aparte: en un telefono nunca llega
-       mouseleave ni focusout, asi que si el toque solo pausara, el carrusel
-       se quedaria detenido para siempre en cuanto alguien lo rozara. Se
-       reanuda solo unos segundos despues del ultimo toque. */
-    var reanudar = null;
-
-    function pausar() {
-      if (reanudar) { clearTimeout(reanudar); reanudar = null; }
-      detenido = true;
-      parar();
-    }
-    function reanudarPronto(ms) {
-      if (reanudar) clearTimeout(reanudar);
-      reanudar = setTimeout(function () {
-        reanudar = null;
-        detenido = false;
-        arrancar();
-      }, ms);
-    }
-
-    ["mouseenter", "focusin"].forEach(function (ev) {
-      seccion.addEventListener(ev, pausar, { passive: true });
-    });
-    ["mouseleave", "focusout"].forEach(function (ev) {
-      seccion.addEventListener(ev, function () { detenido = false; arrancar(); });
-    });
-
-    seccion.addEventListener("touchstart", pausar, { passive: true });
-    seccion.addEventListener("touchend", function () { reanudarPronto(6000); }, { passive: true });
-    seccion.addEventListener("touchcancel", function () { reanudarPronto(3000); }, { passive: true });
-
-    seccion.addEventListener("keydown", function (ev) {
-      if (ev.key === "ArrowRight") { ev.preventDefault(); ir(actual + 1, true); }
-      if (ev.key === "ArrowLeft")  { ev.preventDefault(); ir(actual - 1, true); }
-    });
-
-    /* Solo corre mientras la seccion esta a la vista: un temporizador
-       girando en una seccion que nadie ve solo gasta bateria. */
     if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (entradas) {
-        entradas.forEach(function (e) { e.isIntersecting ? arrancar() : parar(); });
-      }, { threshold: 0.25 }).observe(seccion);
-    } else {
-      arrancar();
+      new IntersectionObserver(function (ent) {
+        ent.forEach(function (e) {
+          if (!e.isIntersecting || tocado) return;
+          var r = section.getBoundingClientRect();
+          var avance = clamp(1 - (r.bottom / (window.innerHeight + r.height)), 0, 0.999);
+          pinta(Math.floor(avance * PANELES.length));
+        });
+      }, { threshold: [0, 0.25, 0.5, 0.75, 1] }).observe(section);
     }
 
-    return seccion;
+    return section;
   }
 
   /* ===================== 07 · TACOMA AZUL EN SCROLL =====================
@@ -907,100 +868,91 @@
     return section;
   }
 
-  /* ========================== 08 · CAPACIDADES ===========================
-     La inversión a fondo claro. La camioneta viaja pegada al scroll y va
-     cambiando de unidad en cada bloque, así el visitante ve variedad de
-     inventario sin salir del efecto.
+  /* ===================== HECHAS PARA AGUANTAR ===========================
+     Antes: un recorte de camioneta sobre fondo liso que se deslizaba
+     mientras cambiaban cuatro parrafos. Correcto y plano.
 
-     El giro vive en su propia sección (#giro); aquí lo que cambia es la
-     unidad, no el ángulo.
+     Ahora cada capacidad ocupa la pantalla completa con una fotografia que
+     la demuestra: barro, nieve, sierra, desierto. El numero enorme al fondo
+     da escala, y la barra lateral deja ver cuanto falta. Se puede saltar de
+     una a otra tocando los puntos.
      ====================================================================== */
 
   function buildCaps() {
-    var truckImg = h("img", { src: CAPS[0].v.image, alt: altText(CAPS[0].v) });
-    var truck = h("div.caps__truck.caps__truck--single", null, truckImg);
+    var small = window.matchMedia("(max-width: 767px)").matches;
 
-    var panels = CAPS.map(function (c) {
-      return h("article.caps__panel", null,
-        h("span.n", null, c.n),
-        h("b", null, c.t),
+    var fotos = CAPS.map(function (c, i) {
+      return h("div.aguanta__foto", null,
+        h("img", {
+          src: c.img + (small ? "-m" : "") + ".webp",
+          alt: c.t + ", Toyota Tacoma",
+          loading: i === 0 ? "eager" : "lazy", decoding: "async"
+        }));
+    });
+    fotos[0].classList.add("is-on");
+
+    var cifra = h("b.aguanta__cifra", null, "01");
+
+    var textos = CAPS.map(function (c) {
+      return h("article.aguanta__texto", null,
+        h("h3", null, c.t),
         h("p", null, c.d));
     });
+    textos[0].classList.add("is-on");
 
-    var dots = CAPS.map(function () { return h("i"); });
+    var puntos = CAPS.map(function (c, i) {
+      return h("button.aguanta__punto", {
+        type: "button", "aria-label": c.t,
+        onclick: function () { irA(i); }
+      }, h("i"), h("span", null, c.n));
+    });
+    puntos[0].classList.add("is-on");
 
-    var stage = h("div.caps__stage", null,
-      h("div.caps__head", null,
+    var stage = h("div.aguanta__stage", null,
+      h("div.aguanta__fondo", null, fotos),
+      h("div.aguanta__velo", { "aria-hidden": "true" }),
+      cifra,
+      h("div.aguanta__cabecera", null,
         h("p.eyebrow", null, "Por qué una Tacoma"),
         h("h2.display.h-lg", null, "Hechas ", h("em", null, "para"), " aguantar")),
-      truck,
-      h("div.caps__panels", null, panels),
-      h("div.caps__dots", { "aria-hidden": "true" }, dots)
-    );
+      h("div.aguanta__textos", null, textos),
+      h("div.aguanta__puntos", null, puntos));
 
-    /* Una pantalla de scroll por bloque, más una de entrada y otra de salida. */
-    var section = h("section.caps.on-ice#capacidades", {
-      style: "height:" + (CAPS.length * 80 + 60) + "vh"
+    var section = h("section.aguanta#capacidades", {
+      style: "height:" + (CAPS.length * 90 + 60) + "vh"
     }, stage);
 
-    var current = -1;
+    var actual = 0;
+
+    function pinta(i) {
+      if (i === actual) return;
+      fotos[actual].classList.remove("is-on");
+      textos[actual].classList.remove("is-on");
+      puntos[actual].classList.remove("is-on");
+      actual = i;
+      fotos[i].classList.add("is-on");
+      textos[i].classList.add("is-on");
+      puntos[i].classList.add("is-on");
+      cifra.textContent = CAPS[i].n;
+    }
+
+    /* Los puntos llevan a su bloque: la seccion se puede recorrer sin
+       depender del scroll, que es lo que espera quien usa teclado. */
+    function irA(i) {
+      var alto = section.offsetHeight - window.innerHeight;
+      var destino = section.offsetTop + alto * ((i + 0.5) / CAPS.length);
+      window.scrollTo({ top: destino, behavior: reduceMotion ? "auto" : "smooth" });
+    }
 
     section._tick = function (p) {
-      var span = range(p, 0.06, 0.94);
-      var pos = span * CAPS.length;
-      var idx = clamp(Math.floor(pos), 0, CAPS.length - 1);
-
-      if (idx !== current) {
-        current = idx;
-        /* Cambio de unidad con un parpadeo corto: sustituir el src en seco
-           enseña el hueco mientras carga la siguiente foto. */
-        truckImg.classList.add("is-out");
-        var next = CAPS[idx].v;
-        setTimeout(function () {
-          if (current !== idx) return;
-          truckImg.src = asset(next.image);
-          truckImg.alt = altText(next);
-          truckImg.classList.remove("is-out");
-        }, 180);
-        dots.forEach(function (d, i) { d.classList.toggle("is-on", i === idx); });
-      }
-
-      /* Recorrido en zigzag: cada bloque la recibe del lado contrario al
-         texto. */
-      var local = pos - idx;
-      var dir = idx % 2 === 0 ? 1 : -1;
-      var x = lerp(-22 * dir, 16 * dir, easeOut(local));
-      var y = lerp(6, -6, local);
-      var rot = lerp(-1.6 * dir, 1.6 * dir, local);
-      var pulse = 1 + Math.sin(Math.PI * local) * 0.05;
-
-      truck.style.transform =
-        "translate(calc(-50% + " + mv(x) + "vw), calc(-50% + " + mv(y) + "vh)) " +
-        "rotate(" + mv(rot) + "deg) scale(" + sc(pulse) + ")";
-
-      /* Recortado a los extremos para que el primero y el último se
-         sostengan mientras la sección sigue fija. */
-      var posVis = clamp(pos, 0, CAPS.length - 1);
-      for (var i = 0; i < panels.length; i++) {
-        var d = i - posVis;
-        var vis = clamp(1 - Math.abs(d) * 1.9, 0, 1);
-        panels[i].style.opacity = String(vis);
-        panels[i].style.transform = "translateY(" + mv(d * 46) + "px)";
-      }
+      var span = range(p, 0.04, 0.96);
+      pinta(clamp(Math.floor(span * CAPS.length), 0, CAPS.length - 1));
+      /* Acercamiento lentisimo sobre la foto: da vida sin distraer. */
+      stage.style.setProperty("--zoom", sc(1 + span * 0.07));
     };
 
     return section;
   }
-
-  /* ===================== 08 · INVENTARIO ================================
-     "Lo que hay hoy". Sección fija: al bajar se va mostrando una camioneta
-     a la vez con su FOTO REAL del lote, a pantalla completa, con la ficha
-     al lado.
-
-     Las fotos son las del lote, con el sol del Valle y el sticker en el
-     parabrisas. Eso es lo que convence a un comprador de título rebuilt:
-     la unidad existe y está parada ahí.
-     ====================================================================== */
 
   /* ========================= EL MURO DE TACOMAS ==========================
      Esta pagina NO es un inventario. Es una landing que lleva al catalogo
@@ -1072,7 +1024,11 @@
       /* Escalonadas: entran una tras otra en vez de aparecer las cuatro de
          golpe, que se lee como un bloque de texto. */
       var d = "transition-delay:" + (i * 110) + "ms";
-      dl.appendChild(h("dt.reveal", { style: d }, qa.q));
+      /* Cada pregunta numerada: se lee como documento, que es justo el tono
+         que necesita la seccion mas delicada de la pagina. */
+      dl.appendChild(h("dt.reveal", { style: d },
+        h("i", null, "0" + (i + 1)),
+        h("span", null, qa.q)));
       dl.appendChild(h("dd.reveal", { style: d }, qa.a));
     });
 
@@ -1099,8 +1055,14 @@
           h("h2.display.h-lg", null, "Tres ", h("em", null, "pasos"), " y ya")),
         h("div.steps", null, STEPS.map(function (st, i) {
           return h("div.steps__item.reveal", { style: "transition-delay:" + (i * 130) + "ms" },
-            h("b", null, st.n), h("h3", null, st.t), h("p", null, st.d));
-        }))));
+            h("div.steps__marca", null, h("b", null, st.n), h("i", { "aria-hidden": "true" })),
+            h("div.steps__cuerpo", null,
+              h("h3", null, st.t),
+              h("p", null, st.d)));
+        })),
+        h("div.steps__cierre.reveal", null,
+          h("p", null, "¿Dudas antes de empezar? Pregunta por WhatsApp, contesta una persona."),
+          link(CONFIG.catalogUrl, "btn btn--wa", "Escribir ahora", ARROW))));
   }
 
   function buildPlace() {
@@ -1319,6 +1281,17 @@
          cuando el visitante llegue abajo ya estan, y el cambio de unidad no
          ensena el hueco mientras carga. */
       var despues = [];
+      /* Las fotos de las secciones nuevas: llegan por detras para que no
+         aparezcan en blanco cuando el visitante baje. */
+      ["barro", "nieve", "montana", "desierto"].forEach(function (n) {
+        despues.push("assets/aguantar/" + n + (window.innerWidth <= 767 ? "-m" : "") + ".webp");
+      });
+      ["4x4", "motor", "cabina", "caja"].forEach(function (n) {
+        despues.push("assets/paneles/" + n + ".webp");
+      });
+      for (var mi = 1; mi <= 12; mi++) {
+        despues.push("assets/muro/t-" + (mi < 10 ? "0" + mi : mi) + ".webp");
+      }
       vehicles.forEach(function (v) {
         if (v.image) despues.push(v.image);
         if (v.photo) {
