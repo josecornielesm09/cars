@@ -22,7 +22,11 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://carhaus.vercel.app/assets/og-carhaus.png">
 
-<link rel="icon" href="assets/logo/carhaus-favicon.png?v=1787980592" sizes="64x64">
+<!-- El navegador pide /favicon.ico y iOS pide /apple-touch-icon.png por su
+     cuenta, esten declarados o no. Sin ellos, dos 404 en cada visita. -->
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="assets/logo/carhaus-favicon.png?v=1787980592" sizes="64x64">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
