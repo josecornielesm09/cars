@@ -3055,3 +3055,15 @@ button:focus-visible {
 .section--ice button:focus-visible,
 .aguanta a:focus-visible,
 .aguanta button:focus-visible { outline-color: var(--blue); }
+
+/* El aviso de privacidad va en la linea legal del pie, no en la fila de
+   enlaces: no es una via de navegacion, es una nota al pie que tiene que
+   estar y poder encontrarse sin competir con el boton de catalogo. */
+.foot__aviso {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(237, 241, 250, 0.3);
+  transition: text-decoration-color 0.3s var(--ease);
+}
+.foot__aviso:hover { text-decoration-color: currentColor; }

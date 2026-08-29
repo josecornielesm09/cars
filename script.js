@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788038165";
+  var ASSETS_V = "1788038431";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1509,7 +1509,8 @@
 
       h("div.foot__legal", null,
         h("span", null, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, TX · 30+ años"),
-        h("span", null, "Todas las unidades con título rebuilt. Disponibilidad sujeta a cambio.")));
+        h("span", null, "Todas las unidades con título rebuilt. Disponibilidad sujeta a cambio.",
+          " ", h("a.foot__aviso", { href: "/privacidad.html" }, "Aviso de privacidad"))));
 
     pie._tick = function (p) {
       var avance = easeOut(range(p, 0.05, 0.68));
