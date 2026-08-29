@@ -1233,10 +1233,14 @@ html.no-motion .inv__card.is-on { transform: none; }
   width: min(620px, 52vw);
 }
 .blue-run__copy h2 {
-  max-width: 780px;
+  /* A 6.4vw esto daba 92px en un portatil normal, dos lineas de casi 400px:
+     medio alto de pantalla ocupado por el titular, encima de una seccion
+     cuyo asunto es la camioneta acercandose. El texto acompana, no compite.
+     A 4.4vw sigue siendo un titular grande y deja respirar la toma. */
+  max-width: 620px;
   margin: 9px 0 14px;
-  font-size: clamp(46px, 6.4vw, 104px);
-  line-height: .82;
+  font-size: clamp(42px, 4.4vw, 72px);
+  line-height: .84;
 }
 .blue-run__copy > p:last-child {
   max-width: 480px;
