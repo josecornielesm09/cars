@@ -273,7 +273,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "5";
+  var ASSETS_V = "6";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -998,9 +998,17 @@
 
   function buildInventory() {
     var shots = vehicles.map(function (v, i) {
+      /* srcset: el telefono baja la version de 1200px y el escritorio la de
+         2048. Sin esto un telefono de 375 puntos se traga fotos de 2048px
+         para mostrarlas a 1125: casi un mega tirado por foto. */
+      var foto = v.photo || v.image;
+      var fotoM = foto.replace(/\.webp$/, "-m.webp");
+
       return h("div.inv__shot", null,
         h("img", {
-          src: v.photo || v.image,
+          src: foto,
+          srcset: v.photo ? asset(fotoM) + " 1200w, " + asset(foto) + " 2048w" : null,
+          sizes: "100vw",
           alt: altText(v),
           loading: i < 2 ? "eager" : "lazy",
           decoding: "async"
@@ -1271,7 +1279,10 @@
       var despues = [];
       vehicles.forEach(function (v) {
         if (v.image) despues.push(v.image);
-        if (v.photo) despues.push(v.photo);
+        if (v.photo) {
+          /* Se precarga la que el navegador va a usar de verdad, no las dos. */
+          despues.push(window.innerWidth <= 767 ? v.photo.replace(/\.webp$/, "-m.webp") : v.photo);
+        }
       });
       despues.push("assets/features/blue-scroll/frame-03.webp");
       despues.push("assets/features/blue-scroll/frame-04.webp");
