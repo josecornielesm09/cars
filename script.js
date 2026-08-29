@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787990088";
+  var ASSETS_V = "1787990192";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1166,7 +1166,11 @@
          tendria que estirar el archivo y volveria lo pixelado. */
       var scale = chico ? lerp(0.78, 2.05, travel) : lerp(1.015, 1.10, travel);
       var y = chico ? lerp(4.5, -3.5, travel) : lerp(1.5, -1.2, travel);
-      stage.style.setProperty("--truck-scale", sc(scale));
+      /* En telefono el acercamiento NO se apaga con "reducir movimiento".
+         Ahi no es un adorno que corre solo: es el contenido de la seccion, y
+         solo avanza si el visitante decide bajar. Lo que si se apaga es la
+         deriva vertical, que si es decoracion. */
+      stage.style.setProperty("--truck-scale", chico ? scale : sc(scale));
       stage.style.setProperty("--truck-y", mv(y) + "vh");
 
       cards.forEach(function (card, i) {

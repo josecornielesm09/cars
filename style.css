@@ -1478,9 +1478,13 @@ html.no-motion .inv__card.is-on { transform: none; }
    Pero pasar de un plano al siguiente al bajar no es movimiento gratuito:
    lo dirige el scroll de quien mira. Eso se queda. Lo que se apaga es el
    zoom continuo y el desplazamiento vertical, que son lo que marea. */
-html.no-motion .blue-run__stage {
-  --truck-scale: 1;
-  --truck-y: 0vh;
+/* Sin movimiento se congela la deriva vertical, pero NO el acercamiento en
+   telefono: ahi el acercamiento es el contenido de la seccion y solo avanza
+   si el visitante baja. Apagarlo dejaba la camioneta quieta y la seccion sin
+   nada que contar. */
+html.no-motion .blue-run__stage { --truck-y: 0vh; }
+@media (min-width: 768px) {
+  html.no-motion .blue-run__stage { --truck-scale: 1; }
 }
 /* Cruces mas cortos: el cambio se lee como avance, no como fundido lento. */
 /* Con cuarenta planos el cambio entre uno y otro es minimo: un fundido
