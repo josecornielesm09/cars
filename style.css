@@ -3230,12 +3230,25 @@ body::after {
   pointer-events: auto;
 }
 
-/* En telefono los rotulos suben: abajo viven la senal de scroll y el boton
-   flotante, y taparse entre ellos seria peor que no decir nada. */
+/* EN TELEFONO NO FLOTAN SOBRE LA TOMA: OCUPAN EL HUECO QUE YA HABIA.
+
+   El hero vertical es una banda de imagen de 0.9 anchos de pantalla, debajo
+   una fila con la senal de scroll y el porcentaje, y despues unos 350px de
+   negro que no decian nada. Ese hueco no era un margen: era espacio muerto
+   en la primera pantalla de la pagina.
+
+   Los mensajes se anclan ahi, medidos desde la banda, no desde el borde de
+   abajo —que se mueve con la barra del navegador—. Y sin max-width en ch:
+   con la tipografia condensada, doce caracteres daban una columna de 101px
+   y el titular bajaba en cascada, una palabra por linea. */
 @media (max-width: 767px) {
-  .hero__di--uno { bottom: 32vh; max-width: 12ch; }
-  .hero__di--dos { bottom: 28vh; max-width: 26ch; }
-  .hero__titular { font-size: clamp(42px, 13vw, 72px); }
+  .hero__di {
+    top: calc(var(--band, 90vw) + 128px);
+    bottom: auto;
+    max-width: none;
+  }
+  .hero__titular { font-size: clamp(38px, 11.5vw, 64px); }
+  .hero__di--dos .hero__cta { margin-top: 16px; }
 }
 
 /* Sin movimiento no hay desplazamiento, pero el relevo se queda: lo dirige
