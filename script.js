@@ -349,7 +349,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787980592";
+  var ASSETS_V = "1787980919";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -507,7 +507,11 @@
       },
         h("span.nav__dot", { "aria-hidden": "true" }),
         h("span.nav__here-txt", null, "913 W Hwy 83")),
-      menuEscritorio, toggle,
+      menuEscritorio,
+      /* En telefono la barra no tiene sitio para el boton completo, pero el
+         catalogo tiene que estar SIEMPRE a un toque. Un icono basta. */
+      link(CONFIG.catalogUrl, "nav__wa", "", WA_ICON),
+      toggle,
       link(CONFIG.catalogUrl, "btn btn--wa", "Catálogo", ARROW),
       hoja
     );
@@ -1402,6 +1406,49 @@
       preload(despues);
     });
 
+    /* VOLVER ARRIBA, CON ANILLO DE PROGRESO.
+
+       El boton tipico es una flecha que aparece y ya. Este ademas dibuja
+       cuanto llevas recorrido en su propio borde: el visitante ve de un
+       vistazo donde esta sin que la pagina se lo diga con palabras.
+
+       Va a la IZQUIERDA porque la derecha es del catalogo, y el catalogo
+       manda. Nunca compiten por el mismo sitio.
+
+       El anillo se dibuja con stroke-dashoffset, que el navegador resuelve
+       sin recalcular layout. */
+    var RADIO = 22;
+    var VUELTA = 2 * Math.PI * RADIO;
+
+    var aro = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    aro.setAttribute("cx", "26"); aro.setAttribute("cy", "26");
+    aro.setAttribute("r", String(RADIO));
+    aro.setAttribute("class", "subir__aro");
+    aro.style.strokeDasharray = VUELTA;
+    aro.style.strokeDashoffset = VUELTA;
+
+    var pista = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    pista.setAttribute("cx", "26"); pista.setAttribute("cy", "26");
+    pista.setAttribute("r", String(RADIO));
+    pista.setAttribute("class", "subir__pista");
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 52 52");
+    svg.setAttribute("aria-hidden", "true");
+    svg.appendChild(pista); svg.appendChild(aro);
+
+    var subir = h("button.subir", {
+      type: "button",
+      "aria-label": "Volver arriba",
+      onclick: function () {
+        window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+      }
+    }, h("span.subir__flecha", { html:
+      '<svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">' +
+      '<path d="M7.5 13V2M2.5 7l5-5 5 5" stroke="currentColor" stroke-width="1.6"/></svg>' }));
+    subir.appendChild(svg);
+    document.body.appendChild(subir);
+
     var fab = link(CONFIG.catalogUrl, "fab", "", WA_ICON);
     fab.appendChild(h("span.fab__txt", null, "Ver catálogo"));
     fab.setAttribute("aria-label", "Abrir catálogo en WhatsApp");
@@ -1474,6 +1521,12 @@
       var y = window.pageYOffset || document.documentElement.scrollTop;
       nav.classList.toggle("is-stuck", y > 40);
       fab.classList.toggle("is-on", y > vh * 0.9);
+
+      /* El anillo del boton de subir se llena con el recorrido. */
+      var recorrido = document.documentElement.scrollHeight - vh;
+      var avanceP = recorrido > 0 ? clamp(y / recorrido, 0, 1) : 0;
+      subir.classList.toggle("is-on", y > vh * 1.4);
+      aro.style.strokeDashoffset = String(VUELTA * (1 - avanceP));
       /* A mitad de pagina el visitante ya sabe que busca: el boton deja de
          ser un icono y se abre con la invitacion. */
       var total = document.documentElement.scrollHeight - vh;

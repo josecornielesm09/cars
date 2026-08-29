@@ -2681,3 +2681,110 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
 html.no-motion .pal > i { transform: none; transition: none; }
 html.no-motion .panel::after { display: none; }
 html.no-motion .foot__enlaces a::after { transition: none; }
+
+/* ===================== VOLVER ARRIBA, CON ANILLO =======================
+   El boton tipico es una flecha que aparece. Este ademas dibuja en su
+   propio borde cuanto llevas recorrido: el visitante ve donde esta sin que
+   la pagina se lo diga con palabras.
+
+   Va a la IZQUIERDA. La derecha es del catalogo, y el catalogo manda: los
+   dos nunca compiten por el mismo sitio.
+   ======================================================================== */
+
+.subir {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 80;
+  width: 52px; height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(8, 13, 30, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--on-night);
+  /* Nace hundido y girado: al aparecer se endereza, y ese gesto minusculo
+     es lo que lo separa de un boton que simplemente se enciende. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px) scale(0.85);
+  transition:
+    opacity 0.4s var(--ease),
+    transform 0.55s var(--ease),
+    background 0.3s,
+    border-color 0.3s;
+}
+.subir.is-on { opacity: 1; visibility: visible; transform: none; }
+.subir:hover {
+  background: rgba(14, 21, 48, 0.88);
+  border-color: rgba(109, 134, 255, 0.55);
+}
+.subir:active { transform: scale(0.94); }
+
+.subir__flecha {
+  display: grid;
+  place-items: center;
+  transition: transform 0.35s var(--ease);
+}
+.subir:hover .subir__flecha { transform: translateY(-2px); }
+
+/* El anillo va por encima, girado para que empiece arriba. */
+.subir svg {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.subir__pista {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.10);
+  stroke-width: 2;
+}
+.subir__aro {
+  fill: none;
+  stroke: var(--blue-glow);
+  stroke-width: 2;
+  stroke-linecap: round;
+  /* Sin transicion: el anillo sigue al dedo, no lo persigue con retraso. */
+}
+
+@media (max-width: 860px) {
+  .subir {
+    left: 14px;
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    width: 46px; height: 46px;
+  }
+}
+
+/* ================= WHATSAPP EN LA BARRA, DISCRETO ======================
+   En telefono no cabe el boton completo, pero el catalogo tiene que estar
+   siempre a un toque. Un icono basta.
+   ======================================================================== */
+
+.nav__wa {
+  display: none;
+  width: 38px; height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  color: #4BD25F;
+  flex: none;
+  transition: transform 0.35s var(--ease), color 0.3s;
+}
+.nav__wa svg { width: 22px; height: 22px; }
+.nav__wa:hover { transform: scale(1.1); color: #6BEA7E; }
+.nav__wa:active { transform: scale(0.92); }
+
+@media (max-width: 860px) {
+  .nav__wa { display: grid; }
+  .nav__wa svg { filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7)); }
+}
+
+/* Sin movimiento los dos aparecen sin gesto, pero el anillo se queda: es
+   informacion sobre donde estas, no un adorno. */
+html.no-motion .subir { transition: opacity 0.15s linear; transform: none; }
+html.no-motion .subir.is-on { transform: none; }
+html.no-motion .subir__flecha,
+html.no-motion .nav__wa { transition: none; }
