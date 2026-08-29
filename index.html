@@ -22,7 +22,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://carhaus.vercel.app/assets/og-carhaus.png">
 
-<link rel="icon" href="assets/logo/carhaus-favicon.png?v=12" sizes="64x64">
+<link rel="icon" href="assets/logo/carhaus-favicon.png?v=1787978695" sizes="64x64">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,11 +40,13 @@
      El atributo media evita bajar los dos juegos: telefono pide film/
      (1400px) y escritorio film-hd/ (2200px). El corte es el mismo 767px
      que usa buildHero en script.js. -->
-<link rel="preload" as="image" href="assets/360/film/f-001.webp?v=12" media="(max-width: 767px)" fetchpriority="high">
-<link rel="preload" as="image" href="assets/360/film/f-002.webp?v=12" media="(max-width: 767px)">
-<link rel="preload" as="image" href="assets/360/film-hd/f-001.webp?v=12" media="(min-width: 768px)" fetchpriority="high">
-<link rel="preload" as="image" href="assets/360/film-hd/f-002.webp?v=12" media="(min-width: 768px)">
-<link rel="stylesheet" href="style.css">
+<link rel="preload" as="image" href="assets/360/film/f-001.webp?v=1787978695" media="(max-width: 767px)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/360/film/f-002.webp?v=1787978695" media="(max-width: 767px)">
+<link rel="preload" as="image" href="assets/360/film-hd/f-001.webp?v=1787978695" media="(min-width: 768px)" fetchpriority="high">
+<link rel="preload" as="image" href="assets/360/film-hd/f-002.webp?v=1787978695" media="(min-width: 768px)">
+<!-- El codigo tambien sale versionado: sin esto un navegador testarudo
+     puede quedarse con una hoja de estilos vieja aunque el HTML sea nuevo. -->
+<link rel="stylesheet" href="style.css?v=1787978695">
 
 <script type="application/ld+json">
 {
@@ -72,7 +74,7 @@
 <body>
   <a class="skip" href="#inventario">Saltar al inventario</a>
   <div id="root"></div>
-  <script src="script.js"></script>
+  <script src="script.js?v=1787978695"></script>
 </body>
 </html>
 
