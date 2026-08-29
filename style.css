@@ -3141,7 +3141,10 @@ button:focus-visible {
    Catorce pantallas sin indicador son catorce pantallas sin saber por donde
    vas. El subrayado del enlace activo se queda extendido; el de hover sigue
    apareciendo al pasar por encima de los demas. */
-.nav__links a.is-here { color: var(--on-night); }
+/* La opacidad, no el color, es lo que distingue aqui. Los enlaces del menu
+   viven al 66%; poner el activo en blanco no se notaba porque la opacidad lo
+   apagaba igual que a los demas. */
+.nav__links a.is-here { color: var(--on-night); opacity: 1; }
 .nav__links a.is-here::after { transform: scaleX(1); transform-origin: left; }
 
 .sheet__row.is-here { color: var(--on-night); }
