@@ -411,7 +411,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787988079";
+  var ASSETS_V = "1787988281";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -675,7 +675,7 @@
        —los archivos son los mismos— y el recorrido sigue leyendose como
        vuelo continuo, pero son catorce mapas de bits a pantalla completa
        menos ocupando memoria en el aparato mas justo de los dos. */
-    var paso = small ? 1.5 : 1;
+    var paso = small ? 2 : 1;
     var cuantos = Math.round(CONFIG.spin.filmCount / paso);
 
     for (var q = 0; q < cuantos; q++) {
@@ -978,13 +978,21 @@
     var chico = window.matchMedia("(max-width: 767px)").matches;
     var carpetaD = chico ? "assets/features/dolly-m/" : "assets/features/dolly/";
 
+    /* En telefono se toma uno de cada dos planos y la seccion se acorta en
+       la misma proporcion. La densidad no cambia —la camioneta avanza lo
+       mismo por cada centimetro de dedo— pero son veinte mapas de bits a
+       pantalla completa menos en memoria. */
+    var pasoD = chico ? 2 : 1;
+    var cuantosD = Math.round(PLANOS / pasoD);
+
     var frames = [];
-    for (var fi = 1; fi <= PLANOS; fi++) {
+    for (var qd = 0; qd < cuantosD; qd++) {
+      var fi = Math.min(PLANOS, qd * pasoD + 1);
       var num = String(fi);
       while (num.length < 3) num = "0" + num;
       frames.push(h("img.blue-run__frame", {
         src: carpetaD + "d-" + num + ".webp",
-        alt: fi === 1 ? "Toyota Tacoma azul acercándose en estudio" : "",
+        alt: qd === 0 ? "Toyota Tacoma azul acercándose en estudio" : "",
         /* SIN loading="lazy". En una secuencia de scroll es una trampa: el
            navegador no sabe que van a hacer falta todos, asi que deja los
            elementos con complete=false aunque el archivo este en cache. La
@@ -993,7 +1001,7 @@
 
            No cuesta datos de mas: la precarga en dos tandas ya los trae. */
         decoding: "async",
-        "aria-hidden": fi === 1 ? null : "true"
+        "aria-hidden": qd === 0 ? null : "true"
       }));
     }
     frames[0].classList.add("is-on");
@@ -1046,7 +1054,8 @@
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver las de hoy", ARROW)),
       h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
 
-    var section = h("section.blue-run#experiencia", { style: "height:380vh" }, stage);
+    var section = h("section.blue-run#experiencia",
+      { style: "height:" + (chico ? 250 : 380) + "vh" }, stage);
     secuenciaLigera(section, frames);
 
     section._tick = function (p) {
