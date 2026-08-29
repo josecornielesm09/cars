@@ -423,6 +423,7 @@
     });
 
     titulo.textContent = "";
+    var dentros = [];
     var i = 0;
     piezas.forEach(function (pz) {
       if (pz.nodeType === 3) { titulo.appendChild(pz); return; }
@@ -434,8 +435,32 @@
       else dentro.textContent = pz.txt;
       mascara.appendChild(dentro);
       titulo.appendChild(mascara);
+      dentros.push(dentro);
       i++;
     });
+    return dentros;
+  }
+
+  /* REVELADO PALABRA A PALABRA ATADO AL SCROLL.
+
+     Los titulares de seccion se revelan con una transicion CSS cuando entran
+     en pantalla: empieza y termina sola. Aqui no. Aqui cada palabra sube
+     segun cuanto has bajado, y si te paras, se para contigo. Es la diferencia
+     entre una animacion que te ensenan y una que estas conduciendo tu.
+
+     El desplazamiento va en porcentaje, que es el alto de la propia palabra:
+     asi el gesto es igual de limpio con el titular grande o chico, sin
+     numeros de pixeles atados a un tamano concreto. */
+  function revelarPalabras(piezas, avance) {
+    for (var i = 0; i < piezas.length; i++) {
+      /* Cada palabra arranca un poco despues que la anterior y tarda algo
+         menos que el tramo entero: asi la ultima acaba de llegar justo
+         cuando el tramo se completa, no antes. */
+      var w = clamp((avance - i * 0.09) / 0.45, 0, 1);
+      var suave = easeOut(w);
+      piezas[i].style.transform = "translate3d(0," + mv((1 - suave) * 106) + "%,0)";
+      piezas[i].style.opacity = String(reduceMotion ? w : suave);
+    }
   }
 
   /* El boton se desplaza hacia el cursor una fraccion de la distancia. Muy
@@ -463,7 +488,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788040502";
+  var ASSETS_V = "1788041430";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -798,14 +823,25 @@
        que se relevan segun avanza el vuelo. Cada uno ocupa su tramo, entra,
        cede el sitio y se va. Nunca hay dos a la vez, y en ningun momento hay
        texto quieto encima de la imagen. */
+    /* La marca no se desvanece: se descubre de izquierda a derecha, como si
+       alguien pasara la mano. Una cortina lee mejor que un fundido en un
+       texto tan pequeno, donde la opacidad baja solo lo vuelve ilegible. */
+    var marca1 = h("span.hero__marca-tapa", { "aria-hidden": "true" });
     var rotulo1 = h("div.hero__di.hero__di--uno", null,
-      h("p.hero__marca", null, CONFIG.brand + " · Pharr, Texas"),
+      h("p.hero__marca", null,
+        h("span", null, CONFIG.brand + " · Pharr, Texas"), marca1),
       h("h1.hero__titular", null, "Toyota Tacoma ", h("em", null, "en Pharr")));
 
+    var cta2 = link(CONFIG.catalogUrl, "btn btn--wa hero__cta", "Ver el catálogo", ARROW);
     var rotulo2 = h("div.hero__di.hero__di--dos", null,
       h("p.hero__linea", null,
         "Lo que está disponible hoy vive en el catálogo, y ahí se actualiza cada vez que entra o sale una unidad."),
-      link(CONFIG.catalogUrl, "btn btn--wa hero__cta", "Ver el catálogo", ARROW));
+      cta2);
+
+    /* El titular se parte en palabras enmascaradas ANTES de montarse: cada
+       una sube desde debajo de su propia linea segun avanza el vuelo. */
+    var palabrasTitular = animarPalabras(rotulo1.querySelector(".hero__titular"));
+    rotulo1.querySelector(".hero__titular").classList.add("titulo-anim");
 
     var stage = h("div.hero__stage", null,
       still, media,
@@ -843,18 +879,26 @@
 
       /* Primer tramo: quien es y donde. Entra enseguida y se va a un tercio
          de camino, antes de que la toma llegue a lo suyo. */
-      var uno = range(t, 0.02, 0.13) * (1 - range(t, 0.30, 0.42));
-      rotulo1.style.opacity = String(uno);
-      rotulo1.style.transform =
-        "translate3d(0," + mv((1 - range(t, 0.02, 0.13)) * 26) + "px,0)";
+      var entra1 = range(t, 0.02, 0.20);
+      var sale1 = 1 - range(t, 0.30, 0.42);
+      rotulo1.style.opacity = String(sale1);
+      /* Las palabras suben una tras otra mientras entra el tramo; el rotulo
+         entero solo se ocupa de irse cuando le toca. */
+      revelarPalabras(palabrasTitular, entra1);
+      marca1.style.transform = "scaleX(" + range(t, 0.02, 0.12) + ")";
 
       /* Segundo tramo: que hacer. Llega cuando el vuelo ya conto lo suyo y
          se queda hasta el final, que es donde el visitante decide. */
       var dos = range(t, 0.55, 0.68);
       rotulo2.style.opacity = String(dos);
-      rotulo2.style.transform =
-        "translate3d(0," + mv((1 - dos) * 30) + "px,0)";
+      rotulo2.style.transform = "translate3d(0," + mv((1 - easeOut(dos)) * 30) + "px,0)";
       rotulo2.style.pointerEvents = dos > 0.6 ? "auto" : "none";
+      /* El boton llega el ultimo y con su propio gesto. Es lo que la pagina
+         quiere que toques: merece entrar solo, no dentro del grupo. */
+      var bot = range(t, 0.64, 0.76);
+      cta2.style.opacity = String(bot);
+      cta2.style.transform =
+        "translate3d(0," + mv((1 - easeOut(bot)) * 14) + "px,0) scale(" + sc(0.94 + easeOut(bot) * 0.06) + ")";
     };
 
     return hero;

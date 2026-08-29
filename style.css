@@ -3254,3 +3254,46 @@ body::after {
 /* Sin movimiento no hay desplazamiento, pero el relevo se queda: lo dirige
    el scroll del visitante, no un temporizador. */
 html.no-motion .hero__di { transform: none !important; }
+
+/* ============ ENTRADAS DE TEXTO DEL HERO =================================
+   Todo lo que sigue lo acciona el bucle de scroll, no un temporizador: si el
+   visitante para el dedo, la animacion para con el. Aqui solo va la forma
+   que hace falta para que el gesto sea posible. */
+
+/* La palabra sube desde debajo de su propia linea. overflow:hidden en la
+   mascara es lo que hace que "aparezca desde el borde" en vez de flotar. */
+.hero__titular .pal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+.hero__titular .pal > i {
+  display: inline-block;
+  font-style: inherit;
+  will-change: transform, opacity;
+  /* Sin transicion: la posicion la escribe el scroll en cada fotograma, y
+     una transicion encima solo anadiria retraso al dedo. */
+  transition: none;
+}
+
+/* La marca se descubre con una cortina que se retira hacia la derecha. */
+.hero__marca { position: relative; display: inline-block; }
+.hero__marca-tapa {
+  position: absolute;
+  inset: -2px -3px;
+  background: var(--night);
+  transform-origin: right center;
+  transform: scaleX(1);
+  will-change: transform;
+}
+.hero.is-seq .hero__marca-tapa { background: var(--night); }
+
+.hero__cta { will-change: transform, opacity; opacity: 0; }
+
+/* Sin movimiento no hay ni subida ni cortina: el texto esta puesto desde el
+   principio y solo se releva al bajar, que es informacion, no adorno. */
+html.no-motion .hero__titular .pal > i { transform: none !important; opacity: 1 !important; }
+html.no-motion .hero__marca-tapa { display: none; }
+html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
