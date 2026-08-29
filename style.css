@@ -2980,10 +2980,15 @@ html.no-motion .pista__chev svg { animation: none; opacity: 0.6; }
 }
 .sheet__row { transition: transform 0.14s var(--ease), background 0.2s; }
 
-html.no-motion .btn:active,
-html.no-motion .fab:active,
-html.no-motion .sheet__row:active,
-html.no-motion .foot__mapa-link:active { transform: none; }
+/* Con "reducir movimiento" la respuesta al pulsar SE QUEDA, solo mas corta.
+
+   Apagarla del todo era volver al problema de origen: el boton sin confirmar
+   el toque. Y no es movimiento gratuito —no desplaza nada, no hace recorrer
+   la vista—: es un acuse de recibo de 90ms al dedo del visitante, que si algo
+   le hace mas falta a quien pide menos movimiento. */
+html.no-motion :is(.btn, .fab, .sheet__row, .foot__mapa-link) {
+  transition-duration: 0.09s;
+}
 
 /* 2 · EL HOVER NO ES PARA DEDOS.
 
