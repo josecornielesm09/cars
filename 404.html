@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Esta página no existe | Car Haus LLC</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#04060F">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Barlow:wght@300;400;500&family=Roboto+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#04060F; --night-2:#080C1A; --ice:#EDF1FA;
+    --blue:#2F44C8; --blue-glow:#6D86FF;
+    --display:"Big Shoulders Display",Impact,sans-serif;
+    --body:"Barlow",system-ui,sans-serif;
+    --mono:"Roboto Mono",ui-monospace,monospace;
+    --ease:cubic-bezier(0.22,1,0.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(circle at 50% 34%,rgba(47,68,200,.20),transparent 58%),
+      var(--night);
+    color:var(--ice); font-family:var(--body);
+    min-height:100svh; display:grid; place-items:center;
+    padding:32px 24px calc(32px + env(safe-area-inset-bottom,0px));
+    text-align:center; -webkit-font-smoothing:antialiased;
+  }
+  .caja{max-width:34rem}
+  .marca{
+    font-family:var(--mono); font-size:10px; letter-spacing:.24em;
+    text-transform:uppercase; color:rgba(237,241,250,.5);
+  }
+  h1{
+    font-family:var(--display); font-weight:900;
+    font-size:clamp(58px,17vw,132px); line-height:.84;
+    letter-spacing:-.02em; margin:18px 0 0;
+  }
+  h1 em{font-style:normal; color:var(--blue-glow); display:inline-block; transform:skewX(-11deg)}
+  p{margin-top:20px; font-size:clamp(15px,4vw,18px); line-height:1.55; color:rgba(237,241,250,.76); text-wrap:pretty}
+  .acciones{margin-top:34px; display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+  a{
+    display:inline-flex; align-items:center; gap:9px;
+    padding:14px 22px; border-radius:999px; text-decoration:none;
+    font-family:var(--mono); font-size:12px; letter-spacing:.12em; text-transform:uppercase;
+    transition:transform .14s var(--ease), background .3s, border-color .3s;
+  }
+  a:active{transform:scale(.97)}
+  a:focus-visible{outline:2px solid var(--blue-glow); outline-offset:3px}
+  .wa{background:#25D366; color:#04120A; font-weight:500}
+  .wa:hover{background:#31e874}
+  .casa{border:1px solid rgba(237,241,250,.22); color:var(--ice)}
+  .casa:hover{border-color:var(--blue-glow)}
+  .tel{margin-top:26px; font-family:var(--mono); font-size:12px; color:rgba(237,241,250,.5)}
+  .tel a{padding:0; border:0; text-transform:none; letter-spacing:.04em; font-size:12px; color:var(--blue-glow)}
+  @media (prefers-reduced-motion:reduce){ a{transition:none} a:active{transform:none} }
+</style>
+</head>
+<body>
+  <main class="caja">
+    <p class="marca">Car Haus LLC · Pharr, Texas</p>
+    <h1>Esta página <em>no existe</em></h1>
+    <p>El enlace que seguiste ya no lleva a ningún lado. Las Tacomas disponibles hoy están en el catálogo de WhatsApp, que se actualiza cada vez que entra o sale una unidad.</p>
+    <div class="acciones">
+      <a class="wa" href="https://wa.me/c/19568672015">Ver el catálogo</a>
+      <a class="casa" href="/">Volver al inicio</a>
+    </div>
+    <p class="tel">O llámanos: <a href="tel:+19568672015">956-867-2015</a></p>
+  </main>
+</body>
+</html>

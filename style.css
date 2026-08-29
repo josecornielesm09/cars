@@ -3015,3 +3015,43 @@ html.no-motion :is(.btn, .fab, .sheet__row, .foot__mapa-link) {
    maquetado puntual no se nota, y las alternativas sin maquetado obligaban a
    fijar anchos que rompen el estado cerrado. Queda anotado para que no se
    vuelva a "arreglar".
+
+/* ============ PULIDO DE TIPOGRAFIA Y ACCESIBILIDAD (auditoria) ==========
+
+   1 · CIFRAS DE ANCHO FIJO.
+
+   Las cifras de la franja cuentan de 0 a su valor al entrar en pantalla. Sin
+   figuras tabulares cada digito mide distinto, asi que el numero cambiaba de
+   ancho en cada paso y la casilla entera temblaba mientras contaba. Es un
+   defecto que solo se ve en movimiento, y por eso no salta revisando el
+   diseno quieto. */
+.stats__item b,
+.hero__deg,
+.blue-run__progress,
+.spec__contador { font-variant-numeric: tabular-nums; }
+
+/* 2 · SIN PALABRAS HUERFANAS.
+
+   Un titular que deja una sola palabra en la ultima linea se lee como un
+   error de maquetacion. balance reparte las lineas para que no pase; pretty
+   hace lo mismo en parrafos largos sin el coste de balance. */
+h1, h2, h3, .display, .eyebrow { text-wrap: balance; }
+p, .lede { text-wrap: pretty; }
+
+/* 3 · EL ANILLO DE FOCO NO PUEDE SER LA REGLA MAS DEBIL DE LA HOJA.
+
+   Estaba escrito con :where(), que tiene especificidad CERO. Para un estilo
+   decorativo esta bien; para el unico indicador que tiene quien navega con
+   teclado, no: cualquier otra regla lo pisa sin querer. Se declara con su
+   propia especificidad y con dos colores, para que se vea tanto sobre el
+   fondo oscuro como sobre las secciones claras. */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--blue-glow);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.section--ice a:focus-visible,
+.section--ice button:focus-visible,
+.aguanta a:focus-visible,
+.aguanta button:focus-visible { outline-color: var(--blue); }
