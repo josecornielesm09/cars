@@ -349,7 +349,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787980919";
+  var ASSETS_V = "1787980967";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -510,7 +510,13 @@
       menuEscritorio,
       /* En telefono la barra no tiene sitio para el boton completo, pero el
          catalogo tiene que estar SIEMPRE a un toque. Un icono basta. */
-      link(CONFIG.catalogUrl, "nav__wa", "", WA_ICON),
+      (function () {
+        /* Un enlace que solo lleva un icono no dice nada a un lector de
+           pantalla: hay que nombrarlo a mano. */
+        var wa = link(CONFIG.catalogUrl, "nav__wa", "", WA_ICON);
+        wa.setAttribute("aria-label", "Ver catálogo en WhatsApp");
+        return wa;
+      })(),
       toggle,
       link(CONFIG.catalogUrl, "btn btn--wa", "Catálogo", ARROW),
       hoja
