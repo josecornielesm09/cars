@@ -2788,3 +2788,11 @@ html.no-motion .subir { transition: opacity 0.15s linear; transform: none; }
 html.no-motion .subir.is-on { transform: none; }
 html.no-motion .subir__flecha,
 html.no-motion .nav__wa { transition: none; }
+
+/* Recorrido de la Tacoma azul: el plano activo se pinta encima del primero,
+   que se queda de fondo para que nunca haya un hueco si un cuadro tarda.
+   Sin estas dos reglas los cuarenta planos quedan en opacidad cero y la
+   seccion muestra los textos sobre un fondo vacio. */
+.blue-run__frame.is-on { opacity: 1; visibility: visible; }
+.blue-run__frame.is-base { opacity: 1; z-index: 0; }
+.blue-run__frame.is-on:not(.is-base) { z-index: 1; }
