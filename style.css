@@ -383,11 +383,21 @@ html { background: var(--night); }
 }
 
 .hero__video,
+/* EL CARTEL DEL NEGOCIO MANDA EL ENCUADRE.
+
+   La toma es 16:9 y la pantalla suele ser mas ancha o mas baja, asi que al
+   llenarla el navegador tiene que recortar. Con el recorte centrado, en una
+   ventana baja de portatil se comia justo la franja de arriba, que es donde
+   esta el cartel CAR HAUS LLC durante todo el clip.
+
+   object-position al 22% conserva esa franja y sacrifica asfalto de abajo,
+   que no aporta nada. */
 .hero__still,
 .hero__seq img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   object-fit: cover;
+  object-position: center 22%;
 }
 
 /* Secuencia de telefono: todas apiladas, solo una encendida. Sin
@@ -428,6 +438,10 @@ html { background: var(--night); }
 .hero.is-seq .hero__seq img,
 .hero.is-seq .hero__still {
   object-fit: cover;
+  /* En vertical el recorte es lateral, no vertical, asi que el cartel se
+     conserva entero: basta con centrar un poco mas alto para dejarlo
+     respirar bajo la barra. */
+  object-position: center 28%;
   background: var(--night);
 }
 
