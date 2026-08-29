@@ -32,7 +32,11 @@
              encodeURIComponent("913 W U.S. Hwy 83 Suite C, Pharr, TX 78577"),
     facebookUrl: "https://www.facebook.com/Carhaus2021",
     email: "jorgealfonsolopez94@gmail.com",
-    logo: "assets/logo/carhaus-logo.png",
+    /* El PNG original pesa 1.78 MB a 1254px y aqui se usa como icono de
+       40px en la barra, en el cargador y como marca de agua del pie. Era el
+       archivo mas pesado de toda la pagina, mas que el hero entero. El WebP
+       a 512px pesa 69 KB y se ve igual. El PNG queda como fuente. */
+    logo: "assets/logo/carhaus-logo.webp",
 
     /* Catálogo de WhatsApp Business. Formato oficial: wa.me/c/<número>.
        Los botones generales de la página apuntan aquí. */
@@ -269,7 +273,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "4";
+  var ASSETS_V = "5";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
