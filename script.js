@@ -498,12 +498,17 @@
 
     var bar = h("i");
 
-    /* Video continuo en vez de secuencia atada al scroll. Saltar entre
-       imágenes hacía visible el cambio de cuadro cuando el navegador no
-       alcanzaba a decodificar. El scroll ahora mueve el escenario de forma
-       sutil, mientras el video reproduce de manera lineal y estable. */
+    /* El recorrido lo manda el SCROLL, no un temporizador.
+
+       Antes iba con autoplay y loop: el video corria solo, terminaba y
+       volvia a empezar sin relacion con donde estuviera el visitante. Un
+       hero atado al scroll tiene que avanzar cuando la persona baja y
+       detenerse cuando ella se detiene; si no, no es un recorrido, es un
+       fondo animado.
+
+       Se quitan autoplay y loop, y _tick mueve currentTime. */
     var video = h("video.hero__video", {
-      autoplay: "", muted: "", loop: "", playsinline: "",
+      muted: "", playsinline: "",
       preload: small ? "metadata" : "auto",
       poster: CONFIG.heroCover,
       "aria-label": "Recorrido de Car Haus LLC en Pharr, Texas"
@@ -512,6 +517,33 @@
       h("source", { src: CONFIG.heroVideoWebm, type: "video/webm" }));
     video.muted = true;
     video.defaultMuted = true;
+
+    /* Despertar el decodificador.
+
+       Un telefono no dibuja NI UN cuadro de un video que nunca se
+       reprodujo: se puede mover currentTime todo lo que se quiera y la
+       pantalla se queda en el poster. La unica forma de despertarlo es
+       reproducir un instante y pausar enseguida. Se intenta apenas hay
+       metadatos y otra vez al primer gesto, porque algunos navegadores solo
+       lo permiten despues de un toque. */
+    var listo = false, despierto = false;
+
+    function despertar() {
+      if (despierto) return;
+      var pr;
+      try { pr = video.play(); } catch (err) { return; }
+      if (pr && typeof pr.then === "function") {
+        pr.then(function () { video.pause(); despierto = true; }).catch(function () {});
+      } else {
+        try { video.pause(); despierto = true; } catch (e) {}
+      }
+    }
+
+    video.addEventListener("loadedmetadata", function () { listo = true; despertar(); });
+    video.addEventListener("canplay", despertar);
+    ["touchstart", "pointerdown", "wheel", "keydown"].forEach(function (ev) {
+      window.addEventListener(ev, despertar, { once: true, passive: true });
+    });
 
     var still = h("img.hero__still", {
       src: CONFIG.heroCover, alt: "", "aria-hidden": "true",
@@ -556,6 +588,16 @@
 
     hero._tick = function (p) {
       var t = range(p, 0.03, 0.97);
+
+      /* AQUI el scroll mueve el recorrido. Sin esto el video corre solo y
+         no tiene nada que ver con donde esta el visitante. */
+      if (listo && video.duration) {
+        var destino = t * (video.duration - 0.05);
+        if (Math.abs(video.currentTime - destino) > 0.02) {
+          try { video.currentTime = destino; } catch (err) { /* aun no busca */ }
+        }
+      }
+
       bar.style.transform = "scaleX(" + t + ")";
       pctB.textContent = Math.round(t * 100) + "%";
       video.style.transform = "scale(" + sc(lerp(1.01, 1.075, t)) + ") translate3d(0," +
@@ -777,42 +819,78 @@
      ====================================================================== */
 
   function buildFeatureZoom() {
-    var mainImage = asset("assets/features/trd-pro-blue-scroll.webp");
-    var cardsData = [
-      {
-        image: asset("assets/features/card-2022-tacoma-trd-sport-army-green.webp"),
-        eyebrow: "2022 · TRD Sport",
-        title: "Army Green",
-        text: "Diseño deportivo, Double Cab y presencia inconfundible."
-      },
-      {
-        image: asset("assets/features/card-2023-tacoma-trd-pro-solar-octane.webp"),
-        eyebrow: "2023 · TRD Pro",
-        title: "Solar Octane",
-        text: "Una configuración off-road creada para llamar la atención."
-      },
-      {
-        image: asset("assets/features/card-2024-tacoma-limited-white.webp"),
-        eyebrow: "2024 · Limited",
-        title: "Más refinada",
-        text: "Comodidad premium con el carácter práctico de una Tacoma."
-      },
-      {
-        image: asset("assets/features/card-2025-tacoma-trailhunter-bronze-oxide.webp"),
-        eyebrow: "2025 · Trailhunter",
-        title: "Bronze Oxide",
-        text: "Nueva generación preparada para aventura y caminos difíciles."
-      }
-    ];
+    /* LAS CUATRO TARJETAS SON EL INVENTARIO REAL.
 
-    /* Esta imagen maestra ya contiene la Tacoma azul, el estudio y el reflejo.
-       No se superpone ninguna unidad del inventario anterior. */
+       Antes mostraban una 2022 Army Green, una 2023 Solar Octane, una 2024
+       Limited y una 2025 Trailhunter: cuatro camionetas que este lote no
+       tiene. Ensenar modelos que no estan a la venta, en un lote cuyo
+       argumento es declarar todo de frente, es exactamente lo que no se
+       puede hacer.
+
+       Se toman las cuatro unidades del inventario que no son la azul, ya
+       que la azul es la protagonista del acercamiento. */
+    var cardsData = vehicles
+      .filter(function (v) { return v.id !== HERO.id; })
+      .slice(0, 4)
+      .map(function (v) {
+        return {
+          image: asset(v.image),
+          eyebrow: v.year + " · " + v.trim,
+          title: ready(v.color) ? v.color : v.trim,
+          text: v.highlights.length
+            ? v.highlights.slice(0, 2).join(" · ")
+            : (ready(v.drivetrain) ? v.drivetrain + " · " : "") + v.engine
+        };
+      });
+
+    /* CUATRO PLANOS, NO UNA IMAGEN CON ZOOM.
+
+       La version anterior usaba una sola foto y la agrandaba por CSS: eso
+       no es acercarse, es estirar. La camioneta se veia cada vez mas
+       borrosa y el efecto se sentia parado.
+
+       Estos cuatro planos estan fotografiados a distintas distancias, asi
+       que al cambiar de uno a otro la perspectiva cambia de verdad: la
+       trompa crece, las llantas se abren, el reflejo se acorta. El scroll
+       decide cual se ve.
+
+       Pesan 260 KB entre los cuatro. */
+    var PLANOS = 4;
     var backdrop = h("div.feature-zoom__backdrop", { "aria-hidden": "true" });
-    var truck = h("img.feature-zoom__truck", {
-      src: mainImage,
-      alt: "Toyota Tacoma TRD Pro azul acercándose en un estudio iluminado",
-      loading: "lazy", decoding: "async"
-    });
+
+    var planos = [];
+    var truck = h("div.feature-zoom__truck");
+    for (var fi = 1; fi <= PLANOS; fi++) {
+      var im = h("img", {
+        src: asset("assets/features/blue-scroll/frame-0" + fi + ".webp"),
+        alt: fi === 1 ? "Toyota Tacoma TRD Pro azul acercandose en un estudio iluminado" : "",
+        "aria-hidden": fi === 1 ? null : "true",
+        decoding: "async"
+      });
+      planos.push(im);
+      truck.appendChild(im);
+    }
+    planos[0].classList.add("is-on");
+    var planoActual = 0;
+
+    /* Se le pregunta al elemento si ya se puede pintar. Si el plano que toca
+       no llego, se queda el ultimo que si esta: congelar un instante se ve
+       mejor que un hueco. */
+    function planoListo(im) { return im && im.complete && im.naturalWidth > 0; }
+
+    function verPlano(i) {
+      i = clamp(i, 0, planos.length - 1);
+      if (!planoListo(planos[i])) {
+        var j = i;
+        while (j > 0 && !planoListo(planos[j])) j--;
+        if (!planoListo(planos[j])) return;
+        i = j;
+      }
+      if (i === planoActual) return;
+      planos[planoActual].classList.remove("is-on");
+      planos[i].classList.add("is-on");
+      planoActual = i;
+    }
 
     var cards = cardsData.map(function (card, i) {
       return h("article.feature-zoom__card", { style: "--card-index:" + i },
@@ -855,6 +933,15 @@
       var transform = "translate3d(" + mv(x) + "vw," + mv(y) + "vh,0) scale(" + sc(zoom) + ")";
       truck.style.transform = transform;
 
+      /* EL ACERCAMIENTO.
+
+         El reparto es LINEAL, no con la curva de "approach": esa curva
+         adelanta el movimiento y hacia que el cuarto plano llegara a mitad
+         de seccion, dejando la otra mitad congelada. Repartidos parejo,
+         cada plano recibe el mismo trozo de scroll y el ultimo aterriza
+         justo cuando empiezan a entrar las tarjetas. */
+      verPlano(Math.floor(range(p, 0.02, 0.62) * PLANOS));
+
       var copyOut = 1 - range(p, 0.42, 0.64);
       copy.style.opacity = String(copyOut);
       copy.style.transform = "translate3d(0," + mv(lerp(0, -58, range(p, 0.40, 0.66))) + "px,0)";
@@ -872,7 +959,10 @@
       progress.firstChild.style.transform = "scaleX(" + p + ")";
     };
 
-    section._preload = [mainImage].concat(cardsData.map(function (c) { return c.image; }));
+    /* Los cuatro planos entran en la precarga critica: si el segundo llega
+       tarde, el acercamiento se atora justo cuando el visitante lo mira. */
+    section._preload = planos.map(function (im) { return im.getAttribute("src"); })
+      .concat(cardsData.map(function (c) { return c.image; }));
     return section;
   }
 

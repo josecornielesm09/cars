@@ -606,18 +606,29 @@ html { background: var(--night); }
   background: #42a5ff;
   box-shadow: 0 0 18px #238dff, 0 0 64px rgba(35,141,255,.78);
 }
+/* Contenedor de los cuatro planos. Antes era la propia <img>; ahora es un
+   div con las cuatro apiladas dentro y solo una encendida. */
 .feature-zoom__truck {
   position: absolute;
   z-index: 2;
+  inset: 0;
+  transform-origin: 52% 60%;
+  will-change: transform;
+}
+.feature-zoom__truck img {
+  position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
-  transform-origin: 52% 60%;
-  will-change: transform;
   filter: saturate(1.06) contrast(1.03);
+  opacity: 0;
+  /* Cruce corto: con cuatro planos el salto entre distancias se nota, y
+     180ms lo suavizan sin que se vean dos camionetas encimadas. */
+  transition: opacity 0.18s linear;
 }
+.feature-zoom__truck img.is-on { opacity: 1; }
 .feature-zoom__shade {
   position: absolute;
   inset: 0;
@@ -741,7 +752,7 @@ html { background: var(--night); }
 
 @media (max-width: 860px) {
   .feature-zoom { height: 230vh; }
-  .feature-zoom__truck { object-position: 54% center; }
+  .feature-zoom__truck img { object-position: 54% center; }
   .feature-zoom__shade {
     background:
       linear-gradient(0deg, rgba(2,8,24,.92) 0%, rgba(2,8,24,.18) 62%, rgba(2,8,24,.60) 100%);
