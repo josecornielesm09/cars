@@ -185,6 +185,20 @@
   /* La unidad protagonista del hero y del giro. */
   var HERO = vehicles[4];
 
+  /* Estos anclajes tienen que existir DE VERDAD. "#comprar" y "#ubicacion"
+     apuntaban a secciones que se quitaron al convertir la pagina en embudo:
+     llevaban semanas sin llevar a ningun sitio y el visitante se quedaba
+     donde estaba sin entender por que. Y el recorrido de la Tacoma azul,
+     que es la seccion mas trabajada, no estaba en el menu. */
+  var DESTINOS = [
+    ["#experiencia",  "La Tacoma"],
+    ["#giro",         "Lo que trae"],
+    ["#capacidades",  "Capacidades"],
+    ["#inventario",   "Modelos"],
+    ["#titulo",       "Título"],
+    ["#ubicacion",    "Dónde estamos"]
+  ];
+
   var marquee = ["Toyota", "Tacoma", "TRD Pro", "TRD Off Road", "TRD Sport",
                  "SR", "4x4", "2WD", "Double Cab", "Access Cab", "Crew Cab"];
 
@@ -449,7 +463,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788038746";
+  var ASSETS_V = "1788039064";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -546,14 +560,6 @@
   /* ======================= 04 · NAVEGACIÓN Y HERO ======================== */
 
   function buildNav() {
-    var DESTINOS = [
-      ["#giro", "La unidad"],
-      ["#capacidades", "Capacidades"],
-      ["#inventario", "Inventario"],
-      ["#titulo", "Título rebuilt"],
-      ["#comprar", "Cómo comprar"],
-      ["#ubicacion", "Ubicación"]
-    ];
 
     /* Enlaces de escritorio: fila simple dentro de la barra. */
     var enlacesEscritorio = DESTINOS.slice(0, 5).map(function (l) {
@@ -1475,22 +1481,54 @@
        El recorrido no termina en el aire: la linea cruza, la camioneta la
        sigue y desemboca en el mapa real del local. Ese es el ultimo gesto
        de la pagina, y responde a la unica pregunta que queda: donde. */
+    /* EL MAPA SE CARGA AL TOCARLO, NO ANTES.
+
+       El incrustado de Google era lo unico en toda la pagina que ponia
+       cookies de terceros, y las ponia a todo el que llegara abajo, hubiera
+       querido ver el mapa o no. Cargandolo solo cuando alguien lo pide, esa
+       parte del aviso de privacidad deja de hacer falta.
+
+       De paso la pagina no arrastra el peso del incrustado —mapas de Google
+       son varios cientos de kilobytes de scripts— hasta que sirve de algo.
+
+       Lo que se ve mientras tanto no es un hueco: es la direccion, la senal
+       de que ahi hay un mapa, y el punto que la animacion del camino ilumina
+       al llegar. El gesto final de la pagina se conserva. */
+    var mapaCargado = false;
+
     var mapa = h("div.foot__mapa", null,
-      h("iframe", {
+      h("button.foot__mapa-carga", {
+        type: "button",
+        "aria-label": "Cargar el mapa de Car Haus LLC en Pharr, Texas",
+        onclick: function () { cargarMapa(); }
+      },
+        h("span.foot__mapa-rejilla", { "aria-hidden": "true" }),
+        h("span.foot__mapa-txt", null,
+          h("b", null, "913 W U.S. Hwy 83"),
+          h("i", null, "Suite C · Pharr, TX 78577")),
+        h("span.foot__mapa-pedir", null, "Ver el mapa")),
+      h("span.foot__pin", { "aria-hidden": "true" }),
+      link(CONFIG.mapsUrl, "foot__mapa-link", "Cómo llegar", ARROW));
+
+    function cargarMapa() {
+      if (mapaCargado) return;
+      mapaCargado = true;
+      var marco = h("iframe", {
         src: "https://www.google.com/maps?q=" +
              encodeURIComponent("913 W US Hwy 83, Pharr, TX 78577") +
              "&z=16&output=embed",
         title: "Mapa de Car Haus LLC, 913 W U.S. Hwy 83, Pharr, Texas",
         loading: "lazy", referrerpolicy: "no-referrer-when-downgrade"
-      }),
-      h("span.foot__pin", { "aria-hidden": "true" }),
-      link(CONFIG.mapsUrl, "foot__mapa-link", "Cómo llegar", ARROW));
+      });
+      mapa.insertBefore(marco, mapa.firstChild);
+      mapa.classList.add("is-cargado");
+    }
 
     var camino = h("div.foot__road", { "aria-hidden": "true" },
       h("div.foot__road-line"),
       truck);
 
-    var pie = h("footer.foot", null,
+    var pie = h("footer.foot#ubicacion", null,
       h("div.foot__viaje", null,
         h("p.eyebrow", null, "Último tramo"),
         h("h2.display.h-md", null, "Te ", h("em", null, "esperamos"), " aquí"),
@@ -1770,6 +1808,20 @@
        desplazamientos y las escalas, que son lo que marea. */
 
     /* --- Bucle único ----------------------------------------------------- */
+    /* Tabla de anclas: cada destino del menu con su seccion y TODOS los
+       enlaces que apuntan a el —el de la barra y el de la hoja de telefono—,
+       para no consultar el DOM en cada fotograma. */
+    var anclas = [];
+    DESTINOS.forEach(function (d) {
+      var id = d[0].slice(1);
+      var sec = document.getElementById(id);
+      if (!sec) return;
+      var enlaces = Array.prototype.slice.call(
+        document.querySelectorAll('a[href="' + d[0] + '"]'));
+      if (enlaces.length) anclas.push({ id: id, sec: sec, enlaces: enlaces });
+    });
+    var anclaActiva = null;
+
     var scenes = [hero, stats, blueJourney, caps, inv, pie].filter(function (s) { return s && s._tick; });
     var iceZones = [caps];
     var raf = null;
@@ -1795,6 +1847,29 @@
          telefono. */
       for (var mi = 0; mi < scenes.length; mi++) {
         if (scenes[mi]._memoria) scenes[mi]._memoria(vh);
+      }
+
+      /* SECCION ACTUAL EN EL MENU.
+
+         En una pagina de catorce pantallas sin indicador, el visitante pierde
+         la nocion de donde esta. Se marca la seccion cuyo cuerpo ocupa la
+         franja alta de la pantalla, que es lo que se esta mirando de verdad;
+         no la que empieza, que iria siempre un paso adelantada. */
+      var aqui = null;
+      for (var ai = 0; ai < anclas.length; ai++) {
+        var ar = anclas[ai].sec.getBoundingClientRect();
+        if (ar.top <= vh * 0.34 && ar.bottom > vh * 0.34) { aqui = anclas[ai].id; break; }
+      }
+      if (aqui !== anclaActiva) {
+        anclaActiva = aqui;
+        for (var aj = 0; aj < anclas.length; aj++) {
+          var puesto = anclas[aj].id === aqui;
+          anclas[aj].enlaces.forEach(function (a) {
+            a.classList.toggle("is-here", puesto);
+            if (puesto) a.setAttribute("aria-current", "true");
+            else a.removeAttribute("aria-current");
+          });
+        }
       }
 
       if (porRevelar.length) revisarRevelados(vh);
