@@ -305,8 +305,8 @@
     seccion._memoria = function (vh) {
       var r = seccion.getBoundingClientRect();
       var lejos = cargada
-        ? (r.top > vh * 1.5 || r.bottom < -vh * 0.5)
-        : (r.top > vh * 1.1 || r.bottom < -vh * 0.2);
+        ? (r.top > vh * 1.5 || r.bottom < -vh * 0.15)
+        : (r.top > vh * 1.1 || r.bottom < -vh * 0.05);
       if (lejos !== cargada) return;          /* ya esta como toca */
       cargada = !lejos;
       for (var k = 1; k < imgs.length; k++) {
@@ -411,7 +411,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787988281";
+  var ASSETS_V = "1787988457";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -675,7 +675,12 @@
        —los archivos son los mismos— y el recorrido sigue leyendose como
        vuelo continuo, pero son catorce mapas de bits a pantalla completa
        menos ocupando memoria en el aparato mas justo de los dos. */
-    var paso = small ? 2 : 1;
+    /* Escritorio tambien adelgaza. Los cuadros de 2200px pesan 10 MB cada
+       uno ya descomprimidos: cuarenta son 420 MB, y con el recorrido azul
+       encima el navegador llegaba a 788 MB. Dos de cada tres siguen dando
+       un vuelo continuo —veintisiete cuadros en tres pantallas— con los
+       mismos archivos y la misma nitidez. */
+    var paso = small ? 2 : 1.5;
     var cuantos = Math.round(CONFIG.spin.filmCount / paso);
 
     for (var q = 0; q < cuantos; q++) {
@@ -982,12 +987,12 @@
        la misma proporcion. La densidad no cambia —la camioneta avanza lo
        mismo por cada centimetro de dedo— pero son veinte mapas de bits a
        pantalla completa menos en memoria. */
-    var pasoD = chico ? 2 : 1;
+    var pasoD = chico ? 2 : 1.5;
     var cuantosD = Math.round(PLANOS / pasoD);
 
     var frames = [];
     for (var qd = 0; qd < cuantosD; qd++) {
-      var fi = Math.min(PLANOS, qd * pasoD + 1);
+      var fi = Math.min(PLANOS, Math.round(qd * pasoD) + 1);
       var num = String(fi);
       while (num.length < 3) num = "0" + num;
       frames.push(h("img.blue-run__frame", {
