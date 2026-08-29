@@ -20,7 +20,7 @@ assets/vehicles/*.png
 # El giro de 12 cuadros se sustituyo por la ficha con una sola imagen
 assets/360/frame-*.webp
 
-# Ya no se usa video en ninguna pantalla: el hero corre con secuencias
+# Videos antiguos del giro 360; el hero usa assets/hero/hero_video.*
 assets/360/giro.mp4
 assets/360/giro-movil.mp4
 assets/360/giro-poster.webp

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Toyota Tacoma en Pharr, TX | Car Haus LLC</title>
-<meta name="description" content="Más de 30 años en el Valle. Toyota Tacoma 4x4, TRD Pro, TRD Off Road, TRD Sport y SR en Car Haus LLC, Pharr, Texas. Inspeccionadas, con financiamiento y título rebuilt declarado de frente.">
+<meta name="description" content="Especialistas en Toyota Tacoma en Pharr, Texas. Explora modelos Tacoma y consulta el catálogo actualizado de Car Haus LLC directamente por WhatsApp.">
 <meta name="theme-color" content="#04060F">
 
 <link rel="canonical" href="https://carhaus.vercel.app/">
@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="Car Haus LLC">
 <meta property="og:locale" content="es_US">
 <meta property="og:title" content="Toyota Tacoma en Pharr, TX | Car Haus LLC">
-<meta property="og:description" content="Más de 30 años en el Valle. Toyota Tacoma 4x4, TRD Off Road, TRD Sport y SR en Car Haus LLC, Pharr, Texas. Financiamiento con crédito aprobado.">
+<meta property="og:description" content="Explora modelos Toyota Tacoma y consulta el catálogo actualizado de Car Haus LLC directamente por WhatsApp.">
 <meta property="og:url" content="https://carhaus.vercel.app/">
 <meta property="og:image" content="https://carhaus.vercel.app/assets/og-carhaus.png">
 <meta property="og:image:width" content="1200">
@@ -28,8 +28,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Barlow:wght@200;300;400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!-- El nuevo recorrido del hero es un solo MP4 optimizado. Evitamos cargar
-     las 80 imagenes de la secuencia anterior antes de mostrar la pagina. -->
+<!-- Primeros cuadros del recorrido: el navegador los pide antes de leer el
+     script, asi el hero aparece casi de inmediato al abrir. -->
+<link rel="preload" as="image" href="assets/hero/hero-cover.webp" fetchpriority="high">
 <link rel="preload" as="video" href="assets/hero/hero_video.mp4" type="video/mp4">
 <link rel="stylesheet" href="style.css">
 
@@ -50,17 +51,15 @@
     "postalCode": "78577",
     "addressCountry": "US"
   },
-  "description": "Más de 30 años de experiencia. Especialistas en Toyota Tacoma. Vehículos inspeccionados con título rebuilt. Financiamiento con crédito aprobado.",
+  "description": "Especialistas en Toyota Tacoma en Pharr, Texas. Catálogo actualizado disponible directamente por WhatsApp.",
   "areaServed": ["Pharr", "McAllen", "Mission", "Edinburg", "Harlingen", "Rio Grande Valley"],
   "sameAs": ["https://www.facebook.com/Carhaus2021"]
 }
 </script>
 </head>
 <body>
-  <a class="skip" href="#inventario">Saltar al inventario</a>
+  <a class="skip" href="#modelos">Saltar a los modelos</a>
   <div id="root"></div>
   <script src="script.js"></script>
 </body>
 </html>
-
-<!-- Preview del hero optimizado en Vercel. -->

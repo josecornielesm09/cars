@@ -18,6 +18,13 @@
 (function () {
   "use strict";
 
+  /* Permite empaquetar recursos dentro de una preview sin cambiar las rutas
+     normales del proyecto. En producción, si no existe el mapa, se usan los
+     archivos WebP/MP4/WebM de assets como siempre. */
+  function asset(path) {
+    return (window.__CARHAUS_ASSETS && window.__CARHAUS_ASSETS[path]) || path;
+  }
+
   /* ========================== 01 · CONFIGURACIÓN ==========================
      EDITABLE. Todo lo que cambia sin tocar el resto del archivo.
      ====================================================================== */
@@ -88,8 +95,9 @@
 
        Si algún día hay foto real de la lona, se sustituye aquí y ya. */
     heroImage: "assets/360/frame-01.webp",
-    heroVideo: "assets/hero/hero_video.mp4",
-    heroVideoFallback: "assets/hero/hero-cover.webm"
+    heroCover: asset("assets/hero/hero-cover.webp"),
+    heroVideoWebm: asset("assets/hero/hero_video.webm"),
+    heroVideoMp4: asset("assets/hero/hero_video.mp4")
   };
 
   /* ============================= 02 · DATOS ==============================
@@ -185,7 +193,7 @@
      motor sobre una toma aérea desconecta al que la está viendo. */
   var FILM_NOTES = [
     { t: "Sobre la 83",     d: "En la U.S. Highway 83, la que cruza todo el Valle. Fácil de encontrar, fácil de estacionarse." },
-    { t: "El lote",         d: "Lo que ves en la página es lo que está aquí parado. Sin fotos de catálogo." },
+    { t: "Especialistas",    d: "Tacomas para trabajo, uso diario y aventura, con atención directa en Pharr." },
     { t: "Puerta abierta",  d: "Pasa a verlas sin cita. Te enseñamos la unidad completa, arriba y abajo." },
     { t: "913 W Hwy 83",    d: "Suite C, Pharr, Texas. Servimos McAllen, Mission, Edinburg y todo el Valle." }
   ];
@@ -201,14 +209,14 @@
   /* Recorrido de la sección clara. Cada panel trae su propia unidad, así el
      visitante ve variedad de inventario sin salir del efecto. */
   var CAPS = [
-    { n: "01", t: "Tracción 4x4",   d: "Cuatro de las cinco unidades traen 4x4 real. En el Valle eso es la diferencia entre llegar y quedarte.", v: vehicles[4] },
-    { n: "02", t: "Motor probado",  d: "V6 3.5L y 2.4L Turbo. Refacción disponible en cualquier lado y mecánico que las conoce.", v: vehicles[3] },
-    { n: "03", t: "Cabina doble",   d: "Double Cab y Crew Cab: caben cinco y la caja queda libre para la herramienta.", v: vehicles[1] },
-    { n: "04", t: "Listas ya",      d: "Inspeccionadas y en el lote. Te la llevas manejando el mismo día.", v: vehicles[0] }
+    { n: "01", t: "Tracción 4x4",   d: "Capacidad para terracería, brecha y lluvia. Consulta las configuraciones actuales en WhatsApp.", v: vehicles[4] },
+    { n: "02", t: "Motor probado",  d: "Motores V6 3.5L y opciones Turbo, según año y versión de la Tacoma.", v: vehicles[3] },
+    { n: "03", t: "Cabina doble",   d: "Double Cab y Crew Cab: espacio para pasajeros sin sacrificar la caja de trabajo.", v: vehicles[1] },
+    { n: "04", t: "Para cada camino", d: "Opciones para uso diario, trabajo y aventura. Revisa el catálogo actualizado antes de visitarnos.", v: vehicles[0] }
   ];
 
   var STEPS = [
-    { n: "01", t: "Escoge", d: "Mira el inventario aquí o en el catálogo de WhatsApp. Pregunta lo que sea: te contestamos nosotros, no un robot." },
+    { n: "01", t: "Explora", d: "Abre el catálogo actualizado de WhatsApp y revisa las Tacomas disponibles directamente con nuestro equipo." },
     { n: "02", t: "Aplica", d: "Identificación, comprobante de ingresos y enganche. Trabajamos con crédito aprobado." },
     { n: "03", t: "Maneja", d: "Firmas, te entregamos placas y papeles en regla, y te la llevas." }
   ];
@@ -349,7 +357,7 @@
     var DESTINOS = [
       ["#giro", "La unidad"],
       ["#capacidades", "Capacidades"],
-      ["#inventario", "Inventario"],
+      ["#modelos", "Modelos"],
       ["#titulo", "Título rebuilt"],
       ["#comprar", "Cómo comprar"],
       ["#ubicacion", "Ubicación"]
@@ -490,51 +498,36 @@
 
     var bar = h("i");
 
-    /* Un solo video reemplaza los 80 WebP antiguos. El MP4 es la fuente
-       principal; WebM queda como respaldo para navegadores compatibles. */
-    var media = h("video.hero__video", {
-      muted: true,
-      playsinline: true,
-      preload: "auto",
-      "aria-label": "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas"
-    });
-    media.muted = true;
-    media.playsInline = true;
-    media.appendChild(h("source", { src: CONFIG.heroVideo, type: "video/mp4" }));
-    media.appendChild(h("source", { src: CONFIG.heroVideoFallback, type: "video/webm" }));
+    /* Video continuo en vez de secuencia atada al scroll. Saltar entre
+       imágenes hacía visible el cambio de cuadro cuando el navegador no
+       alcanzaba a decodificar. El scroll ahora mueve el escenario de forma
+       sutil, mientras el video reproduce de manera lineal y estable. */
+    var video = h("video.hero__video", {
+      autoplay: "", muted: "", loop: "", playsinline: "",
+      preload: small ? "metadata" : "auto",
+      poster: CONFIG.heroCover,
+      "aria-label": "Recorrido de Car Haus LLC en Pharr, Texas"
+    },
+      h("source", { src: CONFIG.heroVideoMp4, type: "video/mp4" }),
+      h("source", { src: CONFIG.heroVideoWebm, type: "video/webm" }));
+    video.muted = true;
+    video.defaultMuted = true;
 
-    var duration = 0;
-    var wantedTime = 0;
-    media.addEventListener("loadedmetadata", function () {
-      duration = isFinite(media.duration) ? media.duration : 0;
-      media.currentTime = 0.01;
+    var still = h("img.hero__still", {
+      src: CONFIG.heroCover, alt: "", "aria-hidden": "true",
+      fetchpriority: "high", decoding: "async"
     });
-    media.addEventListener("canplay", function () {
-      media.classList.add("is-ready");
-    });
-
-    function tickMedia(t) {
-      if (!duration || media.readyState < 2) return;
-      wantedTime = clamp(t, 0, 0.999) * duration;
-      /* Un umbral corto evita ordenar el mismo seek docenas de veces por
-         segundo, que era la causa principal de los destellos al hacer scroll. */
-      if (Math.abs(media.currentTime - wantedTime) > 0.045) {
-        media.currentTime = wantedTime;
-      }
-    }
 
     var stage = h("div.hero__stage", null,
-      media,
+      still, video,
       h("div.hero__scrim", { "aria-hidden": "true" }),
       deg, cue,
       h("div.spin__progress", { "aria-hidden": "true" }, bar)
     );
 
-    /* is-seq marca el modo vertical: la toma se muestra completa, sin
-       estirar. Es la diferencia entre nitido y pixelado en telefono. */
     var hero = h("section.hero.is-film#top", null, stage);
     hero.id = "top";
-    hero.className = "hero is-film is-video";
+    hero.className = "hero is-film";
 
     /* Lista de archivos que el precargador debe traer antes de soltar la
        pagina: sin esto el primer scroll cae sobre cuadros que aun no estan
@@ -543,13 +536,30 @@
        por detras mientras el visitante ya esta viendo el hero: bloquear los
        48 significaba esperar 3 MB antes de ver nada, y eso se sentia como
        un tiron al abrir. */
-    hero._preload = [];
+    hero._preload = [CONFIG.heroCover];
+
+    /* Autoplay puede ser pospuesto por ahorro de batería. Al entrar en
+       pantalla se intenta reanudar; si el navegador lo niega, queda el
+       poster en vez de una caja negra. */
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var play = video.play();
+            if (play && play.catch) play.catch(function () {});
+          } else {
+            video.pause();
+          }
+        });
+      }, { threshold: 0.08 }).observe(hero);
+    }
 
     hero._tick = function (p) {
       var t = range(p, 0.03, 0.97);
-      tickMedia(t);
       bar.style.transform = "scaleX(" + t + ")";
       pctB.textContent = Math.round(t * 100) + "%";
+      video.style.transform = "scale(" + sc(lerp(1.01, 1.075, t)) + ") translate3d(0," +
+        mv(lerp(0, -1.2, t)) + "%,0)";
       /* En telefono la senal vive en su propio renglon, fuera de la imagen:
          se queda puesta todo el recorrido para acompanar al visitante. En
          escritorio se va en cuanto entiende, porque ahi va sobre la toma. */
@@ -569,7 +579,6 @@
   }
 
   function buildStats() {
-    var fourByFour = vehicles.filter(function (v) { return v.drivetrain === "4x4"; }).length;
     /* Los anios de experiencia van primero: es el dato que mas pesa en un
        lote de titulos rebuilt, y el unico que un competidor nuevo no puede
        copiar. Confirmado en la propia pagina de Facebook del negocio.
@@ -578,9 +587,8 @@
        unidades el campo warranty sigue en "Actualizar", asi que la pagina
        estaba prometiendo algo sin confirmar. Cuando se confirme, vuelve. */
     var data = [
-      { n: 30,              suf: "+", label: "Años de experiencia" },
-      { n: vehicles.length, suf: "",  label: "Tacomas disponibles" },
-      { n: fourByFour,      suf: "",  label: "Con tracción 4x4" }
+      { n: 30, suf: "+", label: "Años de experiencia" },
+      { n: 24, suf: "/7", label: "Catálogo disponible" }
     ];
 
     var items = data.map(function (d, i) {
@@ -763,104 +771,110 @@
     return seccion;
   }
 
-     La protagonista avanza hacia la camara mientras cuatro referencias de
-     la familia Tacoma aparecen como tarjetas secundarias. Los cuatro planos
-     ya traen el mismo estudio y se cruzan suavemente para evitar tirones.
+  /* ==================== 06B · TRD PRO — ACERCAMIENTO ====================
+     Una sola fotografía maestra se escala con el scroll. Las tarjetas usan
+     fotos independientes para mantener texto y composición editables.
      ====================================================================== */
 
-  function buildBlueJourney() {
-    var frames = [1, 2, 3, 4].map(function (n, i) {
-      return h("img.blue-run__frame", {
-        src: "assets/features/blue-scroll/frame-0" + n + ".webp",
-        alt: i === 0 ? "Toyota Tacoma azul acercándose en estudio" : "",
-        loading: i < 2 ? "eager" : "lazy",
-        decoding: "async",
-        "aria-hidden": i === 0 ? null : "true"
-      });
-    });
-    frames[0].classList.add("is-on");
-
-    var options = [
-      { img: "assets/features/card-2022-tacoma-trd-sport-army-green.webp", year: "2022", name: "TRD Sport", color: "Army Green" },
-      { img: "assets/features/card-2023-tacoma-trd-pro-solar-octane.webp", year: "2023", name: "TRD Pro", color: "Solar Octane" },
-      { img: "assets/features/card-2024-tacoma-limited-white.webp", year: "2024", name: "Limited", color: "Wind Chill Pearl" },
-      { img: "assets/features/card-2025-tacoma-trailhunter-bronze-oxide.webp", year: "2025", name: "Trailhunter", color: "Bronze Oxide" }
+  function buildFeatureZoom() {
+    var mainImage = asset("assets/features/trd-pro-blue-scroll.webp");
+    var cardsData = [
+      {
+        image: asset("assets/features/card-2022-tacoma-trd-sport-army-green.webp"),
+        eyebrow: "2022 · TRD Sport",
+        title: "Army Green",
+        text: "Diseño deportivo, Double Cab y presencia inconfundible."
+      },
+      {
+        image: asset("assets/features/card-2023-tacoma-trd-pro-solar-octane.webp"),
+        eyebrow: "2023 · TRD Pro",
+        title: "Solar Octane",
+        text: "Una configuración off-road creada para llamar la atención."
+      },
+      {
+        image: asset("assets/features/card-2024-tacoma-limited-white.webp"),
+        eyebrow: "2024 · Limited",
+        title: "Más refinada",
+        text: "Comodidad premium con el carácter práctico de una Tacoma."
+      },
+      {
+        image: asset("assets/features/card-2025-tacoma-trailhunter-bronze-oxide.webp"),
+        eyebrow: "2025 · Trailhunter",
+        title: "Bronze Oxide",
+        text: "Nueva generación preparada para aventura y caminos difíciles."
+      }
     ];
 
-    var cards = options.map(function (o, i) {
-      return h("article.blue-card.blue-card--" + (i + 1), null,
-        h("span.blue-card__num", null, "0" + (i + 1)),
-        h("img", { src: o.img, alt: o.year + " Toyota Tacoma " + o.name + " " + o.color, loading: "lazy", decoding: "async" }),
-        h("div", null,
-          h("small", null, o.year + " · " + o.color),
-          h("b", null, o.name)));
+    /* Esta imagen maestra ya contiene la Tacoma azul, el estudio y el reflejo.
+       No se superpone ninguna unidad del inventario anterior. */
+    var backdrop = h("div.feature-zoom__backdrop", { "aria-hidden": "true" });
+    var truck = h("img.feature-zoom__truck", {
+      src: mainImage,
+      alt: "Toyota Tacoma TRD Pro azul acercándose en un estudio iluminado",
+      loading: "lazy", decoding: "async"
     });
 
-    var progress = h("i");
-    var stage = h("div.blue-run__stage", null,
-      h("div.blue-run__copy", null,
-        h("p.eyebrow", null, "Toyota Tacoma · Car Haus"),
-        h("h2.display", null, "Más cerca. ", h("em", null, "Más Tacoma.")),
-        h("p", null, "Desliza para verla llegar. Explora estilos y consulta el catálogo actualizado por WhatsApp.")),
-      h("div.blue-run__frames", null, frames),
-      h("div.blue-run__cards", null, cards),
-      h("div.blue-run__foot", null,
-        h("span", null, "Desliza para acercar"),
-        link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo actual", ARROW)),
-      h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
+    var cards = cardsData.map(function (card, i) {
+      return h("article.feature-zoom__card", { style: "--card-index:" + i },
+        h("img", { src: card.image, alt: card.eyebrow, loading: "lazy", decoding: "async" }),
+        h("div.feature-zoom__card-copy", null,
+          h("span", null, card.eyebrow),
+          h("b", null, card.title),
+          h("p", null, card.text)));
+    });
 
-    var section = h("section.blue-run#experiencia", { style: "height:380vh" }, stage);
+    var copy = h("div.feature-zoom__copy", null,
+      h("p.eyebrow", null, "Toyota Tacoma · Car Haus"),
+      h("h2.display", null, "Hecha para ", h("em", null, "dominar"), " el camino"),
+      h("p.feature-zoom__lede", null,
+        "Conoce diferentes estilos de Tacoma y revisa las unidades actuales directamente en nuestro catálogo de WhatsApp."),
+      link(CONFIG.catalogUrl, "btn btn--wa feature-zoom__cta", "Ver catálogo actualizado", ARROW),
+      h("small.feature-zoom__disclaimer", null,
+        "Imágenes ilustrativas. Modelos y disponibilidad pueden variar."));
+
+    var progress = h("div.feature-zoom__progress", { "aria-hidden": "true" }, h("i"));
+    var stage = h("div.feature-zoom__stage", null,
+      backdrop,
+      h("div.feature-zoom__horizon", { "aria-hidden": "true" }),
+      truck,
+      h("div.feature-zoom__shade", { "aria-hidden": "true" }),
+      copy,
+      h("div.feature-zoom__cards", null, cards),
+      progress);
+
+    var section = h("section.feature-zoom#modelos", null, stage);
 
     section._tick = function (p) {
-      var travel = range(p, 0.04, 0.96);
-      var framePos = travel * (frames.length - 1);
+      var approach = easeOut(range(p, 0.02, 0.70));
+      var finalPush = easeOut(range(p, 0.68, 1));
+      var small = window.innerWidth <= 860;
+      var zoom = small ? lerp(.72, 1.28, approach) : lerp(.55, 1.34, approach);
+      zoom *= lerp(1, small ? 1.08 : 1.18, finalPush);
+      var x = small ? lerp(3, 0, approach) : lerp(10, -3, approach);
+      var y = small ? lerp(15, 2, approach) : lerp(20, 0, approach);
+      var transform = "translate3d(" + mv(x) + "vw," + mv(y) + "vh,0) scale(" + sc(zoom) + ")";
+      truck.style.transform = transform;
 
-      frames.forEach(function (img, i) {
-        var distance = Math.abs(framePos - i);
-        var opacity = clamp(1 - distance, 0, 1);
-        img.style.opacity = String(opacity);
-        img.classList.toggle("is-on", opacity > 0.02);
-        img.setAttribute("aria-hidden", opacity > 0.02 ? "false" : "true");
-      });
-
-      /* Micro movimiento entre cuadros: el acercamiento nunca se siente
-         como cuatro diapositivas separadas. */
-      var scale = lerp(1.015, 1.075, travel);
-      var y = lerp(1.5, -1.2, travel);
-      stage.style.setProperty("--truck-scale", sc(scale));
-      stage.style.setProperty("--truck-y", mv(y) + "vh");
+      var copyOut = 1 - range(p, 0.42, 0.64);
+      copy.style.opacity = String(copyOut);
+      copy.style.transform = "translate3d(0," + mv(lerp(0, -58, range(p, 0.40, 0.66))) + "px,0)";
 
       cards.forEach(function (card, i) {
-        var start = 0.16 + i * 0.14;
-        var appear = range(travel, start, start + 0.13);
-        var leave = i < 2 ? 1 - range(travel, 0.82, 0.96) : 1;
-        var vis = appear * leave;
-        card.style.opacity = String(vis);
-        card.style.transform = "translate3d(0," + mv((1 - appear) * 28) + "px,0) scale(" + sc(0.94 + appear * 0.06) + ")";
+        var start = 0.48 + i * 0.055;
+        var enter = easeOut(range(p, start, start + 0.18));
+        var leave = 1 - range(p, 0.93 + i * 0.012, 1);
+        card.style.opacity = String(enter * leave);
+        card.style.transform =
+          "translate3d(" + mv(lerp(72, 0, enter)) + "px," + mv(lerp(34, 0, enter)) + "px,0) scale(" +
+          sc(lerp(.92, 1, enter)) + ")";
       });
 
-      progress.style.transform = "scaleX(" + travel + ")";
-      stage.classList.toggle("is-close", travel > 0.76);
+      progress.firstChild.style.transform = "scaleX(" + p + ")";
     };
 
+    section._preload = [mainImage].concat(cardsData.map(function (c) { return c.image; }));
     return section;
   }
-
-  /* ========================== 08 · CAPACIDADES ===========================
-     La inversión a fondo claro. La camioneta viaja pegada al scroll y va
-     cambiando de unidad en cada bloque, así el visitante ve variedad de
-     inventario sin salir del efecto.
-
-     El giro vive en su propia sección (#giro); aquí lo que cambia es la
-     unidad, no el ángulo.
-     ====================================================================== */
-
-  function buildCaps() {
-    var truckImg = h("img", { src: CAPS[0].v.image, alt: altText(CAPS[0].v) });
-    var truck = h("div.caps__truck.caps__truck--single", null, truckImg);
-
-    var panels = CAPS.map(function (c) {
-      return h("article.caps__panel", null,
 
   /* ========================== 07 · CAPACIDADES ===========================
      La inversión a fondo claro. La camioneta viaja pegada al scroll y va
@@ -1046,7 +1060,7 @@
           dl,
           h("aside.rebuilt__note.reveal", null,
             h("b", null, "Te lo decimos antes de que preguntes"),
-            h("p", null, "Las cinco unidades traen título rebuilt. No está escondido en el contrato ni aparece al final: está aquí, en la página, antes de que nos escribas."),
+            h("p", null, "En Car Haus declaramos el tipo de título de cada unidad antes de cerrar la compra. No se esconde en el contrato ni aparece al final."),
             h("p", null, "Llevamos más de 30 años haciendo esto en el Valle. Un lote que piensa quedarse no puede permitirse esconderle nada a un cliente."),
             h("p", null, "Si eso no es para ti, lo entendemos. Si lo que buscas es una Tacoma bien equipada a un precio que existe, ven a verla."),
             link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo", ARROW)))));
@@ -1112,7 +1126,7 @@
             link(CONFIG.catalogUrl, "btn btn--wa", "Catálogo", ARROW))),
         h("div", null, h("h4", null, "Navegar"),
           h("ul", null, [
-            ["#giro", "El lote"], ["#capacidades", "Capacidades"], ["#inventario", "Inventario"],
+            ["#giro", "La experiencia"], ["#modelos", "Modelos"], ["#capacidades", "Capacidades"],
             ["#titulo", "Título rebuilt"], ["#comprar", "Cómo comprar"], ["#ubicacion", "Ubicación"]
           ].map(function (l) { return h("li", null, h("a", { href: l[0] }, l[1])); }))),
         h("div", null, h("h4", null, "Contacto"),
@@ -1123,7 +1137,7 @@
             h("li", null, link(CONFIG.facebookUrl, "", "Facebook"))))),
       h("div.foot__legal", null,
         h("span", null, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, TX"),
-        h("span", null, "Todas las unidades con título rebuilt. Precios y disponibilidad sujetos a cambio.")));
+        h("span", null, "Imágenes ilustrativas. Consulta modelos, títulos y disponibilidad en el catálogo actualizado.")));
   }
 
 
@@ -1186,8 +1200,8 @@
     var nav = buildNav();
     var hero = buildHero();
     var stats = buildStats();
+    var featureZoom = buildFeatureZoom();
     var spec = buildSpec();
-    var blueJourney = buildBlueJourney();
     var caps = buildCaps();
 
     root.appendChild(nav);
@@ -1195,11 +1209,9 @@
     root.appendChild(hero);
     root.appendChild(buildTicker());
     root.appendChild(stats);
+    root.appendChild(featureZoom);
     root.appendChild(spec);   /* ficha de la unidad estrella */
-    root.appendChild(blueJourney);
     root.appendChild(caps);
-    var inv = buildInventory();
-    root.appendChild(inv);
     root.appendChild(buildRebuilt());
     root.appendChild(buildSteps());
     root.appendChild(buildPlace());
@@ -1211,10 +1223,7 @@
     document.documentElement.classList.add("is-loading");
 
     var criticos = (hero._preload || []).slice();
-    /* La primera foto del inventario tambien, que es la siguiente parada. */
-    if (vehicles[0] && vehicles[0].photo) criticos.push(vehicles[0].photo);
-    criticos.push("assets/features/blue-scroll/frame-01.webp");
-    criticos.push("assets/features/blue-scroll/frame-02.webp");
+    criticos = criticos.concat(featureZoom._preload || []);
 
     preload(criticos, loader._set).then(function () {
       document.documentElement.classList.remove("is-loading");
@@ -1232,8 +1241,6 @@
         if (v.image) despues.push(v.image);
         if (v.photo) despues.push(v.photo);
       });
-      despues.push("assets/features/blue-scroll/frame-03.webp");
-      despues.push("assets/features/blue-scroll/frame-04.webp");
       preload(despues);
     });
 
@@ -1276,7 +1283,7 @@
        desplazamientos y las escalas, que son lo que marea. */
 
     /* --- Bucle único ----------------------------------------------------- */
-    var scenes = [hero, blueJourney, caps, inv].filter(function (s) { return s && s._tick; });
+    var scenes = [hero, featureZoom, caps].filter(function (s) { return s && s._tick; });
     var iceZones = [caps];
     var raf = null;
 
