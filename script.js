@@ -463,7 +463,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788039240";
+  var ASSETS_V = "1788040348";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -788,9 +788,29 @@
       src: carpeta + "f-001.webp", alt: "", "aria-hidden": "true"
     });
 
+    /* EL HERO NO DECIA NADA.
+
+       Eran dos pantallas de vuelo de dron con un cursor y un porcentaje.
+       Quien entraba no sabia que negocio era, donde estaba, ni que hacer, y
+       toda la pagina existe para llevarlo al catalogo de WhatsApp.
+
+       No vuelve el bloque de texto fijo que tapaba la toma: son dos mensajes
+       que se relevan segun avanza el vuelo. Cada uno ocupa su tramo, entra,
+       cede el sitio y se va. Nunca hay dos a la vez, y en ningun momento hay
+       texto quieto encima de la imagen. */
+    var rotulo1 = h("div.hero__di.hero__di--uno", null,
+      h("p.hero__marca", null, CONFIG.brand + " · Pharr, Texas"),
+      h("h1.hero__titular", null, "Toyota Tacoma ", h("em", null, "en Pharr")));
+
+    var rotulo2 = h("div.hero__di.hero__di--dos", null,
+      h("p.hero__linea", null,
+        "Lo que está disponible hoy vive en el catálogo, y ahí se actualiza cada vez que entra o sale una unidad."),
+      link(CONFIG.catalogUrl, "btn btn--wa hero__cta", "Ver el catálogo", ARROW));
+
     var stage = h("div.hero__stage", null,
       still, media,
       h("div.hero__scrim", { "aria-hidden": "true" }),
+      rotulo1, rotulo2,
       deg, cue,
       h("div.spin__progress", { "aria-hidden": "true" }, bar)
     );
@@ -820,6 +840,21 @@
          se queda puesta todo el recorrido para acompanar al visitante. En
          escritorio se va en cuanto entiende, porque ahi va sobre la toma. */
       cue.style.opacity = small ? "1" : String(1 - range(p, 0.01, 0.09));
+
+      /* Primer tramo: quien es y donde. Entra enseguida y se va a un tercio
+         de camino, antes de que la toma llegue a lo suyo. */
+      var uno = range(t, 0.02, 0.13) * (1 - range(t, 0.30, 0.42));
+      rotulo1.style.opacity = String(uno);
+      rotulo1.style.transform =
+        "translate3d(0," + mv((1 - range(t, 0.02, 0.13)) * 26) + "px,0)";
+
+      /* Segundo tramo: que hacer. Llega cuando el vuelo ya conto lo suyo y
+         se queda hasta el final, que es donde el visitante decide. */
+      var dos = range(t, 0.55, 0.68);
+      rotulo2.style.opacity = String(dos);
+      rotulo2.style.transform =
+        "translate3d(0," + mv((1 - dos) * 30) + "px,0)";
+      rotulo2.style.pointerEvents = dos > 0.6 ? "auto" : "none";
     };
 
     return hero;

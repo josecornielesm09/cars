@@ -3182,3 +3182,62 @@ body::after {
    Las sombras negras puras sobre un fondo azul oscuro se leen como suciedad.
    Tenidas del azul de la escena, se leen como profundidad. */
 .foot__mapa { box-shadow: 0 18px 44px rgba(6, 12, 34, 0.55); }
+
+/* ==================== LO QUE DICE EL HERO ================================
+   Dos mensajes que se relevan segun avanza el vuelo. Nunca hay dos a la vez
+   y nunca hay texto quieto encima de la toma: cada uno entra, ocupa su tramo
+   y cede el sitio. La opacidad y el desplazamiento los escribe el bucle de
+   scroll, aqui solo va la forma. */
+.hero__di {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+.hero__di--uno { bottom: 27vh; max-width: 17ch; }
+.hero__di--dos { bottom: 24vh; max-width: 34ch; }
+
+.hero__marca {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: rgba(242, 245, 253, 0.72);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+}
+.hero__titular {
+  margin-top: 12px;
+  font-family: var(--display); font-weight: 900;
+  font-size: clamp(46px, 12vw, 108px);
+  line-height: 0.86; letter-spacing: -0.02em;
+  color: var(--on-night);
+  text-shadow: 0 3px 26px rgba(0, 0, 0, 0.6);
+  text-wrap: balance;
+}
+.hero__titular em {
+  font-style: normal; display: inline-block;
+  color: var(--blue-glow); transform: skewX(-11deg);
+}
+.hero__linea {
+  font-size: clamp(15px, 4vw, 18px); line-height: 1.5;
+  color: rgba(242, 245, 253, 0.88);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+  text-wrap: pretty;
+}
+.hero__di--dos .hero__cta {
+  margin-top: 18px;
+  pointer-events: auto;
+}
+
+/* En telefono los rotulos suben: abajo viven la senal de scroll y el boton
+   flotante, y taparse entre ellos seria peor que no decir nada. */
+@media (max-width: 767px) {
+  .hero__di--uno { bottom: 32vh; max-width: 12ch; }
+  .hero__di--dos { bottom: 28vh; max-width: 26ch; }
+  .hero__titular { font-size: clamp(42px, 13vw, 72px); }
+}
+
+/* Sin movimiento no hay desplazamiento, pero el relevo se queda: lo dirige
+   el scroll del visitante, no un temporizador. */
+html.no-motion .hero__di { transform: none !important; }
