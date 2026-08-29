@@ -1365,13 +1365,27 @@ html.no-motion .inv__card.is-on { transform: none; }
   .blue-run__foot .btn { margin-left: auto; padding: 12px 16px; }
 }
 
-html.no-motion .blue-run { height: auto !important; min-height: 100vh; }
-html.no-motion .blue-run__stage { position: relative; }
-html.no-motion .blue-run__frames { transform: none; }
-html.no-motion .blue-run__frame:first-child { opacity: 1 !important; }
-html.no-motion .blue-run__frame:not(:first-child) { display: none; }
-html.no-motion .blue-card { opacity: 1 !important; transform: none !important; }
+/* Con "reducir movimiento" esta seccion NO se desarma.
 
+   Antes se aplastaba a una pantalla, se ocultaban tres de los cuatro planos
+   y las cuatro tarjetas quedaban visibles desde el principio: el
+   acercamiento desaparecia y la seccion se sentia muerta.
+
+   Pero pasar de un plano al siguiente al bajar no es movimiento gratuito:
+   lo dirige el scroll de quien mira. Eso se queda. Lo que se apaga es el
+   zoom continuo y el desplazamiento vertical, que son lo que marea. */
+html.no-motion .blue-run__stage {
+  --truck-scale: 1;
+  --truck-y: 0vh;
+}
+/* Cruces mas cortos: el cambio se lee como avance, no como fundido lento. */
+html.no-motion .blue-run__frame { transition: opacity 0.12s linear; }
+html.no-motion .blue-card { transition: opacity 0.15s linear; }
+
+/* Estas dos reglas habian perdido su @media y quedaban sueltas, dejando
+   ademas un cierre de mas que hacia al navegador descartar reglas hasta
+   recuperarse. Se les devuelve el bloque al que pertenecen. */
+@media (max-width: 860px) {
   .steps { grid-template-columns: 1fr; }
   .foot__grid { grid-template-columns: 1fr; }
 }
