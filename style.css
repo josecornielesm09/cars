@@ -2605,3 +2605,79 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
 
 /* La camioneta del pie recorre toda la calle. */
 .foot__truck { left: 0; }
+
+/* ========================= MICRO INTERACCION ===========================
+   Tres gestos, y solo tres. Una pagina con animacion en todo cansa antes de
+   que el visitante llegue al catalogo.
+   ======================================================================== */
+
+/* 1 · TITULARES PALABRA POR PALABRA.
+   Cada palabra vive dentro de una mascara y entra desde abajo. Solo se
+   anima transform: no toca el layout, asi que no cuesta nada aunque el
+   titular sea enorme. */
+.titulo-anim { overflow: visible; }
+.pal {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* Aire para que las tildes y las colas de las letras no se corten. */
+  padding: 0.12em 0 0.06em;
+  margin: -0.12em 0 -0.06em;
+}
+.pal > i {
+  display: inline-block;
+  font-style: inherit;
+  transform: translateY(105%);
+  transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.titulo-anim.is-in .pal > i { transform: none; }
+
+/* El .reveal general mueve el bloque entero; aqui sobra, porque el
+   movimiento ya lo hace cada palabra. */
+.titulo-anim.reveal { transform: none; opacity: 1; }
+
+/* 2 · BOTONES MAGNETICOS.
+   El desplazamiento lo escribe el JavaScript; aqui solo se define como
+   vuelve a su sitio. */
+.btn--wa { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), background 0.3s; }
+
+/* 3 · LUZ QUE SIGUE AL CURSOR EN LOS PANELES.
+   Refuerza cual esta activo sin necesidad de mas texto ni bordes. */
+.panel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(109, 134, 255, 0.20),
+    transparent 62%
+  );
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+  pointer-events: none;
+  z-index: 2;
+}
+.panel.is-on::after { opacity: 1; }
+
+/* Subrayado que se dibuja de izquierda a derecha en los enlaces del pie. */
+.foot__enlaces a {
+  position: relative;
+  padding-bottom: 2px;
+}
+.foot__enlaces a::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s var(--ease);
+}
+.foot__enlaces a:hover::after { transform: scaleX(1); transform-origin: left; }
+
+/* Todo esto se apaga sin movimiento: son adornos que corren solos, no
+   informacion que dirija el visitante. */
+html.no-motion .pal > i { transform: none; transition: none; }
+html.no-motion .panel::after { display: none; }
+html.no-motion .foot__enlaces a::after { transition: none; }

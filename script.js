@@ -274,6 +274,69 @@
     return s !== "" && s.toLowerCase() !== "actualizar";
   }
 
+  /* ========================= MICRO INTERACCION ============================
+     Tres gestos, y solo tres. Una pagina con animacion en todo cansa antes
+     de que el visitante llegue al catalogo.
+
+     1. Los titulares entran palabra por palabra desde detras de una
+        mascara. Es el gesto que hoy separa una pagina cuidada de una
+        plantilla, y cuesta muy poco: solo transform, nada de layout.
+     2. Los botones principales siguen al cursor unos pixeles. Da la
+        sensacion de que el boton quiere ser pulsado.
+     3. El punto de luz que sigue al raton en los paneles.
+
+     Todo se apaga con "reducir movimiento": son adornos que corren solos,
+     no informacion que dirija el visitante.
+     ====================================================================== */
+
+  /* Envuelve cada palabra en una mascara para que pueda entrar desde abajo.
+     Se respeta la estructura: un <em> se envuelve entero, no se parte, o se
+     perderia su inclinacion. */
+  function animarPalabras(titulo) {
+    if (!titulo || titulo.dataset.animado) return;
+    titulo.dataset.animado = "1";
+
+    var piezas = [];
+    Array.prototype.slice.call(titulo.childNodes).forEach(function (nodo) {
+      if (nodo.nodeType === 3) {
+        nodo.textContent.split(/(\s+)/).forEach(function (t) {
+          if (!t.trim()) { piezas.push(document.createTextNode(t)); return; }
+          piezas.push({ txt: t });
+        });
+      } else {
+        piezas.push({ el: nodo });
+      }
+    });
+
+    titulo.textContent = "";
+    var i = 0;
+    piezas.forEach(function (pz) {
+      if (pz.nodeType === 3) { titulo.appendChild(pz); return; }
+      var mascara = document.createElement("span");
+      mascara.className = "pal";
+      var dentro = document.createElement("i");
+      dentro.style.transitionDelay = (i * 55) + "ms";
+      if (pz.el) dentro.appendChild(pz.el);
+      else dentro.textContent = pz.txt;
+      mascara.appendChild(dentro);
+      titulo.appendChild(mascara);
+      i++;
+    });
+  }
+
+  /* El boton se desplaza hacia el cursor una fraccion de la distancia. Muy
+     poco: si se mueve demasiado deja de sentirse como un boton. */
+  function botonMagnetico(btn) {
+    if (reduceMotion || !window.matchMedia("(hover:hover)").matches) return;
+    btn.addEventListener("mousemove", function (ev) {
+      var r = btn.getBoundingClientRect();
+      var dx = ev.clientX - (r.left + r.width / 2);
+      var dy = ev.clientY - (r.top + r.height / 2);
+      btn.style.transform = "translate(" + dx * 0.18 + "px," + dy * 0.22 + "px)";
+    });
+    btn.addEventListener("mouseleave", function () { btn.style.transform = ""; });
+  }
+
   /* ======================= VERSION DE MATERIAL ==========================
      vercel.json sirve /assets/ con "immutable" y un ano de cache. Eso es
      correcto SIEMPRE QUE la URL cambie cuando cambia el contenido; si no,
@@ -286,7 +349,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787979123";
+  var ASSETS_V = "1787980514";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -743,6 +806,17 @@
           h("p", null, x.d)));
 
       function activar() { pinta(i); }
+
+      /* La luz sigue al cursor dentro del panel. Se escribe en variables
+         CSS: el navegador lo resuelve en el compositor, sin recalcular
+         nada del layout. */
+      if (!reduceMotion) {
+        el.addEventListener("mousemove", function (ev) {
+          var r = el.getBoundingClientRect();
+          el.style.setProperty("--mx", (ev.clientX - r.left) + "px");
+          el.style.setProperty("--my", (ev.clientY - r.top) + "px");
+        });
+      }
       el.addEventListener("mouseenter", activar);
       el.addEventListener("focus", activar);
       el.addEventListener("click", activar);
@@ -1324,6 +1398,15 @@
     fab.appendChild(h("span.fab__txt", null, "Ver catálogo"));
     fab.setAttribute("aria-label", "Abrir catálogo en WhatsApp");
     document.body.appendChild(fab);
+
+    /* Titulares de seccion: entran palabra por palabra. El hero no, porque
+       ahi el protagonista es la toma, no el texto. */
+    Array.prototype.forEach.call(
+      document.querySelectorAll("section h2.display"),
+      function (t) { animarPalabras(t); t.classList.add("reveal", "titulo-anim"); });
+
+    /* Los botones de accion, no todos: solo los que llevan al catalogo. */
+    Array.prototype.forEach.call(document.querySelectorAll(".btn--wa"), botonMagnetico);
 
     /* --- Revelado al entrar en pantalla --------------------------------- */
     if ("IntersectionObserver" in window) {
