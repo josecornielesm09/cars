@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787992035";
+  var ASSETS_V = "1787992869";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1454,16 +1454,20 @@
      ====================================================================== */
 
   function buildFooter() {
-    /* La que recorre el pie es la TRD Sport blanca. Sobre el fondo oscuro del
-       pie es la que mas se despega de las cinco —el azul se fundia con el— y
-       es una unidad real del lote: lleva la placa de Car Haus en el
-       paragolpes, que es justamente lo que este pie tiene que probar. */
+    /* Figura decorativa, no una unidad del inventario: va con aria-hidden y
+       sin pie de foto, porque lo unico que hace es recorrer la linea hasta el
+       mapa. Los recortes del lote se reservan para donde SI se afirma algo
+       sobre lo que hay a la venta.
+
+       Foto de Unsplash (licencia comercial, sin atribucion obligatoria),
+       recortada con U2-Net y bajada a 620px: a los 120-260 que mide en
+       pantalla queda de sobra, y ocupa dos decimas de mega en memoria. */
     var truck = h("img.foot__truck", {
       /* Version a medida del pie. El recorte de catalogo mide 1637px y aqui
          se ve a 120: once veces mas pixeles de los que caben, y seis megas
          de memoria para una figura del tamano de un pulgar. Recortado el
          vacio del lienzo y bajado a 560, ocupa tres cuartos de mega. */
-      src: "assets/vehicles/tacoma-2021-trd-sport-white-pie.webp",
+      src: "assets/vehicles/tacoma-pie.webp",
       alt: "", "aria-hidden": "true", loading: "lazy", decoding: "async"
     });
 
