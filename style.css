@@ -1413,20 +1413,22 @@ html.no-motion .inv__card.is-on { transform: none; }
      Los planos pasan a ocupar una banda ancha en la parte alta. La camioneta
      se ve entera en vez de recortada por los lados, y la ampliacion baja a
      0.9. Las tarjetas ya vivian abajo, asi que la composicion no cambia. */
+  /* La banda va de borde a borde y se funde arriba y abajo: se lee como una
+     ventana a la escena, no como una foto pegada encima.
+
+     Se probo con contain —el plano entero, con sus margenes— para ganar
+     nitidez, y fue peor: al verse los bordes del rectangulo, agrandarlo se
+     leia como "la misma foto, mas grande", que es exactamente lo contrario
+     de lo que la seccion tiene que contar. El recorte de cover no se nota;
+     un marco que crece, si. */
   .blue-run__frames {
-    inset: 9vh 0 auto 0;
-    height: 52vh;
+    inset: 10vh 0 auto 0;
+    height: min(53vh, 430px);
     transform-origin: 50% 52%;
   }
-  /* SIN RECORTE.
-
-     Con cover el telefono recortaba los lados de la camioneta y ademas
-     obligaba a estirar la foto para tapar el alto. Con contain se ve el
-     plano entero, la ampliacion la pone la camara del scroll y nunca pasa
-     de lo que el archivo aguanta. */
   .blue-run__frame {
-    object-fit: contain;
-    object-position: 50% center;
+    object-fit: cover;
+    object-position: 50% 46%;
   }
 
   /* Los bordes de la banda se funden con el fondo de la escena para que no

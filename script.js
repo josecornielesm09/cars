@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787990286";
+  var ASSETS_V = "1787990631";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1164,8 +1164,11 @@
 
          El limite de 1.95 no es al azar: por encima de ahi el navegador
          tendria que estirar el archivo y volveria lo pixelado. */
-      var scale = chico ? lerp(0.78, 1.95, travel) : lerp(1.015, 1.10, travel);
-      var y = chico ? lerp(4.5, -3.5, travel) : lerp(1.5, -1.2, travel);
+      /* Casi no se escala. Los originales ya son un recorte progresivo de la
+         misma toma, asi que anadir escala encima solo subraya que es una foto
+         creciendo. El avance lo tienen que poner los planos. */
+      var scale = chico ? lerp(1.0, 1.06, travel) : lerp(1.015, 1.10, travel);
+      var y = chico ? lerp(1.2, -1.0, travel) : lerp(1.5, -1.2, travel);
       /* En telefono el acercamiento NO se apaga con "reducir movimiento".
          Ahi no es un adorno que corre solo: es el contenido de la seccion, y
          solo avanza si el visitante decide bajar. Lo que si se apaga es la
