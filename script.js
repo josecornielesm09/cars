@@ -449,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787991798";
+  var ASSETS_V = "1787992035";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1454,17 +1454,16 @@
      ====================================================================== */
 
   function buildFooter() {
-    /* La que recorre el pie es la 2025: es la generacion nueva, se distingue
-       de un vistazo de las anteriores, y en rojo se despega del fondo oscuro
-       mucho mas que el azul, que se fundia con el. Ademas es una unidad real
-       del lote —lleva la placa de Car Haus en el paragolpes—, que es
-       justamente lo que este pie tiene que probar. */
+    /* La que recorre el pie es la TRD Sport blanca. Sobre el fondo oscuro del
+       pie es la que mas se despega de las cinco —el azul se fundia con el— y
+       es una unidad real del lote: lleva la placa de Car Haus en el
+       paragolpes, que es justamente lo que este pie tiene que probar. */
     var truck = h("img.foot__truck", {
       /* Version a medida del pie. El recorte de catalogo mide 1637px y aqui
          se ve a 120: once veces mas pixeles de los que caben, y seis megas
          de memoria para una figura del tamano de un pulgar. Recortado el
          vacio del lienzo y bajado a 560, ocupa tres cuartos de mega. */
-      src: "assets/vehicles/tacoma-2025-sr-red-pie.webp",
+      src: "assets/vehicles/tacoma-2021-trd-sport-white-pie.webp",
       alt: "", "aria-hidden": "true", loading: "lazy", decoding: "async"
     });
 
