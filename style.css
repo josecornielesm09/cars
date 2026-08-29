@@ -1890,3 +1890,124 @@ html.no-motion .foot__pin::after { animation: none; opacity: 0; }
   background: currentColor;
   flex: none;
 }
+
+/* =============== BARRA SIN VIDRIO EN TELEFONO ===========================
+   El desenfoque de la barra se comia justo la franja donde esta el cartel
+   del local, que es lo primero que tiene que leerse al abrir. En una
+   pantalla de telefono la barra ocupa una porcion grande del hero, asi que
+   ese efecto costaba mucho mas de lo que aportaba.
+
+   Se retira el cristal y queda la barra limpia sobre la imagen. La
+   legibilidad la da una sombra de texto, que no tapa nada.
+   ======================================================================== */
+
+@media (max-width: 860px) {
+  .nav,
+  .nav.is-stuck {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: transparent;
+    box-shadow: none;
+  }
+  /* Sin el reflejo giratorio: sin cristal no tiene borde que recorrer. */
+  .nav::before { display: none; }
+
+  .nav__brand span,
+  .nav__here,
+  .nav__toggle {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.75);
+  }
+  .nav__brand img {
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
+  }
+  .nav__toggle span,
+  .nav__toggle span::before,
+  .nav__toggle span::after {
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Al bajar, fuera del hero, la barra si necesita fondo para leerse sobre
+     secciones claras y oscuras. Un velo plano, sin desenfoque. */
+  .nav.is-stuck { background: rgba(4, 6, 15, 0.86); }
+  .nav.is-stuck.on-ice { background: rgba(237, 241, 250, 0.92); }
+}
+
+/* ========================== EL MURO DE TACOMAS ==========================
+   Dos filas cruzandose. El ojo lee abundancia antes que cualquier texto.
+   ======================================================================== */
+
+.muro { position: relative; background: var(--night); }
+
+.muro__stage {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(22px, 4vh, 44px);
+  overflow: hidden;
+}
+
+.muro__cabecera { padding: 0 var(--gutter); flex: none; }
+.muro__cabecera .lede { margin-top: 18px; }
+
+.muro__filas {
+  display: grid;
+  gap: clamp(10px, 1.4vw, 18px);
+  flex: none;
+  /* Los bordes se desvanecen: la tira no termina, sigue. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+
+.muro__fila {
+  display: flex;
+  gap: clamp(10px, 1.4vw, 18px);
+  width: max-content;
+  will-change: transform;
+}
+
+.muro__pieza {
+  width: clamp(180px, 22vw, 320px);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--line-night);
+  background: var(--night-2);
+  flex: none;
+}
+.muro__pieza img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+.muro__pieza:hover img { transform: scale(1.06); }
+
+.muro__cta {
+  padding: 0 var(--gutter);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  flex: none;
+}
+.muro__nota {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  color: var(--on-night-3);
+  text-transform: uppercase;
+}
+
+@media (max-width: 860px) {
+  .muro { height: 190vh !important; }
+  .muro__pieza { width: 58vw; border-radius: 11px; }
+  .muro__cabecera .lede { display: none; }
+}
+
+/* El cruce de las filas lo dirige el scroll, asi que se conserva con
+   "reducir movimiento". Lo unico que se apaga es el zoom al pasar el
+   cursor, que no depende de nadie. */
+html.no-motion .muro__pieza img { transition: none; }
+html.no-motion .muro__pieza:hover img { transform: none; }

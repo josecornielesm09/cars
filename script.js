@@ -279,7 +279,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "8";
+  var ASSETS_V = "9";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1002,89 +1002,71 @@
      la unidad existe y está parada ahí.
      ====================================================================== */
 
-  function buildInventory() {
-    var shots = vehicles.map(function (v, i) {
-      /* srcset: el telefono baja la version de 1200px y el escritorio la de
-         2048. Sin esto un telefono de 375 puntos se traga fotos de 2048px
-         para mostrarlas a 1125: casi un mega tirado por foto. */
-      var foto = v.photo || v.image;
-      var fotoM = foto.replace(/\.webp$/, "-m.webp");
+  /* ========================= EL MURO DE TACOMAS ==========================
+     Esta pagina NO es un inventario. Es una landing que lleva al catalogo
+     de WhatsApp, que es donde vive lo que hay hoy y donde se actualiza.
 
-      return h("div.inv__shot", null,
-        h("img", {
-          src: foto,
-          srcset: v.photo ? asset(fotoM) + " 1200w, " + asset(foto) + " 2048w" : null,
-          sizes: "100vw",
-          alt: altText(v),
-          loading: i < 2 ? "eager" : "lazy",
-          decoding: "async"
-        }));
+     Antes esta seccion listaba cinco unidades con ano, version y millaje.
+     Eso obligaba a que cada foto fuera de esa unidad exacta, y creaba un
+     problema cada vez que una foto no daba la talla. Ademas envejecia sola:
+     el dia que se vende una, la pagina miente.
+
+     Ahora ensena CANTIDAD. Dos filas de Tacomas que se desplazan en
+     sentidos opuestos con el scroll: el ojo lee abundancia antes de leer
+     una sola palabra. Y todo termina en el catalogo.
+     ====================================================================== */
+
+  function buildMuro() {
+    var MURO = [];
+    for (var i = 1; i <= 12; i++) {
+      MURO.push("assets/muro/t-" + (i < 10 ? "0" + i : i) + ".webp");
+    }
+    /* Se intercalan las unidades reales del lote entre las de referencia:
+       las fotos propias son las que dan credibilidad. */
+    vehicles.forEach(function (v, k) {
+      if (v.photo) MURO.splice(2 + k * 3, 0, v.photo);
     });
-    shots[0].classList.add("is-on");
 
-    /* Una ficha por unidad: se cruzan con opacidad, no se reescribe el
-       contenido. Reescribir provoca un parpadeo del texto en cada cambio. */
-    var cards = vehicles.map(function (v) {
-      var tags = v.highlights.slice(0, 4).map(function (t) { return h("span", null, t); });
-      tags.push(h("span.is-rebuilt", null, "Título rebuilt"));
+    function fila(desde, hasta, clase) {
+      var piezas = MURO.slice(desde, hasta).map(function (src, i) {
+        return h("div.muro__pieza", null,
+          h("img", { src: src, alt: "Toyota Tacoma", loading: "lazy", decoding: "async" }));
+      });
+      /* Se duplica el contenido para que la tira no muestre el final. */
+      return h("div.muro__fila." + clase, null, piezas.concat(piezas.map(function (p) {
+        return p.cloneNode(true);
+      })));
+    }
 
-      return h("article.inv__card", null,
-        h("div.inv__card-top", null,
-          h("span.inv__yr", null, String(v.year)),
-          h("h3.inv__name", null, v.trim)),
-        h("div.inv__meta", null, metaOf(v).map(function (m) { return h("span", null, m); })),
-        /* Si la imagen no es de la unidad, se dice. Un lote que declara el
-           titulo de frente no puede callar esto. */
-        v.fotoReferencia ? h("p.inv__ref", null,
-          "Foto de referencia · pide fotos reales de esta unidad por WhatsApp") : null,
-        h("div.inv__tags", null, tags),
-        h("p.inv__note", null, v.titleDisclosure),
-        h("div.inv__cta", null,
-          link(waUnit(v), "btn btn--wa", "Preguntar por esta", ARROW),
-          link(CONFIG.phoneHref, "btn btn--ghost", "Llamar")));
-    });
-    cards[0].classList.add("is-on");
+    var filaA = fila(0, Math.ceil(MURO.length / 2), "muro__fila--a");
+    var filaB = fila(Math.ceil(MURO.length / 2), MURO.length, "muro__fila--b");
 
-    var counter = h("b", null, "01");
-    var dots = vehicles.map(function () { return h("i"); });
-    dots[0].classList.add("is-on");
+    var stage = h("div.muro__stage", null,
+      h("div.muro__cabecera", null,
+        h("p.eyebrow", null, "Lo que movemos"),
+        h("h2.display.h-lg", null, "Puras ", h("em", null, "Tacomas")),
+        h("p.lede", null,
+          "Todas las versiones, todos los colores. Lo que está disponible hoy vive en el catálogo, y ahí se actualiza.")),
+      h("div.muro__filas", { "aria-hidden": "true" }, filaA, filaB),
+      h("div.muro__cta", null,
+        link(CONFIG.catalogUrl, "btn btn--wa", "Ver el catálogo completo", ARROW),
+        h("span.muro__nota", null, "Se actualiza cada vez que entra o sale una unidad")));
 
-    var stage = h("div.inv__stage", null,
-      h("div.inv__frame", null, shots),
-      h("div.inv__scrim", { "aria-hidden": "true" }),
-      h("div.inv__head", null,
-        h("p.eyebrow", null, "Inventario · " + vehicles.length + " unidades"),
-        h("h2.display.h-md", null, "Lo que ", h("em", null, "hay"), " hoy")),
-      h("div.inv__cards", null, cards),
-      h("div.inv__num", null, counter, h("span", null, "de " + String(vehicles.length).padStart(2, "0"))),
-      h("div.inv__dots", { "aria-hidden": "true" }, dots)
-    );
-
-    /* Una pantalla de scroll por unidad, más una de entrada y otra de
-       salida: da tiempo de leer la ficha sin que se sienta atorado. */
-    var section = h("section.inv#inventario", {
-      style: "height:" + (vehicles.length * 80 + 60) + "vh"
-    }, stage);
-
-    var current = -1;
+    var section = h("section.muro#inventario", { style: "height: 220vh" }, stage);
 
     section._tick = function (p) {
-      var span = range(p, 0.05, 0.95);
-      var idx = clamp(Math.floor(span * vehicles.length), 0, vehicles.length - 1);
-
-      if (idx === current) return;
-      current = idx;
-
-      shots.forEach(function (s, i) { s.classList.toggle("is-on", i === idx); });
-      cards.forEach(function (c, i) { c.classList.toggle("is-on", i === idx); });
-      dots.forEach(function (d, i) { d.classList.toggle("is-on", i === idx); });
-      counter.textContent = String(idx + 1).padStart(2, "0");
+      /* Las dos filas se cruzan: una avanza y la otra retrocede. Ese
+         contraste es lo que hace que se lea como movimiento y no como una
+         imagen larga. */
+      var t = range(p, 0.02, 0.98);
+      filaA.style.transform = "translateX(" + (-t * 34) + "%)";
+      filaB.style.transform = "translateX(" + (-66 + t * 34) + "%)";
     };
 
     return section;
   }
 
-    function buildRebuilt() {
+  function buildRebuilt() {
     var dl = h("dl.rebuilt__qa");
     REBUILT_QA.forEach(function (qa, i) {
       /* Escalonadas: entran una tras otra en vez de aparecer las cuatro de
@@ -1304,7 +1286,7 @@
     root.appendChild(spec);   /* ficha de la unidad estrella */
     root.appendChild(blueJourney);
     root.appendChild(caps);
-    var inv = buildInventory();
+    var inv = buildMuro();
     root.appendChild(inv);
     root.appendChild(buildRebuilt());
     root.appendChild(buildSteps());
