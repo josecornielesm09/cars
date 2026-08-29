@@ -349,7 +349,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787980514";
+  var ASSETS_V = "1787980592";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1352,9 +1352,17 @@
     document.body.appendChild(loader);
     document.documentElement.classList.add("is-loading");
 
-    var criticos = (hero._preload || []).slice();
+    /* hero._preload ya viene versionado desde el DOM. Volver a pasarlo por
+       asset() dejaba ?v=X&v=X y el navegador lo trataba como otra URL: cada
+       cuadro del hero se bajaba DOS veces. */
+    var criticos = (hero._preload || []).map(function (u) {
+      return u.split("?")[0];
+    });
     /* La primera foto del inventario tambien, que es la siguiente parada. */
-    if (vehicles[0] && vehicles[0].photo) criticos.push(vehicles[0].photo);
+    /* Version de muro: la grande dejo de desplegarse al quitar el
+       inventario, y pedirla aqui devolvia un 404 en cada visita. */
+    if (vehicles[0] && vehicles[0].photo)
+      criticos.push(vehicles[0].photo.replace(/\.webp$/, "-w.webp"));
     /* Los dos primeros planos evitan un destello cuando comienza el
        acercamiento; los dos cercanos se precargan despues. */
     criticos.push("assets/features/blue-scroll/frame-01.webp");
