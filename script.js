@@ -88,8 +88,7 @@
 
        Si algún día hay foto real de la lona, se sustituye aquí y ya. */
     heroImage: "assets/360/frame-01.webp",
-    heroVideo: "assets/hero/hero_video.mp4",
-    heroVideoFallback: "assets/hero/hero-cover.webm"
+    heroCover: "assets/hero/hero-cover.webp"
   };
 
   /* ============================= 02 · DATOS ==============================
@@ -490,41 +489,57 @@
 
     var bar = h("i");
 
-    /* Un solo video reemplaza los 80 WebP antiguos. El MP4 es la fuente
-       principal; WebM queda como respaldo para navegadores compatibles. */
-    var media = h("video.hero__video", {
-      muted: true,
-      playsinline: true,
-      preload: "auto",
-      "aria-label": "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas"
-    });
-    media.muted = true;
-    media.playsInline = true;
-    media.appendChild(h("source", { src: CONFIG.heroVideo, type: "video/mp4" }));
-    media.appendChild(h("source", { src: CONFIG.heroVideoFallback, type: "video/webm" }));
+    var media, tickMedia;
+    var imgs = [];
 
-    var duration = 0;
-    var wantedTime = 0;
-    media.addEventListener("loadedmetadata", function () {
-      duration = isFinite(media.duration) ? media.duration : 0;
-      media.currentTime = 0.01;
-    });
-    media.addEventListener("canplay", function () {
-      media.classList.add("is-ready");
-    });
+    /* Secuencia en las dos pantallas. Lo unico que cambia es de que carpeta
+       salen los archivos. */
+    var carpeta = small ? CONFIG.spin.filmDir : CONFIG.spin.filmDirHd;
 
-    function tickMedia(t) {
-      if (!duration || media.readyState < 2) return;
-      wantedTime = clamp(t, 0, 0.999) * duration;
-      /* Un umbral corto evita ordenar el mismo seek docenas de veces por
-         segundo, que era la causa principal de los destellos al hacer scroll. */
-      if (Math.abs(media.currentTime - wantedTime) > 0.045) {
-        media.currentTime = wantedTime;
-      }
+    media = h("div.hero__seq");
+
+    for (var i = 1; i <= CONFIG.spin.filmCount; i++) {
+      var num = String(i);
+      while (num.length < 3) num = "0" + num;
+      var img = h("img", {
+        src: carpeta + "f-" + num + ".webp",
+        alt: i === 1 ? "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas" : "",
+        "aria-hidden": i === 1 ? null : "true",
+        decoding: "async"
+      });
+      imgs.push(img);
+      media.appendChild(img);
     }
+    imgs[0].classList.add("is-on");
+
+    var last = 0;
+
+    tickMedia = function (t) {
+      var idx = clamp(Math.floor(t * imgs.length), 0, imgs.length - 1);
+
+      /* Si ese cuadro todavia no llega, se queda el ultimo que si esta.
+         Congelar un instante se ve mucho mejor que un hueco en blanco. */
+      if (!pintable(imgs[idx])) {
+        var j = idx;
+        while (j > last && !pintable(imgs[j])) j--;
+        if (!pintable(imgs[j])) return;
+        idx = j;
+      }
+
+      if (idx === last) return;
+      imgs[last].classList.remove("is-on");
+      imgs[idx].classList.add("is-on");
+      last = idx;
+    };
+
+    var still = h("img.hero__still", {
+      /* Respaldo detras de la secuencia: el primer cuadro, no el poster de
+         960px, que se veia blando en escritorio. */
+      src: carpeta + "f-001.webp", alt: "", "aria-hidden": "true"
+    });
 
     var stage = h("div.hero__stage", null,
-      media,
+      still, media,
       h("div.hero__scrim", { "aria-hidden": "true" }),
       deg, cue,
       h("div.spin__progress", { "aria-hidden": "true" }, bar)
@@ -532,9 +547,9 @@
 
     /* is-seq marca el modo vertical: la toma se muestra completa, sin
        estirar. Es la diferencia entre nitido y pixelado en telefono. */
-    var hero = h("section.hero.is-film#top", null, stage);
+    var hero = h("section.hero.is-film#top", { class: small ? "hero is-film is-seq" : null }, stage);
     hero.id = "top";
-    hero.className = "hero is-film is-video";
+    hero.className = "hero is-film" + (small ? " is-seq" : "");
 
     /* Lista de archivos que el precargador debe traer antes de soltar la
        pagina: sin esto el primer scroll cae sobre cuadros que aun no estan
@@ -543,7 +558,7 @@
        por detras mientras el visitante ya esta viendo el hero: bloquear los
        48 significaba esperar 3 MB antes de ver nada, y eso se sentia como
        un tiron al abrir. */
-    hero._preload = [];
+    hero._preload = imgs.slice(0, 8).map(function (im) { return im.getAttribute("src"); });
 
     hero._tick = function (p) {
       var t = range(p, 0.03, 0.97);
@@ -763,7 +778,91 @@
     return seccion;
   }
 
-  /* ========================== 07 · CAPACIDADES ===========================
+  /* ===================== 07 · TACOMA AZUL EN SCROLL =====================
+     La protagonista avanza hacia la camara mientras cuatro referencias de
+     la familia Tacoma aparecen como tarjetas secundarias. Los cuatro planos
+     ya traen el mismo estudio y se cruzan suavemente para evitar tirones.
+     ====================================================================== */
+
+  function buildBlueJourney() {
+    var frames = [1, 2, 3, 4].map(function (n, i) {
+      return h("img.blue-run__frame", {
+        src: "assets/features/blue-scroll/frame-0" + n + ".webp",
+        alt: i === 0 ? "Toyota Tacoma azul acercándose en estudio" : "",
+        loading: i < 2 ? "eager" : "lazy",
+        decoding: "async",
+        "aria-hidden": i === 0 ? null : "true"
+      });
+    });
+    frames[0].classList.add("is-on");
+
+    var options = [
+      { img: "assets/features/card-2022-tacoma-trd-sport-army-green.webp", year: "2022", name: "TRD Sport", color: "Army Green" },
+      { img: "assets/features/card-2023-tacoma-trd-pro-solar-octane.webp", year: "2023", name: "TRD Pro", color: "Solar Octane" },
+      { img: "assets/features/card-2024-tacoma-limited-white.webp", year: "2024", name: "Limited", color: "Wind Chill Pearl" },
+      { img: "assets/features/card-2025-tacoma-trailhunter-bronze-oxide.webp", year: "2025", name: "Trailhunter", color: "Bronze Oxide" }
+    ];
+
+    var cards = options.map(function (o, i) {
+      return h("article.blue-card.blue-card--" + (i + 1), null,
+        h("span.blue-card__num", null, "0" + (i + 1)),
+        h("img", { src: o.img, alt: o.year + " Toyota Tacoma " + o.name + " " + o.color, loading: "lazy", decoding: "async" }),
+        h("div", null,
+          h("small", null, o.year + " · " + o.color),
+          h("b", null, o.name)));
+    });
+
+    var progress = h("i");
+    var stage = h("div.blue-run__stage", null,
+      h("div.blue-run__copy", null,
+        h("p.eyebrow", null, "Toyota Tacoma · Car Haus"),
+        h("h2.display", null, "Más cerca. ", h("em", null, "Más Tacoma.")),
+        h("p", null, "Desliza para verla llegar. Explora estilos y consulta el catálogo actualizado por WhatsApp.")),
+      h("div.blue-run__frames", null, frames),
+      h("div.blue-run__cards", null, cards),
+      h("div.blue-run__foot", null,
+        h("span", null, "Desliza para acercar"),
+        link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo actual", ARROW)),
+      h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
+
+    var section = h("section.blue-run#experiencia", { style: "height:380vh" }, stage);
+
+    section._tick = function (p) {
+      var travel = range(p, 0.04, 0.96);
+      var framePos = travel * (frames.length - 1);
+
+      frames.forEach(function (img, i) {
+        var distance = Math.abs(framePos - i);
+        var opacity = clamp(1 - distance, 0, 1);
+        img.style.opacity = String(opacity);
+        img.classList.toggle("is-on", opacity > 0.02);
+        img.setAttribute("aria-hidden", opacity > 0.02 ? "false" : "true");
+      });
+
+      /* Micro movimiento entre cuadros: el acercamiento nunca se siente
+         como cuatro diapositivas separadas. */
+      var scale = lerp(1.015, 1.075, travel);
+      var y = lerp(1.5, -1.2, travel);
+      stage.style.setProperty("--truck-scale", sc(scale));
+      stage.style.setProperty("--truck-y", mv(y) + "vh");
+
+      cards.forEach(function (card, i) {
+        var start = 0.16 + i * 0.14;
+        var appear = range(travel, start, start + 0.13);
+        var leave = i < 2 ? 1 - range(travel, 0.82, 0.96) : 1;
+        var vis = appear * leave;
+        card.style.opacity = String(vis);
+        card.style.transform = "translate3d(0," + mv((1 - appear) * 28) + "px,0) scale(" + sc(0.94 + appear * 0.06) + ")";
+      });
+
+      progress.style.transform = "scaleX(" + travel + ")";
+      stage.classList.toggle("is-close", travel > 0.76);
+    };
+
+    return section;
+  }
+
+  /* ========================== 08 · CAPACIDADES ===========================
      La inversión a fondo claro. La camioneta viaja pegada al scroll y va
      cambiando de unidad en cada bloque, así el visitante ve variedad de
      inventario sin salir del efecto.
@@ -1088,6 +1187,7 @@
     var hero = buildHero();
     var stats = buildStats();
     var spec = buildSpec();
+    var blueJourney = buildBlueJourney();
     var caps = buildCaps();
 
     root.appendChild(nav);
@@ -1096,6 +1196,7 @@
     root.appendChild(buildTicker());
     root.appendChild(stats);
     root.appendChild(spec);   /* ficha de la unidad estrella */
+    root.appendChild(blueJourney);
     root.appendChild(caps);
     var inv = buildInventory();
     root.appendChild(inv);
@@ -1112,6 +1213,10 @@
     var criticos = (hero._preload || []).slice();
     /* La primera foto del inventario tambien, que es la siguiente parada. */
     if (vehicles[0] && vehicles[0].photo) criticos.push(vehicles[0].photo);
+    /* Los dos primeros planos evitan un destello cuando comienza el
+       acercamiento; los dos cercanos se precargan despues. */
+    criticos.push("assets/features/blue-scroll/frame-01.webp");
+    criticos.push("assets/features/blue-scroll/frame-02.webp");
 
     preload(criticos, loader._set).then(function () {
       document.documentElement.classList.remove("is-loading");
@@ -1129,6 +1234,8 @@
         if (v.image) despues.push(v.image);
         if (v.photo) despues.push(v.photo);
       });
+      despues.push("assets/features/blue-scroll/frame-03.webp");
+      despues.push("assets/features/blue-scroll/frame-04.webp");
       preload(despues);
     });
 
@@ -1171,7 +1278,7 @@
        desplazamientos y las escalas, que son lo que marea. */
 
     /* --- Bucle único ----------------------------------------------------- */
-    var scenes = [hero, caps, inv].filter(function (s) { return s && s._tick; });
+    var scenes = [hero, blueJourney, caps, inv].filter(function (s) { return s && s._tick; });
     var iceZones = [caps];
     var raf = null;
 
