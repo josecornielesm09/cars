@@ -286,7 +286,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "11";
+  var ASSETS_V = "12";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -630,11 +630,14 @@
        Se retiro la cifra de "3 meses de garantia": en los datos de las cinco
        unidades el campo warranty sigue en "Actualizar", asi que la pagina
        estaba prometiendo algo sin confirmar. Cuando se confirme, vuelve. */
+    /* Ya no se cuentan unidades: esta pagina dejo de ser un inventario y
+       ese numero envejecia solo. Queda lo que no caduca. */
     var data = [
-      { n: 30,              suf: "+", label: "Años de experiencia" },
-      { n: vehicles.length, suf: "",  label: "Tacomas disponibles" },
-      { n: fourByFour,      suf: "",  label: "Con tracción 4x4" }
+      { n: 30,  suf: "+", label: "Años en el Valle" },
+      { n: 5,   suf: "",  label: "Versiones que manejamos" },
+      { n: 100, suf: "%", label: "Títulos declarados de frente" }
     ];
+
 
     var items = data.map(function (d, i) {
       /* Arranca con el valor FINAL escrito, no con un cero.
@@ -1018,34 +1021,30 @@
     return section;
   }
 
-  function buildRebuilt() {
-    var dl = h("dl.rebuilt__qa");
-    REBUILT_QA.forEach(function (qa, i) {
-      /* Escalonadas: entran una tras otra en vez de aparecer las cuatro de
-         golpe, que se lee como un bloque de texto. */
-      var d = "transition-delay:" + (i * 110) + "ms";
-      /* Cada pregunta numerada: se lee como documento, que es justo el tono
-         que necesita la seccion mas delicada de la pagina. */
-      dl.appendChild(h("dt.reveal", { style: d },
-        h("i", null, "0" + (i + 1)),
-        h("span", null, qa.q)));
-      dl.appendChild(h("dd.reveal", { style: d }, qa.a));
-    });
+  /* ===================== EL TITULO, EN UNA FRANJA ========================
+     Era una seccion entera con cuatro preguntas sobre fondo claro. Bien
+     escrita, pero larga y en mitad del embudo: frenaba justo cuando el
+     visitante venia lanzado hacia el catalogo.
 
-    return h("section.section.section--ice.on-ice#titulo", null,
-      h("div.section__inner", null,
-        h("div.section__head.reveal", null,
+     Se convierte en una franja. Dice lo unico que hay que decir, lo dice de
+     frente, y sigue empujando al catalogo. Quien quiera el detalle lo
+     pregunta por WhatsApp, que es adonde queremos llevarlo.
+     ====================================================================== */
+
+  function buildRebuilt() {
+    return h("section.banda.on-ice#titulo", null,
+      h("div.banda__inner", null,
+        h("div.banda__texto", null,
           h("p.eyebrow", null, "Sin letra chica"),
-          h("h2.display.h-lg", null, "Hablemos ", h("em", null, "del"), " título")),
-        h("div.rebuilt", null,
-          dl,
-          h("aside.rebuilt__note.reveal", null,
-            h("b", null, "Te lo decimos antes de que preguntes"),
-            h("p", null, "Las cinco unidades traen título rebuilt. No está escondido en el contrato ni aparece al final: está aquí, en la página, antes de que nos escribas."),
-            h("p", null, "Llevamos más de 30 años haciendo esto en el Valle. Un lote que piensa quedarse no puede permitirse esconderle nada a un cliente."),
-            h("p", null, "Si eso no es para ti, lo entendemos. Si lo que buscas es una Tacoma bien equipada a un precio que existe, ven a verla."),
-            link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo", ARROW)))));
+          h("h2.display.h-md", null, "Todas con título ", h("em", null, "rebuilt")),
+          h("p.lede", null,
+            "Reparadas, inspeccionadas y legales para circular. Por eso una Tacoma bien equipada está a tu alcance. Te lo decimos aquí, antes de que preguntes.")),
+        h("div.banda__cta", null,
+          link(CONFIG.catalogUrl, "btn btn--wa", "Ver disponibles", ARROW),
+          h("small", null, "¿Dudas sobre el título? Pregúntanos, contesta una persona."))));
   }
+
+
 
   function buildSteps() {
     return h("section.section#comprar", null,
@@ -1116,14 +1115,23 @@
 
   function buildFooter() {
     var truck = h("img.foot__truck", {
-      src: HERO.image,
-      alt: "", "aria-hidden": "true", loading: "lazy", decoding: "async"
+      src: HERO.image, alt: "", "aria-hidden": "true", loading: "lazy", decoding: "async"
     });
 
-    var destino = h("div.foot__destino", null,
+    /* LA RAYITA LLEGA AL MAPA.
+       El recorrido no termina en el aire: la linea cruza, la camioneta la
+       sigue y desemboca en el mapa real del local. Ese es el ultimo gesto
+       de la pagina, y responde a la unica pregunta que queda: donde. */
+    var mapa = h("div.foot__mapa", null,
+      h("iframe", {
+        src: "https://www.google.com/maps?q=" +
+             encodeURIComponent("913 W US Hwy 83, Pharr, TX 78577") +
+             "&z=16&output=embed",
+        title: "Mapa de Car Haus LLC, 913 W U.S. Hwy 83, Pharr, Texas",
+        loading: "lazy", referrerpolicy: "no-referrer-when-downgrade"
+      }),
       h("span.foot__pin", { "aria-hidden": "true" }),
-      h("b", null, "Car Haus LLC"),
-      h("span", null, "913 W U.S. Hwy 83, Suite C · Pharr, TX"));
+      link(CONFIG.mapsUrl, "foot__mapa-link", "Cómo llegar", ARROW));
 
     var camino = h("div.foot__road", { "aria-hidden": "true" },
       h("div.foot__road-line"),
@@ -1131,48 +1139,36 @@
 
     var pie = h("footer.foot", null,
       h("div.foot__viaje", null,
-        h("p.eyebrow", null, "Ultimo tramo"),
-        h("h2.display.h-md", null, "Te ", h("em", null, "esperamos"), " aqui"),
+        h("p.eyebrow", null, "Último tramo"),
+        h("h2.display.h-md", null, "Te ", h("em", null, "esperamos"), " aquí"),
         camino,
-        destino),
+        h("div.foot__llegada", null,
+          mapa,
+          h("div.foot__datos", null,
+            h("b", null, "Car Haus LLC"),
+            h("p", null, "913 W U.S. Hwy 83, Suite C"),
+            h("p", null, "Pharr, TX 78577"),
+            h("div.foot__enlaces", null,
+              link(CONFIG.phoneHref, "", CONFIG.phoneDisplay),
+              link(CONFIG.facebookUrl, "", "Facebook"),
+              link("mailto:" + CONFIG.email, "", "Correo")),
+            link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo", ARROW)))),
 
-      h("img.foot__mark", { src: CONFIG.logo, alt: "", "aria-hidden": "true", loading: "lazy" }),
-      h("div.foot__grid", null,
-        h("div", null,
-          h("h4", null, "Car Haus LLC"),
-          h("p", { style: "margin:0;max-width:34ch;color:var(--on-night-2)" },
-            "Toyota Tacoma en Pharr, Texas. Financiamiento con crédito aprobado."),
-          h("div", { style: "margin-top:22px" },
-            link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo", ARROW))),
-        h("div", null, h("h4", null, "Navegar"),
-          h("ul", null, [
-            ["#giro", "El lote"], ["#capacidades", "Capacidades"], ["#inventario", "Inventario"],
-            ["#titulo", "Título rebuilt"], ["#comprar", "Cómo comprar"], ["#ubicacion", "Ubicación"]
-          ].map(function (l) { return h("li", null, h("a", { href: l[0] }, l[1])); }))),
-        h("div", null, h("h4", null, "Contacto"),
-          h("ul", null,
-            h("li", null, link(CONFIG.phoneHref, "", CONFIG.phoneDisplay)),
-            h("li", null, link("mailto:" + CONFIG.email, "", CONFIG.email)),
-            h("li", null, link(CONFIG.mapsUrl, "", "913 W U.S. Hwy 83, Suite C")),
-            h("li", null, link(CONFIG.facebookUrl, "", "Facebook"))))),
       h("div.foot__legal", null,
-        h("span", null, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, TX"),
-        h("span", null, "Todas las unidades con título rebuilt. Precios y disponibilidad sujetos a cambio.")));
+        h("span", null, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, TX · 30+ años"),
+        h("span", null, "Todas las unidades con título rebuilt. Disponibilidad sujeta a cambio.")));
 
-    /* El recorrido lo marca el scroll: la camioneta avanza mientras el pie
-       entra en pantalla y llega justo cuando la direccion queda a la vista. */
     pie._tick = function (p) {
-      var avance = easeOut(range(p, 0.05, 0.72));
-      /* Sin mv(): este avance lo dirige el scroll de quien mira, no la
-         pagina sola, asi que se conserva tambien con "reducir movimiento".
-         Es el mismo criterio del hero, el inventario y el acercamiento. */
+      var avance = easeOut(range(p, 0.05, 0.68));
       truck.style.transform = "translateX(" + (avance * 100 - 100) + "%)";
       camino.style.setProperty("--avance", avance);
-      destino.classList.toggle("is-on", avance > 0.88);
+      mapa.classList.toggle("is-on", avance > 0.9);
     };
 
     return pie;
   }
+
+
 
 
 
@@ -1254,8 +1250,6 @@
     var inv = buildMuro();
     root.appendChild(inv);
     root.appendChild(buildRebuilt());
-    root.appendChild(buildSteps());
-    root.appendChild(buildPlace());
     var pie = buildFooter();
     root.appendChild(pie);
 
