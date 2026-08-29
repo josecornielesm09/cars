@@ -13,7 +13,6 @@ PROMPT_MAESTRO_CAR_HAUS_3D.md
 # Material fuente: la pagina usa las versiones optimizadas
 assets/360/tacoma-360-frames-01-12
 assets/gallery/*.jpg
-assets/hero/hero_video.mp4
 
 # Los recortes se sirven en WebP; los PNG de 2048px son la fuente
 assets/vehicles/*.png
