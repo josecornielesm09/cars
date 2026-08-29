@@ -318,6 +318,44 @@
   /* Decodificar por adelantado quita el tiron al cambiar de cuadro, pero
      hacerlo con los 40 de golpe es justo lo que llena la memoria. Se hace
      con una ventana que viaja con el dedo. */
+  /* Reparte n cuadros entre los que hay, incluyendo SIEMPRE el primero y el
+     ultimo.
+
+     Antes se avanzaba de dos en dos desde el uno: 1, 3, 5... 39. El plano 40
+     —el primerisimo plano del cofre, que es el remate de todo el
+     acercamiento— no salia nunca, y el efecto se quedaba a medio camino. */
+  /* PISTA DE SCROLL para las secciones que se mueven al bajar.
+
+     Una seccion fija que solo cambia si el visitante sigue bajando necesita
+     decirlo: sin nada, mucha gente se queda mirando y cree que se atasco.
+     El hero ya llevaba su propio aviso con raton y flechas; las demas llevan
+     esta version chica, dos flechas y una palabra.
+
+     Se apaga en cuanto la seccion arranca: ya cumplio, y dejarlo puesto lo
+     unico que hace es tapar. */
+  function pistaScroll(texto) {
+    var CHEV_P =
+      '<svg width="11" height="6" viewBox="0 0 14 8" fill="none" aria-hidden="true">' +
+      '<path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.7" ' +
+      'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    return h("div.pista", { "aria-hidden": "true" },
+      h("span.pista__txt", null, texto || "Sigue bajando"),
+      h("span.pista__chev", { html: CHEV_P + CHEV_P }));
+  }
+
+  function reparto(total, cuantos) {
+    if (cuantos >= total) {
+      var todos = [];
+      for (var t = 1; t <= total; t++) todos.push(t);
+      return todos;
+    }
+    var lista = [];
+    for (var k = 0; k < cuantos; k++) {
+      lista.push(Math.round(k * (total - 1) / (cuantos - 1)) + 1);
+    }
+    return lista;
+  }
+
   function decodificarCerca(imgs, idx) {
     for (var i = idx; i < Math.min(idx + 4, imgs.length); i++) {
       var im = imgs[i];
@@ -411,7 +449,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787988873";
+  var ASSETS_V = "1787989555";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -690,11 +728,11 @@
        encima el navegador llegaba a 788 MB. Dos de cada tres siguen dando
        un vuelo continuo —veintisiete cuadros en tres pantallas— con los
        mismos archivos y la misma nitidez. */
-    var paso = small ? 2 : 1.5;
-    var cuantos = Math.round(CONFIG.spin.filmCount / paso);
+    var cuantos = small ? 20 : 27;
+    var listaHero = reparto(CONFIG.spin.filmCount, cuantos);
 
-    for (var q = 0; q < cuantos; q++) {
-      var i = Math.min(CONFIG.spin.filmCount, Math.round(q * paso) + 1);
+    for (var q = 0; q < listaHero.length; q++) {
+      var i = listaHero[q];
       var num = String(i);
       while (num.length < 3) num = "0" + num;
       var img = h("img", {
@@ -997,12 +1035,11 @@
        la misma proporcion. La densidad no cambia —la camioneta avanza lo
        mismo por cada centimetro de dedo— pero son veinte mapas de bits a
        pantalla completa menos en memoria. */
-    var pasoD = chico ? 2 : 1.5;
-    var cuantosD = Math.round(PLANOS / pasoD);
+    var listaD = reparto(PLANOS, chico ? 16 : 27);
 
     var frames = [];
-    for (var qd = 0; qd < cuantosD; qd++) {
-      var fi = Math.min(PLANOS, Math.round(qd * pasoD) + 1);
+    for (var qd = 0; qd < listaD.length; qd++) {
+      var fi = listaD[qd];
       var num = String(fi);
       while (num.length < 3) num = "0" + num;
       frames.push(h("img.blue-run__frame", {
@@ -1069,8 +1106,11 @@
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver las de hoy", ARROW)),
       h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
 
+    var pistaBJ = pistaScroll();
+    stage.appendChild(pistaBJ);
+
     var section = h("section.blue-run#experiencia",
-      { style: "height:" + (chico ? 250 : 380) + "vh" }, stage);
+      { style: "height:" + (chico ? 240 : 380) + "vh" }, stage);
     secuenciaLigera(section, frames);
 
     /* La segunda tanda de precarga se saca de aqui, no de un contador del
@@ -1117,6 +1157,7 @@
       });
 
       progress.style.transform = "scaleX(" + travel + ")";
+      pistaBJ.style.opacity = String(1 - range(travel, 0.02, 0.13));
       stage.classList.toggle("is-close", travel > 0.76);
     };
 
@@ -1163,6 +1204,8 @@
     });
     puntos[0].classList.add("is-on");
 
+    var pistaCaps = pistaScroll();
+
     var stage = h("div.aguanta__stage", null,
       h("div.aguanta__fondo", null, fotos),
       h("div.aguanta__velo", { "aria-hidden": "true" }),
@@ -1172,6 +1215,7 @@
         h("h2.display.h-lg", null, "Hechas ", h("em", null, "para"), " aguantar")),
       h("div.aguanta__textos", null, textos),
       h("div.aguanta__puntos", null, puntos));
+    stage.appendChild(pistaCaps);
 
     var section = h("section.aguanta#capacidades", {
       style: "height:" + (CAPS.length * 90 + 60) + "vh"
@@ -1204,6 +1248,7 @@
       pinta(clamp(Math.floor(span * CAPS.length), 0, CAPS.length - 1));
       /* Acercamiento lentisimo sobre la foto: da vida sin distraer. */
       stage.style.setProperty("--zoom", sc(1 + span * 0.07));
+      pistaCaps.style.opacity = String(1 - range(span, 0.02, 0.13));
     };
 
     return section;
@@ -1258,6 +1303,8 @@
     var filaA = fila(0, Math.ceil(MURO.length / 2), "muro__fila--a");
     var filaB = fila(Math.ceil(MURO.length / 2), MURO.length, "muro__fila--b");
 
+    var pistaMuro = pistaScroll();
+
     var stage = h("div.muro__stage", null,
       h("div.muro__cabecera", null,
         h("p.eyebrow", null, "Lo que movemos"),
@@ -1268,6 +1315,7 @@
       h("div.muro__cta", null,
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver todas por WhatsApp", ARROW),
         h("span.muro__nota", null, "Se actualiza cada vez que entra o sale una unidad")));
+    stage.appendChild(pistaMuro);
 
     var section = h("section.muro#inventario", { style: "height: 220vh" }, stage);
 
@@ -1278,6 +1326,7 @@
       var t = range(p, 0.02, 0.98);
       filaA.style.transform = "translateX(" + (-t * 34) + "%)";
       filaB.style.transform = "translateX(" + (-66 + t * 34) + "%)";
+      pistaMuro.style.opacity = String(1 - range(t, 0.02, 0.13));
     };
 
     return section;
