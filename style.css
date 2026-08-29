@@ -3211,8 +3211,13 @@ body::after {
    tres lineas se salian por arriba: la primera palabra quedaba cortada por
    el borde de la pantalla, detras del menu. Dandole ancho baja a dos lineas,
    y desde ahi cabe holgado en la mitad inferior sin tocar la barra. */
-.hero__di--uno { bottom: 15vh; max-width: 26ch; }
-.hero__di--dos { bottom: 15vh; max-width: 34ch; }
+/* NADA DE ch EN LA TIPOGRAFIA DE TITULARES.
+
+   ch mide el ancho del cero, y en una condensada pesada el cero es muy
+   estrecho: 26ch daban menos de la mitad del ancho que aparentan y el
+   titular se partia en cuatro lineas. Con medida real cabe en dos. */
+.hero__di--uno { bottom: 15vh; max-width: min(56vw, 660px); }
+.hero__di--dos { bottom: 15vh; max-width: min(46vw, 520px); }
 
 .hero__marca {
   font-family: var(--mono);
@@ -3261,7 +3266,9 @@ body::after {
     bottom: auto;
     max-width: none;
   }
-  .hero__titular { font-size: clamp(38px, 11.5vw, 64px); }
+  .hero__titular { font-size: clamp(36px, 10.5vw, 60px); }
+  .hero__di--uno,
+  .hero__di--dos { max-width: none; }
   .hero__di--dos .hero__cta { margin-top: 16px; }
 }
 
@@ -3279,6 +3286,7 @@ html.no-motion .hero__di { transform: none !important; }
 .hero__titular .pal {
   display: inline-block;
   overflow: hidden;
+  white-space: nowrap;
   vertical-align: bottom;
   padding-bottom: 0.06em;
   margin-bottom: -0.06em;

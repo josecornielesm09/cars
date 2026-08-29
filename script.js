@@ -488,7 +488,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788041532";
+  var ASSETS_V = "1788041649";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -885,7 +885,9 @@
       /* Las palabras suben una tras otra mientras entra el tramo; el rotulo
          entero solo se ocupa de irse cuando le toca. */
       revelarPalabras(palabrasTitular, entra1);
-      marca1.style.transform = "scaleX(" + range(t, 0.02, 0.12) + ")";
+      /* La cortina se RETIRA: empieza tapando (1) y acaba en cero. Estaba
+         escrita al reves y crecia sobre el texto en vez de descubrirlo. */
+      marca1.style.transform = "scaleX(" + (1 - range(t, 0.02, 0.12)) + ")";
 
       /* Segundo tramo: que hacer. Llega cuando el vuelo ya conto lo suyo y
          se queda hasta el final, que es donde el visitante decide. */
