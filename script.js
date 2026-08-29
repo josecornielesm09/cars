@@ -395,7 +395,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787987829";
+  var ASSETS_V = "1787987971";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -655,13 +655,21 @@
 
     media = h("div.hero__seq");
 
-    for (var i = 1; i <= CONFIG.spin.filmCount; i++) {
+    /* En telefono se usan dos de cada tres cuadros. No cambia la nitidez
+       —los archivos son los mismos— y el recorrido sigue leyendose como
+       vuelo continuo, pero son catorce mapas de bits a pantalla completa
+       menos ocupando memoria en el aparato mas justo de los dos. */
+    var paso = small ? 1.5 : 1;
+    var cuantos = Math.round(CONFIG.spin.filmCount / paso);
+
+    for (var q = 0; q < cuantos; q++) {
+      var i = Math.min(CONFIG.spin.filmCount, Math.round(q * paso) + 1);
       var num = String(i);
       while (num.length < 3) num = "0" + num;
       var img = h("img", {
         src: carpeta + "f-" + num + ".webp",
-        alt: i === 1 ? "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas" : "",
-        "aria-hidden": i === 1 ? null : "true",
+        alt: q === 0 ? "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas" : "",
+        "aria-hidden": q === 0 ? null : "true",
         decoding: "async"
       });
       imgs.push(img);
