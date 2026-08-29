@@ -2351,3 +2351,119 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
   .steps__marca i { display: none; }
   .steps__cierre { flex-direction: column; align-items: flex-start; }
 }
+
+/* ========================= PIE MAS COMPACTO ============================
+   Estaba desproporcionado: el recorrido de la calle mas tres columnas mas
+   la linea legal ocupaban casi dos pantallas. En una landing cuyo objetivo
+   es llevar al catalogo, el pie no debe competir con el contenido.
+   ======================================================================== */
+
+.foot { padding-top: clamp(44px, 6vw, 76px); padding-bottom: 26px; }
+
+.foot__viaje { margin-bottom: clamp(34px, 4.5vw, 58px); }
+.foot__road { height: clamp(72px, 9vw, 110px); margin: clamp(18px, 2.5vw, 30px) 0 14px; }
+.foot__truck { width: clamp(120px, 15vw, 200px); }
+
+/* Los enlaces de navegacion sobran en el pie: la barra los tiene y el menu
+   de telefono tambien. Repetirlos solo alargaba la pagina. */
+.foot__grid > div:nth-child(2) { display: none; }
+.foot__grid {
+  grid-template-columns: 1.5fr 1fr;
+  gap: clamp(24px, 4vw, 56px);
+}
+
+.foot__mark { width: min(360px, 42vw); bottom: -26%; opacity: 0.04; }
+
+.foot__legal {
+  margin-top: clamp(28px, 3.5vw, 46px);
+  padding-top: 18px;
+  font-size: 11.5px;
+}
+
+@media (max-width: 860px) {
+  .foot__grid { grid-template-columns: 1fr; gap: 26px; }
+  .foot__viaje h2 { font-size: clamp(28px, 8vw, 44px); }
+}
+
+/* ===================== EL EMBUDO: SIEMPRE EL CATALOGO ==================
+   El boton flotante aparecia recien pasado el hero y era un circulo mudo.
+   Ahora se extiende con texto en cuanto el visitante lleva medio recorrido:
+   a esa altura ya sabe que quiere, y el boton deja de ser un icono para
+   pasar a ser una invitacion.
+   ======================================================================== */
+
+.fab {
+  width: auto;
+  height: 52px;
+  border-radius: 100px;
+  padding: 0 16px;
+  gap: 0;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+.fab svg { flex: none; }
+.fab__txt {
+  max-width: 0;
+  opacity: 0;
+  white-space: nowrap;
+  font-family: var(--cond);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: max-width 0.55s var(--ease), opacity 0.4s var(--ease), margin-left 0.55s var(--ease);
+}
+.fab.is-wide .fab__txt {
+  max-width: 190px;
+  opacity: 1;
+  margin-left: 10px;
+}
+
+@media (max-width: 480px) {
+  .fab.is-wide .fab__txt { max-width: 120px; font-size: 13.5px; }
+}
+
+/* ==================== AFINADO PARA TELEFONO ============================
+   Las secciones nuevas se disenaron primero en pantalla ancha. Aqui se
+   corrigen las tres cosas que en vertical no funcionaban igual.
+   ======================================================================== */
+
+@media (max-width: 640px) {
+  /* 1. Los titulares gigantes robaban la mitad de la pantalla y dejaban el
+        contenido sin aire. */
+  .h-lg { font-size: clamp(34px, 10vw, 52px); }
+  .h-md { font-size: clamp(28px, 8.5vw, 44px); }
+
+  /* 2. En "Hechas para aguantar" el numero de fondo competia con el texto
+        en vez de acompanarlo. Se corre al borde y se apaga. */
+  .aguanta__cifra {
+    font-size: 52vw;
+    right: -8vw;
+    bottom: -2vh;
+    color: rgba(242, 245, 253, 0.05);
+  }
+  .aguanta__cabecera { top: clamp(76px, 11vh, 108px); }
+  .aguanta__texto h3 { font-size: clamp(26px, 8vw, 38px); }
+
+  /* 3. El acordeon cerrado dejaba los titulos apretados contra el borde. */
+  .panel { height: 84px; }
+  .panel.is-on { height: 280px; }
+  .panel__cuerpo { padding: 14px 16px; }
+  .panel__cuerpo b { font-size: 19px; }
+
+  /* El muro con piezas mas anchas se lee mejor que con muchas pequenas. */
+  .muro__pieza { width: 68vw; }
+  .muro__cta { flex-direction: column; align-items: flex-start; gap: 10px; }
+
+  /* La seccion del titulo respira. */
+  .rebuilt { gap: 34px; }
+  .rebuilt__note { padding: 24px 20px; }
+}
+
+/* El boton flotante no puede taparse con el pie ni con el boton de
+   WhatsApp del sistema en iOS. */
+@media (max-width: 860px) {
+  .fab { right: 14px; bottom: calc(14px + env(safe-area-inset-bottom, 0px)); }
+}

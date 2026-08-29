@@ -286,7 +286,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "10";
+  var ASSETS_V = "11";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -828,7 +828,7 @@
       h("div.blue-run__cards", null, cards),
       h("div.blue-run__foot", null,
         h("span", null, "Estilos de referencia · el inventario actual está en el catálogo"),
-        link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo actual", ARROW)),
+        link(CONFIG.catalogUrl, "btn btn--wa", "Ver las de hoy", ARROW)),
       h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
 
     var section = h("section.blue-run#experiencia", { style: "height:380vh" }, stage);
@@ -1001,7 +1001,7 @@
           "Todas las versiones, todos los colores. Lo que está disponible hoy vive en el catálogo, y ahí se actualiza.")),
       h("div.muro__filas", { "aria-hidden": "true" }, filaA, filaB),
       h("div.muro__cta", null,
-        link(CONFIG.catalogUrl, "btn btn--wa", "Ver el catálogo completo", ARROW),
+        link(CONFIG.catalogUrl, "btn btn--wa", "Ver todas por WhatsApp", ARROW),
         h("span.muro__nota", null, "Se actualiza cada vez que entra o sale una unidad")));
 
     var section = h("section.muro#inventario", { style: "height: 220vh" }, stage);
@@ -1061,8 +1061,8 @@
               h("p", null, st.d)));
         })),
         h("div.steps__cierre.reveal", null,
-          h("p", null, "¿Dudas antes de empezar? Pregunta por WhatsApp, contesta una persona."),
-          link(CONFIG.catalogUrl, "btn btn--wa", "Escribir ahora", ARROW))));
+          h("p", null, "¿Dudas antes de empezar? Contesta una persona, no un robot."),
+          link(CONFIG.phoneHref, "btn btn--ghost", "Llamar al lote"))));
   }
 
   function buildPlace() {
@@ -1141,7 +1141,7 @@
         h("div", null,
           h("h4", null, "Car Haus LLC"),
           h("p", { style: "margin:0;max-width:34ch;color:var(--on-night-2)" },
-            "Más de 30 años en el Valle. Toyota Tacoma inspeccionadas, con financiamiento y el título declarado de frente."),
+            "Toyota Tacoma en Pharr, Texas. Financiamiento con crédito aprobado."),
           h("div", { style: "margin-top:22px" },
             link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo", ARROW))),
         h("div", null, h("h4", null, "Navegar"),
@@ -1245,8 +1245,11 @@
     root.appendChild(hero);
     root.appendChild(buildTicker());
     root.appendChild(stats);
-    root.appendChild(spec);   /* ficha de la unidad estrella */
+    /* La Tacoma azul va inmediatamente despues del hero: el visitante acaba
+       de llegar al lote y lo primero que ve es la camioneta acercandose.
+       Los paneles vienen despues, cuando ya quiere saber que trae. */
     root.appendChild(blueJourney);
+    root.appendChild(spec);
     root.appendChild(caps);
     var inv = buildMuro();
     root.appendChild(inv);
@@ -1305,6 +1308,7 @@
     });
 
     var fab = link(CONFIG.catalogUrl, "fab", "", WA_ICON);
+    fab.appendChild(h("span.fab__txt", null, "Ver catálogo"));
     fab.setAttribute("aria-label", "Abrir catálogo en WhatsApp");
     document.body.appendChild(fab);
 
@@ -1366,6 +1370,10 @@
       var y = window.pageYOffset || document.documentElement.scrollTop;
       nav.classList.toggle("is-stuck", y > 40);
       fab.classList.toggle("is-on", y > vh * 0.9);
+      /* A mitad de pagina el visitante ya sabe que busca: el boton deja de
+         ser un icono y se abre con la invitacion. */
+      var total = document.documentElement.scrollHeight - vh;
+      fab.classList.toggle("is-wide", total > 0 && y / total > 0.28);
 
       /* La barra se invierte cuando cruza una sección clara. */
       var onIce = false;
