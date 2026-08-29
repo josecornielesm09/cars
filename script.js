@@ -411,7 +411,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787988631";
+  var ASSETS_V = "1787988873";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1073,6 +1073,12 @@
       { style: "height:" + (chico ? 250 : 380) + "vh" }, stage);
     secuenciaLigera(section, frames);
 
+    /* La segunda tanda de precarga se saca de aqui, no de un contador del
+       1 al 40. En telefono solo hay veinte planos montados: enumerarlos a
+       mano descargaba los otros veinte para nada, casi un mega de datos
+       moviles tirado. */
+    section._resto = frames.slice(6).map(function (im) { return im.getAttribute("src"); });
+
     section._tick = function (p) {
       var travel = range(p, 0.04, 0.96);
       var framePos = travel * (frames.length - 1);
@@ -1558,7 +1564,8 @@
       ["4x4", "motor", "cabina", "caja"].forEach(function (n) {
         despues.push("assets/paneles/" + n + ".webp");
       });
-      for (var mi = 1; mi <= 12; mi++) {
+      var piezasMuro = window.innerWidth <= 767 ? 6 : 12;
+      for (var mi = 1; mi <= piezasMuro; mi++) {
         despues.push("assets/muro/t-" + (mi < 10 ? "0" + mi : mi) + ".webp");
       }
       vehicles.forEach(function (v) {
@@ -1567,10 +1574,7 @@
            que el inventario dejo de listar unidades. */
         if (v.photo) despues.push(v.photo.replace(/\.webp$/, "-w.webp"));
       });
-      for (var bj = 7; bj <= 40; bj++) {
-        var bn = String(bj); while (bn.length < 3) bn = "0" + bn;
-        despues.push(carpetaBJ + "d-" + bn + ".webp");
-      }
+      if (blueJourney._resto) despues = despues.concat(blueJourney._resto);
       preload(despues);
     });
 
