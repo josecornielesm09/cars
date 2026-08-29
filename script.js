@@ -72,7 +72,7 @@
          Escritorio 1920px (7.8 MB), telefono 1600px (3.6 MB). Solo los
          primeros ocho retienen la pagina; el resto llega por detras. */
       filmDir: "assets/360/film/",
-      filmDirHd: "assets/360/film-hd/",
+      filmDirHd: "assets/360/film-hd/", filmDirMd: "assets/360/film-md/",
       filmCount: 40,
 
       /* La seccion de giro se sustituyo por la ficha de una sola imagen:
@@ -411,7 +411,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1787988457";
+  var ASSETS_V = "1787988631";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -667,7 +667,17 @@
 
     /* Secuencia en las dos pantallas. Lo unico que cambia es de que carpeta
        salen los archivos. */
-    var carpeta = small ? CONFIG.spin.filmDir : CONFIG.spin.filmDirHd;
+    /* Tres juegos del mismo vuelo, y se elige por los pixeles que la
+       pantalla puede ensenar de verdad, no por si es telefono o no.
+
+       Un cuadro de 2200px ocupa 10 MB descomprimido; el de 1600px, 5.5. En
+       un monitor normal de 1440 el de 1600 se ve identico —el navegador lo
+       reduce igual— y ahorra la mitad de memoria. El de 2200 se reserva
+       para donde se nota: pantallas retina y monitores anchos. */
+    var pideAncho = (window.innerWidth || 1440) * (window.devicePixelRatio || 1);
+    var carpeta = small ? CONFIG.spin.filmDir
+                : pideAncho > 1900 ? CONFIG.spin.filmDirHd
+                : CONFIG.spin.filmDirMd;
 
     media = h("div.hero__seq");
 
