@@ -1393,7 +1393,10 @@ html.no-motion .blue-run__stage {
   --truck-y: 0vh;
 }
 /* Cruces mas cortos: el cambio se lee como avance, no como fundido lento. */
-html.no-motion .blue-run__frame { transition: opacity 0.12s linear; }
+/* Con cuarenta planos el cambio entre uno y otro es minimo: un fundido
+   deja ver el plano lejano por debajo del cercano y se leen como dos
+   camionetas superpuestas. El cambio va seco tambien sin movimiento. */
+html.no-motion .blue-run__frame { transition: none; }
 html.no-motion .blue-card { transition: opacity 0.15s linear; }
 
 /* Estas dos reglas habian perdido su @media y quedaban sueltas, dejando
