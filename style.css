@@ -3381,19 +3381,33 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
   inset: 0;
   pointer-events: none;
   background:
-    linear-gradient(180deg, var(--night) 0%, rgba(4,6,15,0) 22%,
-                    rgba(4,6,15,0) 78%, var(--night) 100%),
-    radial-gradient(ellipse 62% 46% at 50% 50%, rgba(4,6,15,0.92) 0%, rgba(4,6,15,0.55) 55%, transparent 78%);
+    linear-gradient(180deg, var(--night) 0%, rgba(4,6,15,0.10) 26%,
+                    rgba(4,6,15,0.10) 74%, var(--night) 100%),
+    radial-gradient(ellipse 70% 52% at 50% 50%, rgba(4,6,15,0.62) 0%, rgba(4,6,15,0.30) 60%, transparent 80%);
 }
 
+/* EL TEXTO NECESITA SU PROPIO SUELO.
+
+   Con solo el velo, el titular caia encima de una camioneta blanca y no se
+   leia: un degradado suave no puede garantizar contraste contra fotos que
+   ademas se estan moviendo debajo. El bloque se apoya en su propio panel de
+   vidrio, que ademas lo separa del muro y lo convierte en lo que es, una
+   parada en medio del desfile. */
 .vmuro__copy {
   position: relative;
   z-index: 3;
   justify-self: center;
   text-align: center;
-  max-width: min(30rem, 86vw);
-  padding: 0 var(--gutter);
+  max-width: min(27rem, 88vw);
+  padding: clamp(26px, 5vw, 40px) clamp(20px, 4vw, 34px);
+  border-radius: 20px;
+  background: rgba(6, 10, 24, 0.82);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow: 0 24px 60px rgba(2, 5, 16, 0.6);
 }
+.vmuro__copy h2 { font-size: clamp(30px, 7.6vw, 52px); line-height: 0.94; }
 .vmuro__copy .lede {
   margin: 12px auto 22px;
   color: var(--on-night-2);
