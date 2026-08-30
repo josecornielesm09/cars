@@ -3323,3 +3323,91 @@ html.no-motion .hero__di { transform: none !important; }
 html.no-motion .hero__titular .pal > i { transform: none !important; opacity: 1 !important; }
 html.no-motion .hero__marca-tapa { display: none; }
 html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
+
+/* ================== MURO VERTICAL DE DOS COLUMNAS ========================
+   La tira horizontal girada. Dos columnas que se cruzan mientras bajas: una
+   sube, la otra baja. En el mismo sentido el ojo las toma por una sola cosa
+   deslizandose; enfrentadas, cada una empuja a la otra. */
+.vmuro {
+  position: relative;
+  background: var(--night);
+}
+.vmuro__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  align-items: center;
+}
+
+.vmuro__cols {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 14px;
+  /* Mas altas que la pantalla: al desplazarse nunca asoma un extremo. */
+  align-items: start;
+}
+.vmuro__col {
+  display: grid;
+  gap: 14px;
+  will-change: transform;
+}
+/* La segunda arranca medio paso desfasada, para que las fichas no queden
+   emparejadas en filas y se lea como dos corrientes y no como una rejilla. */
+.vmuro__col--b { margin-top: -14vh; }
+
+.vmuro__ficha {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--night-2);
+  border: 1px solid var(--line-night);
+}
+.vmuro__ficha img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+}
+
+/* El velo deja legible el texto y funde los extremos de las columnas, para
+   que no se vea donde empiezan ni donde acaban. */
+.vmuro__velo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, var(--night) 0%, rgba(4,6,15,0) 22%,
+                    rgba(4,6,15,0) 78%, var(--night) 100%),
+    radial-gradient(ellipse 62% 46% at 50% 50%, rgba(4,6,15,0.92) 0%, rgba(4,6,15,0.55) 55%, transparent 78%);
+}
+
+.vmuro__copy {
+  position: relative;
+  z-index: 3;
+  justify-self: center;
+  text-align: center;
+  max-width: min(30rem, 86vw);
+  padding: 0 var(--gutter);
+}
+.vmuro__copy .lede {
+  margin: 12px auto 22px;
+  color: var(--on-night-2);
+  font-size: clamp(14px, 1.15vw, 17px);
+  text-wrap: pretty;
+}
+
+@media (max-width: 767px) {
+  .vmuro__cols { gap: 10px; padding: 0 10px; }
+  .vmuro__col { gap: 10px; }
+  .vmuro__col--b { margin-top: -12vh; }
+  .vmuro__ficha { border-radius: 11px; }
+}
+
+/* Sin movimiento las columnas se quedan quietas: la seccion sigue contando
+   lo mismo, un muro de Tacomas con su invitacion al catalogo. */
+html.no-motion .vmuro__col { transform: none !important; }

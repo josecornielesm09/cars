@@ -488,7 +488,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788077077";
+  var ASSETS_V = "1788078958";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1392,6 +1392,63 @@
      una sola palabra. Y todo termina en el catalogo.
      ====================================================================== */
 
+  /* ===================== MURO VERTICAL DE DOS COLUMNAS ==================
+     La misma idea que la tira horizontal, girada: dos columnas que se cruzan
+     en vertical mientras bajas. Una sube, la otra baja.
+
+     Lo que hace que se lea como movimiento y no como una lista larga es que
+     vayan en sentidos opuestos. Con las dos hacia el mismo lado el ojo las
+     toma por una sola cosa que se desliza; enfrentadas, cada una empuja a la
+     otra y la seccion respira.
+
+     Las fichas van recortadas a vertical. En apaisado, dos columnas dejan
+     tiras anchas y bajas que se leen como filas, no como columnas, y el
+     gesto se pierde. */
+  function buildMuroVertical() {
+    var FICHAS = [];
+    for (var i = 1; i <= 12; i++) FICHAS.push("assets/muro-v/p-" + (i < 10 ? "0" + i : i) + ".webp");
+
+    function columna(desde, hasta, clase) {
+      var piezas = FICHAS.slice(desde, hasta).map(function (src) {
+        return h("div.vmuro__ficha", null,
+          h("img", { src: src, alt: "Toyota Tacoma", loading: "lazy", decoding: "async" }));
+      });
+      /* Duplicada, para que el extremo no llegue nunca a verse. */
+      return h("div.vmuro__col." + clase, null, piezas.concat(piezas.map(function (x) {
+        return x.cloneNode(true);
+      })));
+    }
+
+    var colA = columna(0, 6, "vmuro__col--a");
+    var colB = columna(6, 12, "vmuro__col--b");
+
+    var pistaV = pistaScroll();
+
+    var stage = h("div.vmuro__stage", null,
+      h("div.vmuro__cols", { "aria-hidden": "true" }, colA, colB),
+      h("div.vmuro__velo", { "aria-hidden": "true" }),
+      h("div.vmuro__copy", null,
+        h("p.eyebrow", null, "El lote y la calle"),
+        h("h2.display.h-lg", null, "Así se ven ", h("em", null, "de verdad")),
+        h("p.lede", null,
+          "Unidades del lote y estilos de referencia. Lo que está disponible hoy vive en el catálogo."),
+        link(CONFIG.catalogUrl, "btn btn--wa", "Ver el catálogo", ARROW)));
+    stage.appendChild(pistaV);
+
+    var section = h("section.vmuro#estilos", { style: "height: 200vh" }, stage);
+
+    section._tick = function (p) {
+      var t = range(p, 0.02, 0.98);
+      /* Empiezan desplazadas y se cruzan: la primera sube desde su mitad,
+         la segunda baja desde la suya. Nunca se ve el final de ninguna. */
+      colA.style.transform = "translate3d(0," + mv(-t * 50) + "%,0)";
+      colB.style.transform = "translate3d(0," + mv(-50 + t * 50) + "%,0)";
+      pistaV.style.opacity = String(1 - range(t, 0.02, 0.13));
+    };
+
+    return section;
+  }
+
   function buildMuro() {
     /* En telefono la tira lleva menos piezas. Cada una se duplica para que
        no se vea el final, asi que doce fuentes son veinticuatro imagenes
@@ -1721,6 +1778,7 @@
     var stats = buildStats();
     var spec = buildSpec();
     var blueJourney = buildBlueJourney();
+    var vmuro = buildMuroVertical();
     var caps = buildCaps();
 
     root.appendChild(nav);
@@ -1733,6 +1791,7 @@
        Los paneles vienen despues, cuando ya quiere saber que trae. */
     root.appendChild(blueJourney);
     root.appendChild(spec);
+    root.appendChild(vmuro);
     root.appendChild(caps);
     var inv = buildMuro();
     root.appendChild(inv);
@@ -1914,7 +1973,7 @@
     });
     var anclaActiva = null;
 
-    var scenes = [hero, stats, blueJourney, caps, inv, pie].filter(function (s) { return s && s._tick; });
+    var scenes = [hero, stats, blueJourney, vmuro, caps, inv, pie].filter(function (s) { return s && s._tick; });
     var iceZones = [caps];
     var raf = null;
 
