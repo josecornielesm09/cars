@@ -488,7 +488,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788077010";
+  var ASSETS_V = "1788077077";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1179,8 +1179,8 @@
          borron en vez de una camioneta. */
       { img: "assets/features/card-tacoma-verde.webp",   year: "TRD Sport",   name: "Verde",   color: "Deportiva y discreta" },
       { img: "assets/features/card-tacoma-naranja.webp", year: "TRD Pro",     name: "Naranja", color: "La de arriba de la gama" },
-      { img: "assets/features/card-tacoma-blanca.webp",  year: "Limited",     name: "Blanca",  color: "Equipada de fabrica" },
-      { img: "assets/features/card-tacoma-bronce.webp",  year: "Trailhunter", name: "Bronce",  color: "Para brecha y terraceria" }
+      { img: "assets/features/card-tacoma-blanca.webp",  year: "Limited",     name: "Blanca",  color: "Equipada de fábrica" },
+      { img: "assets/features/card-tacoma-bronce.webp",  year: "Trailhunter", name: "Bronce",  color: "Para brecha y terracería" }
     ];
 
     var cards = options.map(function (o, i) {
