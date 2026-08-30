@@ -488,7 +488,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788079131";
+  var ASSETS_V = "1788107013";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1405,8 +1405,16 @@
      tiras anchas y bajas que se leen como filas, no como columnas, y el
      gesto se pierde. */
   function buildMuroVertical() {
+    /* Solo material de estudio. Se probo mezclando fotos reales del lote y no
+       funcionaba: las del lote llevan el cartel del parabrisas y el sol del
+       Valle, y al lado de un render de estudio se leen como dos secciones
+       distintas pegadas. Las del lote tienen su sitio, pero no aqui.
+
+       Ocho fichas de cuatro camionetas: cada una entera con su reflejo, y un
+       detalle de su frente. Con solo cuatro imagenes la columna se notaria
+       repetida; alternando plano y detalle, no. */
     var FICHAS = [];
-    for (var i = 1; i <= 12; i++) FICHAS.push("assets/muro-v/p-" + (i < 10 ? "0" + i : i) + ".webp");
+    for (var i = 1; i <= 8; i++) FICHAS.push("assets/muro-v/p-0" + i + ".webp");
 
     function columna(desde, hasta, clase) {
       var piezas = FICHAS.slice(desde, hasta).map(function (src) {
@@ -1419,8 +1427,8 @@
       })));
     }
 
-    var colA = columna(0, 6, "vmuro__col--a");
-    var colB = columna(6, 12, "vmuro__col--b");
+    var colA = columna(0, 4, "vmuro__col--a");
+    var colB = columna(4, 8, "vmuro__col--b");
 
     var pistaV = pistaScroll();
 
@@ -1428,10 +1436,10 @@
       h("div.vmuro__cols", { "aria-hidden": "true" }, colA, colB),
       h("div.vmuro__velo", { "aria-hidden": "true" }),
       h("div.vmuro__copy", null,
-        h("p.eyebrow", null, "El lote y la calle"),
-        h("h2.display.h-lg", null, "Así se ven ", h("em", null, "de verdad")),
+        h("p.eyebrow", null, "Versiones y colores"),
+        h("h2.display.h-lg", null, "Todas las ", h("em", null, "versiones")),
         h("p.lede", null,
-          "Unidades del lote y estilos de referencia. Lo que está disponible hoy vive en el catálogo."),
+          "TRD Sport, TRD Pro, Limited y Trailhunter. Lo que está disponible hoy vive en el catálogo."),
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver el catálogo", ARROW)));
     stage.appendChild(pistaV);
 

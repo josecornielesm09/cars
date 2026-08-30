@@ -3367,10 +3367,13 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
   background: var(--night-2);
   border: 1px solid var(--line-night);
 }
+/* Cuadradas. Los renders de estudio vienen en cuadrado y la camioneta ocupa
+   todo el ancho: recortarlos a vertical le cortaba las puntas. Asi se usa el
+   archivo entero, sin tirar un pixel. */
 .vmuro__ficha img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
 }
 
