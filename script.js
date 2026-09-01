@@ -193,7 +193,7 @@
   var DESTINOS = [
     ["#experiencia",  "La Tacoma"],
     ["#giro",         "Lo que trae"],
-    ["#capacidades",  "Capacidades"],
+    ["#estilos",      "Versiones"],
     ["#inventario",   "Modelos"],
     ["#titulo",       "Título"],
     ["#ubicacion",    "Dónde estamos"]
@@ -475,7 +475,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788297350";
+  var ASSETS_V = "1788297444";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
