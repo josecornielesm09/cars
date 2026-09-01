@@ -193,7 +193,7 @@
   var DESTINOS = [
     ["#experiencia",  "La Tacoma"],
     ["#estilos",      "Versiones"],
-    ["#inventario",   "Modelos"],
+    ["#inventario",   "El lote"],
     ["#titulo",       "Título"],
     ["#ubicacion",    "Dónde estamos"]
   ];
@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788299836";
+  var ASSETS_V = "1788300622";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1277,11 +1277,17 @@
     var pistaMuro = pistaScroll();
 
     var stage = h("div.muro__stage", null,
+      /* La tira deja de llamarse "Puras Tacomas". En el lote tambien hay
+         SUV y sedanes —el propio catalogo los ensena— y una tira que dice
+         "puras" con un Camry dentro se cae sola.
+
+         La especialidad no se pierde: se afirma arriba, en la franja de
+         datos, y la sostiene toda la pagina. Aqui se dice lo que hay. */
       h("div.muro__cabecera", null,
-        h("p.eyebrow", null, "Lo que movemos"),
-        h("h2.display.h-lg", null, "Puras ", h("em", null, "Tacomas")),
+        h("p.eyebrow", null, "Lo que hay en el lote"),
+        h("h2.display.h-lg", null, "Tacoma es lo nuestro. ", h("em", null, "No lo único.")),
         h("p.lede", null,
-          "Todas las versiones, todos los colores. Lo que está disponible hoy vive en el catálogo, y ahí se actualiza.")),
+          "Camionetas, SUV y sedanes, todos revisados. Lo que está disponible hoy vive en el catálogo, y ahí se actualiza.")),
       h("div.muro__filas", { "aria-hidden": "true" }, filaA, filaB),
       h("div.muro__cta", null,
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver todas por WhatsApp", ARROW),
