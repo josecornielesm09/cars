@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788300651";
+  var ASSETS_V = "1788300867";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1257,8 +1257,13 @@
     var enTelefono = window.matchMedia("(max-width: 767px)").matches;
 
     var MURO = [];
-    for (var i = 1; i <= 8; i++) MURO.push("assets/lote/u-0" + i + ".webp");
-    if (enTelefono) MURO = MURO.slice(0, 6);
+    for (var i = 1; i <= 15; i++) {
+      MURO.push("assets/lote/u-" + (i < 10 ? "0" + i : i) + ".webp");
+    }
+    /* En telefono, diez. Cada ficha se duplica para que no se vea el final,
+       asi que quince fuentes son treinta imagenes decodificadas de una tira
+       que solo se ve de reojo mientras pasa. */
+    if (enTelefono) MURO = MURO.slice(0, 10);
 
     function fila(desde, hasta, clase) {
       var piezas = MURO.slice(desde, hasta).map(function (src, i) {
@@ -1630,9 +1635,9 @@
       ["verde", "naranja", "blanca", "bronce"].forEach(function (n) {
         despues.push("assets/features/card-tacoma-" + n + ".webp");
       });
-      var piezasMuro = window.innerWidth <= 767 ? 6 : 8;
+      var piezasMuro = window.innerWidth <= 767 ? 10 : 15;
       for (var mi = 1; mi <= piezasMuro; mi++) {
-        despues.push("assets/lote/u-0" + mi + ".webp");
+        despues.push("assets/lote/u-" + (mi < 10 ? "0" + mi : mi) + ".webp");
       }
       vehicles.forEach(function (v) {
         if (v.image) despues.push(v.image);
