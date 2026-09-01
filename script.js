@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788300622";
+  var ASSETS_V = "1788300651";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
