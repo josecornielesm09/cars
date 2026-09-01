@@ -222,19 +222,6 @@
 
   /* Recorrido de la sección clara. Cada panel trae su propia unidad, así el
      visitante ve variedad de inventario sin salir del efecto. */
-  /* Cada capacidad con una fotografia que la demuestre, no con un recorte
-     sobre fondo liso. Una Tacoma embarrada dice "aguanta" mejor que
-     cualquier frase. */
-  var CAPS = [
-    { n: "01", t: "Aguanta el barro",  d: "Tracción 4x4 real. En el Valle eso es la diferencia entre llegar y quedarte tirado.",
-      img: "assets/aguantar/barro" },
-    { n: "02", t: "Aguanta el frío",   d: "Motor V6 3.5L probado durante décadas. Arranca, jala y se repara en cualquier taller.",
-      img: "assets/aguantar/nieve" },
-    { n: "03", t: "Aguanta la sierra", d: "Suspensión y despeje pensados para camino de terracería, no para folleto.",
-      img: "assets/aguantar/montana" },
-    { n: "04", t: "Aguanta el viaje",  d: "Double Cab y Crew Cab: caben cinco y la caja queda libre para la herramienta.",
-      img: "assets/aguantar/desierto" }
-  ];
 
   var STEPS = [
     { n: "01", t: "Escoge", d: "Mira el inventario aquí o en el catálogo de WhatsApp. Pregunta lo que sea: te contestamos nosotros, no un robot." },
@@ -488,7 +475,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788107013";
+  var ASSETS_V = "1788297350";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1298,112 +1285,6 @@
      una a otra tocando los puntos.
      ====================================================================== */
 
-  function buildCaps() {
-    var small = window.matchMedia("(max-width: 767px)").matches;
-
-    var fotos = CAPS.map(function (c, i) {
-      return h("div.aguanta__foto", null,
-        h("img", {
-          src: c.img + (small ? "-m" : "") + ".webp",
-          alt: c.t + ", Toyota Tacoma",
-          loading: i === 0 ? "eager" : "lazy", decoding: "async"
-        }));
-    });
-    fotos[0].classList.add("is-on");
-
-    var cifra = h("b.aguanta__cifra", null, "01");
-
-    var textos = CAPS.map(function (c) {
-      return h("article.aguanta__texto", null,
-        h("h3", null, c.t),
-        h("p", null, c.d));
-    });
-    textos[0].classList.add("is-on");
-
-    var puntos = CAPS.map(function (c, i) {
-      return h("button.aguanta__punto", {
-        type: "button", "aria-label": c.t,
-        onclick: function () { irA(i); }
-      }, h("i"), h("span", null, c.n));
-    });
-    puntos[0].classList.add("is-on");
-
-    var pistaCaps = pistaScroll();
-
-    var stage = h("div.aguanta__stage", null,
-      h("div.aguanta__fondo", null, fotos),
-      h("div.aguanta__velo", { "aria-hidden": "true" }),
-      cifra,
-      h("div.aguanta__cabecera", null,
-        h("p.eyebrow", null, "Por qué una Tacoma"),
-        h("h2.display.h-lg", null, "Hechas ", h("em", null, "para"), " aguantar")),
-      h("div.aguanta__textos", null, textos),
-      h("div.aguanta__puntos", null, puntos));
-    stage.appendChild(pistaCaps);
-
-    var section = h("section.aguanta#capacidades", {
-      style: "height:" + (CAPS.length * 90 + 60) + "vh"
-    }, stage);
-
-    var actual = 0;
-
-    function pinta(i) {
-      if (i === actual) return;
-      fotos[actual].classList.remove("is-on");
-      textos[actual].classList.remove("is-on");
-      puntos[actual].classList.remove("is-on");
-      actual = i;
-      fotos[i].classList.add("is-on");
-      textos[i].classList.add("is-on");
-      puntos[i].classList.add("is-on");
-      cifra.textContent = CAPS[i].n;
-    }
-
-    /* Los puntos llevan a su bloque: la seccion se puede recorrer sin
-       depender del scroll, que es lo que espera quien usa teclado. */
-    function irA(i) {
-      var alto = section.offsetHeight - window.innerHeight;
-      var destino = section.offsetTop + alto * ((i + 0.5) / CAPS.length);
-      window.scrollTo({ top: destino, behavior: reduceMotion ? "auto" : "smooth" });
-    }
-
-    section._tick = function (p) {
-      var span = range(p, 0.04, 0.96);
-      pinta(clamp(Math.floor(span * CAPS.length), 0, CAPS.length - 1));
-      /* Acercamiento lentisimo sobre la foto: da vida sin distraer. */
-      stage.style.setProperty("--zoom", sc(1 + span * 0.07));
-      pistaCaps.style.opacity = String(1 - range(span, 0.02, 0.13));
-    };
-
-    return section;
-  }
-
-  /* ========================= EL MURO DE TACOMAS ==========================
-     Esta pagina NO es un inventario. Es una landing que lleva al catalogo
-     de WhatsApp, que es donde vive lo que hay hoy y donde se actualiza.
-
-     Antes esta seccion listaba cinco unidades con ano, version y millaje.
-     Eso obligaba a que cada foto fuera de esa unidad exacta, y creaba un
-     problema cada vez que una foto no daba la talla. Ademas envejecia sola:
-     el dia que se vende una, la pagina miente.
-
-     Ahora ensena CANTIDAD. Dos filas de Tacomas que se desplazan en
-     sentidos opuestos con el scroll: el ojo lee abundancia antes de leer
-     una sola palabra. Y todo termina en el catalogo.
-     ====================================================================== */
-
-  /* ===================== MURO VERTICAL DE DOS COLUMNAS ==================
-     La misma idea que la tira horizontal, girada: dos columnas que se cruzan
-     en vertical mientras bajas. Una sube, la otra baja.
-
-     Lo que hace que se lea como movimiento y no como una lista larga es que
-     vayan en sentidos opuestos. Con las dos hacia el mismo lado el ojo las
-     toma por una sola cosa que se desliza; enfrentadas, cada una empuja a la
-     otra y la seccion respira.
-
-     Las fichas van recortadas a vertical. En apaisado, dos columnas dejan
-     tiras anchas y bajas que se leen como filas, no como columnas, y el
-     gesto se pierde. */
   function buildMuroVertical() {
     /* Solo material de estudio. Se probo mezclando fotos reales del lote y no
        funcionaba: las del lote llevan el cartel del parabrisas y el sol del
@@ -1787,7 +1668,6 @@
     var spec = buildSpec();
     var blueJourney = buildBlueJourney();
     var vmuro = buildMuroVertical();
-    var caps = buildCaps();
 
     root.appendChild(nav);
     if (nav._backdrop) root.appendChild(nav._backdrop);
@@ -1800,7 +1680,6 @@
     root.appendChild(blueJourney);
     root.appendChild(spec);
     root.appendChild(vmuro);
-    root.appendChild(caps);
     var inv = buildMuro();
     root.appendChild(inv);
     root.appendChild(buildRebuilt());
@@ -1838,15 +1717,12 @@
       if (typeof paint === "function") paint();
 
       /* Segunda tanda, ya sin retener a nadie: los recortes de
-         "Hechas para aguantar" y el resto de fotos del inventario. Asi para
+         las secciones de abajo. Asi para
          cuando el visitante llegue abajo ya estan, y el cambio de unidad no
          ensena el hueco mientras carga. */
       var despues = [];
       /* Las fotos de las secciones nuevas: llegan por detras para que no
          aparezcan en blanco cuando el visitante baje. */
-      ["barro", "nieve", "montana", "desierto"].forEach(function (n) {
-        despues.push("assets/aguantar/" + n + (window.innerWidth <= 767 ? "-m" : "") + ".webp");
-      });
       ["4x4", "motor", "cabina", "caja"].forEach(function (n) {
         despues.push("assets/paneles/" + n + ".webp");
       });
@@ -1981,8 +1857,10 @@
     });
     var anclaActiva = null;
 
-    var scenes = [hero, stats, blueJourney, vmuro, caps, inv, pie].filter(function (s) { return s && s._tick; });
-    var iceZones = [caps];
+    var scenes = [hero, stats, blueJourney, vmuro, inv, pie].filter(function (s) { return s && s._tick; });
+    /* Ya no queda ninguna seccion de fondo claro que invierta la barra:
+       la que lo hacia era "Hechas para aguantar". */
+    var iceZones = [];
     var raf = null;
 
     function paint() {
