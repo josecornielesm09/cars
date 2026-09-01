@@ -3199,6 +3199,26 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
   .vmuro__ficha { border-radius: 11px; }
 }
 
+/* EN ESCRITORIO LAS COLUMNAS SE APARTAN A LOS LADOS.
+
+   Con dos columnas repartiendose el ancho completo, en un monitor cada ficha
+   salia de casi 700px: mas alta que la ventana, asi que no se veia un muro
+   pasando sino dos cuadrados gigantes deslizandose. Y encima el panel de
+   texto quedaba encima de ellos.
+
+   Limitando el ancho de columna y empujando cada una a su lado, el centro
+   queda libre para el texto y las fichas vuelven al tamano en que se leen
+   como muro. */
+@media (min-width: 768px) {
+  .vmuro__cols {
+    padding: 0 clamp(20px, 5vw, 80px);
+    gap: clamp(20px, 4vw, 56px);
+  }
+  .vmuro__col { max-width: clamp(220px, 24vw, 340px); }
+  .vmuro__col--a { justify-self: start; }
+  .vmuro__col--b { justify-self: end; }
+}
+
 /* Sin movimiento las columnas se quedan quietas: la seccion sigue contando
    lo mismo, un muro de Tacomas con su invitacion al catalogo. */
 html.no-motion .vmuro__col { transform: none !important; }
