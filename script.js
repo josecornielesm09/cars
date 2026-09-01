@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788299727";
+  var ASSETS_V = "1788299836";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -912,7 +912,12 @@
     var data = [
       { n: 30,  suf: "+",  label: "Años en el Valle" },
       { txt: "Tacoma",     label: "Nuestra especialidad" },
-      { n: 100, suf: "%",  label: "Títulos declarados de frente" }
+      /* El dato de garantia estuvo fuera mucho tiempo porque en la ficha de
+         las unidades seguia sin confirmar. Ya no: el propio catalogo de
+         WhatsApp lo anuncia en su portada, "garantia de 3 meses en motor,
+         transmision y aire acondicionado". Con eso publicado por el negocio,
+         la pagina puede decirlo. */
+      { txt: "Garantía", label: "3 meses en motor, transmisión y aire" }
     ];
 
     var items = data.map(function (d, i) {

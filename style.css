@@ -605,7 +605,7 @@ html { background: var(--night); }
 /* La casilla de palabra no compite en tamano con las cifras: se sostiene
    sola con el corte en diagonal que ya es la firma de la marca. */
 .stats__item b.stats__palabra {
-  font-size: clamp(30px, 3.9vw, 62px);
+  font-size: clamp(26px, 3.4vw, 54px);
   transform: skewX(-11deg);
   transform-origin: left bottom;
   color: var(--blue-glow);
@@ -3214,7 +3214,13 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
     padding: 0 clamp(20px, 5vw, 80px);
     gap: clamp(20px, 4vw, 56px);
   }
-  .vmuro__col { max-width: clamp(220px, 24vw, 340px); }
+  /* width ademas de max-width: con justify-self la columna se ajusta a su
+     contenido, y su contenido pide el 100% de la columna. Sin un ancho
+     explicito que rompa ese circulo, las dos se colapsaban a dos pixeles. */
+  .vmuro__col {
+    width: 100%;
+    max-width: clamp(220px, 24vw, 340px);
+  }
   .vmuro__col--a { justify-self: start; }
   .vmuro__col--b { justify-self: end; }
 }
