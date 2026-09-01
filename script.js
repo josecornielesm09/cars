@@ -192,7 +192,6 @@
      que es la seccion mas trabajada, no estaba en el menu. */
   var DESTINOS = [
     ["#experiencia",  "La Tacoma"],
-    ["#giro",         "Lo que trae"],
     ["#estilos",      "Versiones"],
     ["#inventario",   "Modelos"],
     ["#titulo",       "Título"],
@@ -213,12 +212,6 @@
   ];
 
   /* Los cuatro textos del giro, uno por cuarto de vuelta. */
-  var SPIN_NOTES = [
-    { t: "4x4 real",       d: "Tracción en las cuatro llantas para caminos de terracería, brecha y lluvia." },
-    { t: "V6 3.5L",        d: "El motor que le dio fama a la Tacoma. Probado, servible en cualquier taller." },
-    { t: "Crawl Control",  d: "Controla la velocidad sola en pendiente y arena. Tú solo dirección." },
-    { t: "Snorkel",        d: "Toma de aire alta: cruza agua y polvo sin comprometer el motor." }
-  ];
 
   /* Recorrido de la sección clara. Cada panel trae su propia unidad, así el
      visitante ve variedad de inventario sin salir del efecto. */
@@ -475,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788297444";
+  var ASSETS_V = "1788299627";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -989,103 +982,6 @@
      - Flechas y puntos para manejarlo a mano, y flechas del teclado.
      ====================================================================== */
 
-  /* ==================== LO QUE TRAE UNA TACOMA ==========================
-     Antes: un carrusel de recortes sobre fondo liso, con autoplay. Se veia
-     como catalogo de refacciones.
-
-     Ahora son cuatro paneles verticales de fotografia. El activo se abre y
-     los otros se comprimen: en una mirada se entiende que hay cuatro cosas
-     y cual estas viendo. Se cambia pasando el cursor, tocando, con el
-     teclado, o dejando que el scroll lo lleve.
-
-     El acordeon es el patron correcto aqui porque el contenido es
-     comparable: cuatro caracteristicas del mismo nivel.
-     ====================================================================== */
-
-  function buildSpec() {
-    var PANELES = [
-      { img: "assets/paneles/4x4.webp",    n: "01", t: "4x4 real",
-        d: "Tracción en las cuatro llantas. Terracería, brecha y lluvia sin pensarlo." },
-      { img: "assets/paneles/motor.webp",  n: "02", t: "V6 3.5L",
-        d: "El motor que le dio fama. Probado, y con refacción en cualquier taller." },
-      { img: "assets/paneles/cabina.webp", n: "03", t: "Doble cabina",
-        d: "Caben cinco y la caja queda libre. Familia entre semana, trabajo el sábado." },
-      { img: "assets/paneles/caja.webp",   n: "04", t: "Caja de trabajo",
-        d: "Para herramienta, material o campamento. La misma camioneta, otro uso." }
-    ];
-
-    var actual = 0;
-    var paneles = PANELES.map(function (x, i) {
-      var el = h("article.panel", {
-        tabindex: "0", role: "button",
-        "aria-label": x.t + ". " + x.d
-      },
-        h("img", { src: x.img, alt: x.t + " en una Toyota Tacoma",
-                   loading: i < 2 ? "eager" : "lazy", decoding: "async" }),
-        h("div.panel__velo", { "aria-hidden": "true" }),
-        h("div.panel__cuerpo", null,
-          h("span.panel__n", null, x.n),
-          h("b", null, x.t),
-          h("p", null, x.d)));
-
-      function activar() { pinta(i); }
-
-      /* La luz sigue al cursor dentro del panel. Se escribe en variables
-         CSS: el navegador lo resuelve en el compositor, sin recalcular
-         nada del layout. */
-      if (!reduceMotion) {
-        el.addEventListener("mousemove", function (ev) {
-          var r = el.getBoundingClientRect();
-          el.style.setProperty("--mx", (ev.clientX - r.left) + "px");
-          el.style.setProperty("--my", (ev.clientY - r.top) + "px");
-        });
-      }
-      el.addEventListener("mouseenter", activar);
-      el.addEventListener("focus", activar);
-      el.addEventListener("click", activar);
-      return el;
-    });
-    paneles[0].classList.add("is-on");
-
-    function pinta(i) {
-      if (i === actual) return;
-      paneles[actual].classList.remove("is-on");
-      actual = i;
-      paneles[i].classList.add("is-on");
-    }
-
-    var section = h("section.section.paneles#giro", null,
-      h("div.section__inner", null,
-        h("div.section__head.reveal", null,
-          h("p.eyebrow", null, "Toyota Tacoma"),
-          h("h2.display.h-md", null, "Lo que ", h("em", null, "trae"), " una Tacoma")),
-        h("div.paneles__fila", null, paneles)));
-
-    /* Mientras la seccion cruza la pantalla, el foco avanza solo. Si el
-       visitante toca o pasa el cursor, manda el. */
-    var tocado = false;
-    section.addEventListener("pointerdown", function () { tocado = true; });
-    section.addEventListener("mouseenter", function () { tocado = true; });
-
-    if ("IntersectionObserver" in window) {
-      new IntersectionObserver(function (ent) {
-        ent.forEach(function (e) {
-          if (!e.isIntersecting || tocado) return;
-          var r = section.getBoundingClientRect();
-          var avance = clamp(1 - (r.bottom / (window.innerHeight + r.height)), 0, 0.999);
-          pinta(Math.floor(avance * PANELES.length));
-        });
-      }, { threshold: [0, 0.25, 0.5, 0.75, 1] }).observe(section);
-    }
-
-    return section;
-  }
-
-  /* ===================== 07 · TACOMA AZUL EN SCROLL =====================
-     La protagonista avanza hacia la camara mientras cuatro referencias de
-     la familia Tacoma aparecen como tarjetas secundarias. Los cuatro planos
-     ya traen el mismo estudio y se cruzan suavemente para evitar tirones.
-     ====================================================================== */
 
   function buildBlueJourney() {
     /* CUARENTA PLANOS, NO CUATRO.
@@ -1339,25 +1235,25 @@
   }
 
   function buildMuro() {
-    /* En telefono la tira lleva menos piezas. Cada una se duplica para que
-       no se vea el final, asi que doce fuentes son veinticuatro imagenes
-       decodificadas y el muro solo se ve de reojo mientras pasa. Seis
-       cuentan lo mismo por la mitad de memoria. */
+    /* SOLO UNIDADES DEL LOTE.
+
+       Antes la tira mezclaba doce fotos de referencia bajadas de internet
+       con alguna propia intercalada. Fuera todas: aqui van unicamente las
+       ocho que salieron del catalogo real, y se reconocen porque llevan el
+       cartel del parabrisas y la placa de Car Haus en el paragolpes.
+
+       Tres son fotos del lote tal cual. Las otras cinco son los recortes de
+       las unidades, montados sobre el fondo oscuro de la seccion para que
+       toda la tira tenga el mismo peso visual.
+
+       Esta seccion es la que sostiene la promesa de la pagina: si aqui hubiera
+       camionetas que no son suyas, el visitante que llega al lote encuentra
+       otra cosa. */
     var enTelefono = window.matchMedia("(max-width: 767px)").matches;
-    var cuantas = enTelefono ? 6 : 12;
 
     var MURO = [];
-    for (var i = 1; i <= cuantas; i++) {
-      MURO.push("assets/muro/t-" + (i < 10 ? "0" + i : i) + ".webp");
-    }
-    /* Se intercalan las unidades reales del lote entre las de referencia:
-       las fotos propias son las que dan credibilidad. */
-    (enTelefono ? vehicles.slice(0, 2) : vehicles).forEach(function (v, k) {
-      /* Version de muro (900x600). Las fichas miden como mucho 320px, asi
-         que servir la de 2048 era mandar seis veces mas pixeles de los que
-         la pantalla puede ensenar. */
-      if (v.photo) MURO.splice(2 + k * 3, 0, v.photo.replace(/\.webp$/, "-w.webp"));
-    });
+    for (var i = 1; i <= 8; i++) MURO.push("assets/lote/u-0" + i + ".webp");
+    if (enTelefono) MURO = MURO.slice(0, 6);
 
     function fila(desde, hasta, clase) {
       var piezas = MURO.slice(desde, hasta).map(function (src, i) {
@@ -1665,7 +1561,6 @@
     var nav = buildNav();
     var hero = buildHero();
     var stats = buildStats();
-    var spec = buildSpec();
     var blueJourney = buildBlueJourney();
     var vmuro = buildMuroVertical();
 
@@ -1675,10 +1570,8 @@
     root.appendChild(buildTicker());
     root.appendChild(stats);
     /* La Tacoma azul va inmediatamente despues del hero: el visitante acaba
-       de llegar al lote y lo primero que ve es la camioneta acercandose.
-       Los paneles vienen despues, cuando ya quiere saber que trae. */
+       de llegar al lote y lo primero que ve es la camioneta acercandose. */
     root.appendChild(blueJourney);
-    root.appendChild(spec);
     root.appendChild(vmuro);
     var inv = buildMuro();
     root.appendChild(inv);
@@ -1723,15 +1616,12 @@
       var despues = [];
       /* Las fotos de las secciones nuevas: llegan por detras para que no
          aparezcan en blanco cuando el visitante baje. */
-      ["4x4", "motor", "cabina", "caja"].forEach(function (n) {
-        despues.push("assets/paneles/" + n + ".webp");
-      });
       ["verde", "naranja", "blanca", "bronce"].forEach(function (n) {
         despues.push("assets/features/card-tacoma-" + n + ".webp");
       });
-      var piezasMuro = window.innerWidth <= 767 ? 6 : 12;
+      var piezasMuro = window.innerWidth <= 767 ? 6 : 8;
       for (var mi = 1; mi <= piezasMuro; mi++) {
-        despues.push("assets/muro/t-" + (mi < 10 ? "0" + mi : mi) + ".webp");
+        despues.push("assets/lote/u-0" + mi + ".webp");
       }
       vehicles.forEach(function (v) {
         if (v.image) despues.push(v.image);

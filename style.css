@@ -2182,91 +2182,17 @@ html.no-motion .muro__pieza:hover img { transform: none; }
    comprimen: en una mirada se ve cuantos hay y cual estas viendo.
    ======================================================================== */
 
-.paneles { background: var(--night-2); border-block: 1px solid var(--line-night); }
 
-.paneles__fila {
-  display: flex;
-  gap: 10px;
-  height: clamp(380px, 56vh, 620px);
-}
 
-.panel {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  overflow: hidden;
-  border-radius: 18px;
-  border: 1px solid var(--line-night);
-  cursor: pointer;
-  /* flex-grow es lo que abre y cierra. Se anima el crecimiento, no el
-     ancho: asi los cuatro reparten siempre el 100% sin saltos. */
-  transition: flex-grow 0.65s var(--ease), border-color 0.4s;
-}
-.panel.is-on {
-  flex-grow: 2.6;
-  border-color: rgba(109, 134, 255, 0.45);
-}
 
-.panel img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transform: scale(1.04);
-  filter: saturate(0.85) brightness(0.72);
-  transition: transform 0.9s var(--ease), filter 0.6s var(--ease);
-}
-.panel.is-on img {
-  transform: scale(1);
-  filter: saturate(1.05) brightness(1);
-}
 
-.panel__velo {
-  position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(4,6,15,0.92) 0%, rgba(4,6,15,0.30) 46%, transparent 74%);
-}
 
-.panel__cuerpo {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: clamp(16px, 2vw, 26px);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.panel__n {
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
-  color: var(--blue-glow);
-}
-.panel__cuerpo b {
-  font-family: var(--display); font-weight: 800;
-  font-size: clamp(20px, 2.2vw, 34px); line-height: 0.95;
-  text-transform: uppercase;
-  /* En vertical el titulo se gira: cabe en un panel estrecho sin cortarse. */
-  white-space: nowrap;
-}
 /* El parrafo solo aparece en el panel abierto: en los estrechos no cabria. */
-.panel__cuerpo p {
-  margin: 0;
-  font-size: 14.5px;
-  color: rgba(242,245,253,0.82);
-  max-width: 34ch;
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.45s var(--ease) 0.12s, transform 0.45s var(--ease) 0.12s;
-}
-.panel.is-on .panel__cuerpo p { opacity: 1; transform: none; }
 
 @media (max-width: 860px) {
   /* En vertical el acordeon se apila: cuatro tiras horizontales. */
-  .paneles__fila { flex-direction: column; height: auto; gap: 8px; }
-  .panel { flex: none; height: 92px; transition: height 0.55s var(--ease); }
-  .panel.is-on { height: 300px; }
-  .panel__cuerpo b { white-space: normal; }
 }
 
-html.no-motion .panel,
-html.no-motion .panel img,
-html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
 
 /* ================= PREGUNTAS DEL TITULO, NUMERADAS =====================
    La seccion mas delicada de la pagina tiene que leerse como documento, no
@@ -2454,10 +2380,6 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
   .h-md { font-size: clamp(28px, 8.5vw, 44px); }
 
   /* 2. El acordeon cerrado dejaba los titulos apretados contra el borde. */
-  .panel { height: 84px; }
-  .panel.is-on { height: 280px; }
-  .panel__cuerpo { padding: 14px 16px; }
-  .panel__cuerpo b { font-size: 19px; }
 
   /* El muro con piezas mas anchas se lee mejor que con muchas pequenas. */
   .muro__pieza { width: 68vw; }
@@ -2580,28 +2502,9 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
    ======================================================================== */
 
 @media (max-width: 860px) {
-  .paneles__fila {
-    flex-direction: row;
-    height: 340px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 4px;
-  }
-  .paneles__fila::-webkit-scrollbar { display: none; }
 
-  .panel {
-    flex: 0 0 78vw;
-    height: 100%;
-    scroll-snap-align: center;
-    transition: none;
-  }
   /* Todos abiertos: en una tira que se desliza no hace falta comprimir
      ninguno, y el texto se lee entero en cada uno. */
-  .panel img { filter: saturate(1) brightness(0.9); transform: scale(1); }
-  .panel__cuerpo p { opacity: 1; transform: none; }
-  .panel.is-on { border-color: rgba(109,134,255,.45); }
 }
 
 /* La primera toma del hero se queda de fondo: si un cuadro tarda en
@@ -2651,21 +2554,6 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
 
 /* 3 · LUZ QUE SIGUE AL CURSOR EN LOS PANELES.
    Refuerza cual esta activo sin necesidad de mas texto ni bordes. */
-.panel::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    340px circle at var(--mx, 50%) var(--my, 50%),
-    rgba(109, 134, 255, 0.20),
-    transparent 62%
-  );
-  opacity: 0;
-  transition: opacity 0.45s var(--ease);
-  pointer-events: none;
-  z-index: 2;
-}
-.panel.is-on::after { opacity: 1; }
 
 /* Subrayado que se dibuja de izquierda a derecha en los enlaces del pie. */
 .foot__enlaces a {
@@ -2687,7 +2575,6 @@ html.no-motion .panel__cuerpo p { transition-duration: 0.2s; }
 /* Todo esto se apaga sin movimiento: son adornos que corren solos, no
    informacion que dirija el visitante. */
 html.no-motion .pal > i { transform: none; transition: none; }
-html.no-motion .panel::after { display: none; }
 html.no-motion .foot__enlaces a::after { transition: none; }
 
 /* ===================== VOLVER ARRIBA, CON ANILLO =======================
