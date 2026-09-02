@@ -3241,7 +3241,10 @@ html.no-motion .vmuro__col { transform: none !important; }
 .muro__vista {
   margin: 0;
   flex: none;
-  width: clamp(220px, 26vw, 320px);
+  /* La captura mide 571px de ancho y de ahi no se puede sacar mas. A 320 se
+     estiraba en pantalla densa; a 280 el navegador la reduce y queda
+     nitida. Si algun dia llega una captura mas grande, esto puede subir. */
+  width: clamp(210px, 22vw, 280px);
 }
 .muro__vista img {
   display: block;
