@@ -3228,3 +3228,52 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
 /* Sin movimiento las columnas se quedan quietas: la seccion sigue contando
    lo mismo, un muro de Tacomas con su invitacion al catalogo. */
 html.no-motion .vmuro__col { transform: none !important; }
+
+/* ============ VISTA DEL CATALOGO JUNTO AL BOTON =========================
+   El boton verde manda a un catalogo de WhatsApp y quien no lo ha abierto
+   nunca no sabe que va a encontrar. Ensenarle la pantalla antes de tocar
+   quita esa duda: se ve que hay unidades reales, con fotos.
+
+   El borde inferior de la captura viene fundido en el propio archivo, asi
+   que la imagen no acaba, se disuelve en la seccion. */
+.muro__cta { align-items: flex-end; }
+
+.muro__vista {
+  margin: 0;
+  flex: none;
+  width: clamp(220px, 26vw, 320px);
+}
+.muro__vista img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px 14px 0 0;
+  border: 1px solid var(--line-night);
+  border-bottom: 0;
+  /* Sombra tenida del fondo: negra pura sobre azul oscuro parece suciedad. */
+  box-shadow: 0 14px 40px rgba(6, 12, 34, 0.55);
+}
+.muro__vista figcaption {
+  margin-top: 9px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--on-night-3);
+}
+
+.muro__accion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding-bottom: 4px;
+}
+
+@media (max-width: 767px) {
+  /* En vertical la vista va arriba y el boton debajo, que es el orden en
+     que se leen: primero que hay, despues como llegar. */
+  .muro__cta { flex-direction: column; align-items: stretch; gap: 16px; }
+  .muro__vista { width: min(280px, 76vw); }
+  .muro__accion { align-items: flex-start; }
+}

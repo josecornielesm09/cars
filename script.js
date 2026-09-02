@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788300867";
+  var ASSETS_V = "1788366221";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1294,9 +1294,29 @@
         h("p.lede", null,
           "Camionetas, SUV y sedanes, todos revisados. Lo que está disponible hoy vive en el catálogo, y ahí se actualiza.")),
       h("div.muro__filas", { "aria-hidden": "true" }, filaA, filaB),
+      /* ANTES DE TOCAR, ENSENAR A DONDE VA.
+
+         El boton verde manda a un catalogo de WhatsApp, y quien no lo ha
+         abierto nunca no sabe que se va a encontrar. Una vista de la propia
+         pantalla lo resuelve: se ve que hay unidades de verdad, con fotos y
+         con la garantia anunciada arriba.
+
+         La captura esta cortada por encima de los precios a proposito. Los
+         precios cambian y las unidades se venden: congelar aqui un 24,500
+         seria enseñar dentro de medio ano el precio de algo que ya no esta,
+         justo lo contrario de lo que esta pagina promete. Lo que se ve es la
+         forma del catalogo, no su contenido. */
       h("div.muro__cta", null,
-        link(CONFIG.catalogUrl, "btn btn--wa", "Ver todas por WhatsApp", ARROW),
-        h("span.muro__nota", null, "Se actualiza cada vez que entra o sale una unidad")));
+        h("figure.muro__vista", null,
+          h("img", {
+            src: "assets/catalogo/vista.webp",
+            alt: "Catálogo de Car Haus en WhatsApp, con las Toyota Tacoma disponibles",
+            loading: "lazy", decoding: "async"
+          }),
+          h("figcaption", null, "Así se ve el catálogo")),
+        h("div.muro__accion", null,
+          link(CONFIG.catalogUrl, "btn btn--wa", "Ver todas por WhatsApp", ARROW),
+          h("span.muro__nota", null, "Se actualiza cada vez que entra o sale una unidad"))));
     stage.appendChild(pistaMuro);
 
     var section = h("section.muro#inventario", { style: "height: 220vh" }, stage);
