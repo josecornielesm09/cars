@@ -3229,54 +3229,36 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
    lo mismo, un muro de Tacomas con su invitacion al catalogo. */
 html.no-motion .vmuro__col { transform: none !important; }
 
-/* ============ VISTA DEL CATALOGO JUNTO AL BOTON =========================
-   El boton verde manda a un catalogo de WhatsApp y quien no lo ha abierto
-   nunca no sabe que va a encontrar. Ensenarle la pantalla antes de tocar
-   quita esa duda: se ve que hay unidades reales, con fotos.
 
-   El borde inferior de la captura viene fundido en el propio archivo, asi
-   que la imagen no acaba, se disuelve en la seccion. */
-.muro__cta { align-items: flex-end; }
-
-.muro__vista {
-  margin: 0;
-  flex: none;
-  /* La captura mide 571px de ancho y de ahi no se puede sacar mas. A 320 se
-     estiraba en pantalla densa; a 280 el navegador la reduce y queda
-     nitida. Si algun dia llega una captura mas grande, esto puede subir. */
-  width: clamp(210px, 22vw, 280px);
+/* ============ LA VISTA DEL CATALOGO, DENTRO DEL PANEL ====================
+   Va entre el texto y el boton: se ve a donde lleva antes de tocarlo. El
+   borde inferior viene fundido en el propio archivo, asi que no acaba en un
+   corte: se disuelve en el panel. */
+.vmuro__vista {
+  margin: 20px auto 4px;
+  /* La captura mide 571px y de ahi no se puede sacar mas. A este ancho el
+     navegador la reduce en vez de estirarla. */
+  width: min(280px, 100%);
 }
-.muro__vista img {
+.vmuro__vista img {
   display: block;
   width: 100%;
   height: auto;
-  border-radius: 14px 14px 0 0;
-  border: 1px solid var(--line-night);
+  border-radius: 12px 12px 0 0;
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-bottom: 0;
-  /* Sombra tenida del fondo: negra pura sobre azul oscuro parece suciedad. */
-  box-shadow: 0 14px 40px rgba(6, 12, 34, 0.55);
-}
-.muro__vista figcaption {
-  margin-top: 9px;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--on-night-3);
+  box-shadow: 0 12px 34px rgba(2, 5, 16, 0.5);
 }
 
-.muro__accion {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding-bottom: 4px;
-}
+/* ============ ESCRITORIO ANCHO: LA SECCION NO SE PARTE EN TRES ===========
+   A 1900px las columnas quedaban a 340 y el panel a 432: sobraban 308px de
+   negro a cada lado y la seccion se leia como tres islas sueltas en vez de
+   un muro con un cartel encima.
 
-@media (max-width: 767px) {
-  /* En vertical la vista va arriba y el boton debajo, que es el orden en
-     que se leen: primero que hay, despues como llegar. */
-  .muro__cta { flex-direction: column; align-items: stretch; gap: 16px; }
-  .muro__vista { width: min(280px, 76vw); }
-  .muro__accion { align-items: flex-start; }
+   Las fichas y el panel crecen con la pantalla hasta donde el archivo
+   aguanta —840px de origen, mostradas como mucho a 420— y los huecos se
+   cierran. */
+@media (min-width: 1200px) {
+  .vmuro__col { max-width: clamp(340px, 23vw, 420px); }
+  .vmuro__copy { max-width: min(38rem, 46vw); }
 }

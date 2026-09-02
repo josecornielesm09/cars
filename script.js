@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788366326";
+  var ASSETS_V = "1788380851";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1222,6 +1222,19 @@
         h("h2.display.h-lg", null, "Todas las ", h("em", null, "versiones")),
         h("p.lede", null,
           "TRD Sport, TRD Pro, Limited y Trailhunter. Lo que está disponible hoy vive en el catálogo."),
+        /* La vista del catalogo va aqui, dentro del panel y justo encima del
+           boton: se ve a donde lleva antes de tocarlo.
+
+           Cortada por encima de los precios a proposito. Los precios cambian
+           y las unidades se venden; congelar aqui un 24,500 seria ensenar
+           dentro de medio ano el precio de algo que ya no esta. Se ve la
+           forma del catalogo, no su contenido. */
+        h("figure.vmuro__vista", null,
+          h("img", {
+            src: "assets/catalogo/vista.webp",
+            alt: "Catálogo de Car Haus en WhatsApp, con las Toyota Tacoma disponibles",
+            loading: "lazy", decoding: "async"
+          })),
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver el catálogo", ARROW)));
     stage.appendChild(pistaV);
 
@@ -1290,7 +1303,7 @@
          datos, y la sostiene toda la pagina. Aqui se dice lo que hay. */
       h("div.muro__cabecera", null,
         h("p.eyebrow", null, "Lo que hay en el lote"),
-        h("h2.display.h-lg", null, "Tacoma es lo nuestro. ", h("em", null, "No lo único.")),
+        h("h2.display.h-lg", null, "Conoce nuestro catálogo ", h("em", null, "actualizado")),
         h("p.lede", null,
           "Camionetas, SUV y sedanes, todos revisados. Lo que está disponible hoy vive en el catálogo, y ahí se actualiza.")),
       h("div.muro__filas", { "aria-hidden": "true" }, filaA, filaB),
@@ -1307,16 +1320,8 @@
          justo lo contrario de lo que esta pagina promete. Lo que se ve es la
          forma del catalogo, no su contenido. */
       h("div.muro__cta", null,
-        h("figure.muro__vista", null,
-          h("img", {
-            src: "assets/catalogo/vista.webp",
-            alt: "Catálogo de Car Haus en WhatsApp, con las Toyota Tacoma disponibles",
-            loading: "lazy", decoding: "async"
-          }),
-          h("figcaption", null, "Así se ve el catálogo")),
-        h("div.muro__accion", null,
-          link(CONFIG.catalogUrl, "btn btn--wa", "Ver todas por WhatsApp", ARROW),
-          h("span.muro__nota", null, "Se actualiza cada vez que entra o sale una unidad"))));
+        link(CONFIG.catalogUrl, "btn btn--wa", "Ver todas por WhatsApp", ARROW),
+        h("span.muro__nota", null, "Se actualiza cada vez que entra o sale una unidad")));
     stage.appendChild(pistaMuro);
 
     var section = h("section.muro#inventario", { style: "height: 220vh" }, stage);
