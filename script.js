@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788415976";
+  var ASSETS_V = "1788418717";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1045,25 +1045,54 @@
 
     decodificarCerca(frames, 0);
 
-    /* SIN TARJETAS ENCIMA DE LA TOMA.
+    /* ESTILOS DE REFERENCIA, NO INVENTARIO.
 
-       Primero fueron cuatro renders de color, despues tres paradas con un
-       dato cada una. Las dos veces tapaban justo lo unico que esta seccion
-       tiene que ensenar. El titular y el pie bastan: la camioneta se mira,
-       no se anota. */
+       Antes eran cuatro renders con ano y version concretos: 2022 Army
+       Green, 2023 Solar Octane, 2024 Limited, 2025 Trailhunter. Ninguna de
+       esas camionetas esta en el lote, y poner ano y version junto a una
+       foto hace que se lea como una unidad a la venta.
+
+       Ahora son fotografias reales de Tacoma, descargadas de Unsplash
+       (licencia de uso comercial, sin atribucion obligatoria), etiquetadas
+       por ESTILO y no por ano. El pie de la seccion aclara que lo que esta
+       disponible vive en el catalogo de WhatsApp. */
+    var options = [
+      /* Las cuatro salen del mismo estudio azul que la toma de esta seccion:
+         misma luz, mismo suelo reflectante, mismo encuadre. Las anteriores
+         eran fotos de bosque a 400px que desentonaban con el fondo y se
+         leian como cuatro recortes pegados encima.
+
+         Vienen recortadas ajustadas al vehiculo: el cuadro original es
+         cuadrado con medio lienzo de estudio vacio, y a 72x56 eso deja un
+         borron en vez de una camioneta. */
+      { img: "assets/features/card-tacoma-verde.webp",   year: "TRD Sport",   name: "Verde",   color: "Deportiva y discreta" },
+      { img: "assets/features/card-tacoma-naranja.webp", year: "TRD Pro",     name: "Naranja", color: "La de arriba de la gama" },
+      { img: "assets/features/card-tacoma-blanca.webp",  year: "Limited",     name: "Blanca",  color: "Equipada de fábrica" },
+      { img: "assets/features/card-tacoma-bronce.webp",  year: "Trailhunter", name: "Bronce",  color: "Para brecha y terracería" }
+    ];
+
+    var cards = options.map(function (o, i) {
+      return h("article.blue-card.blue-card--" + (i + 1), null,
+        h("span.blue-card__num", null, "0" + (i + 1)),
+        h("img", { src: o.img, alt: "Toyota Tacoma " + o.name + ", estilo " + o.year, loading: "lazy", decoding: "async" }),
+        h("div", null,
+          h("small", null, o.year + " · " + o.color),
+          h("b", null, o.name)));
+    });
 
     var progress = h("i");
     var stage = h("div.blue-run__stage", null,
       h("div.blue-run__copy", null,
         h("p.eyebrow", null, "Toyota Tacoma · Car Haus"),
-        h("h2.display", null, "Del conjunto ", h("em", null, "al detalle.")),
+        h("h2.display", null, "Más cerca. ", h("em", null, "Más Tacoma.")),
         /* Sin parrafo aqui: tapaba la toma justo cuando la camioneta se
            acerca, que es lo unico que esta seccion tiene que ensenar. La
            invitacion a deslizar y el enlace al catalogo ya viven en el pie
            de la seccion. */),
       h("div.blue-run__frames", null, frames),
+      h("div.blue-run__cards", null, cards),
       h("div.blue-run__foot", null,
-        h("span", null, "Toma de referencia · las unidades de hoy están en el catálogo"),
+        h("span", null, "Estilos de referencia · el inventario actual está en el catálogo"),
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver las de hoy", ARROW)),
       h("div.blue-run__progress", { "aria-hidden": "true" }, progress));
 
@@ -1129,6 +1158,15 @@
          deriva vertical, que si es decoracion. */
       stage.style.setProperty("--truck-scale", scale);
       stage.style.setProperty("--truck-y", mv(y) + "vh");
+
+      cards.forEach(function (card, i) {
+        var start = 0.16 + i * 0.14;
+        var appear = range(travel, start, start + 0.13);
+        var leave = i < 2 ? 1 - range(travel, 0.82, 0.96) : 1;
+        var vis = appear * leave;
+        card.style.opacity = String(vis);
+        card.style.transform = "translate3d(0," + mv((1 - appear) * 28) + "px,0) scale(" + sc(0.94 + appear * 0.06) + ")";
+      });
 
       progress.style.transform = "scaleX(" + travel + ")";
       pistaBJ.style.opacity = String(1 - range(travel, 0.02, 0.13));
