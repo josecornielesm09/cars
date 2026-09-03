@@ -1267,52 +1267,6 @@ html.no-motion .inv__card.is-on { transform: none; }
   transition: none;
 }
 .blue-run__frame.is-on { visibility: visible; }
-.blue-run__paradas {
-  position: absolute;
-  z-index: 5;
-  left: var(--gutter);
-  bottom: clamp(96px, 16vh, 158px);
-  width: min(370px, 31vw);
-  min-height: 168px;
-  pointer-events: none;
-}
-.blue-parada {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 15px 18px 17px;
-  border: 1px solid rgba(255, 255, 255, .17);
-  border-left: 2px solid var(--blue-glow);
-  border-radius: 15px;
-  background: rgba(3, 12, 26, .67);
-  box-shadow: 0 20px 55px rgba(10, 18, 44, .32);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  opacity: 0;
-  will-change: transform, opacity;
-}
-.blue-parada__rot {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--on-night-3);
-}
-.blue-parada b {
-  display: block;
-  margin: 8px 0 6px;
-  font-family: var(--display);
-  font-size: clamp(21px, 2vw, 30px);
-  line-height: 1;
-  text-transform: uppercase;
-}
-.blue-parada p {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: var(--on-night-2);
-}
 .blue-run__foot {
   position: absolute;
   z-index: 7;
@@ -1445,14 +1399,6 @@ html.no-motion .inv__card.is-on { transform: none; }
       #041326 0%, rgba(4, 19, 38, 0) 14%,
       rgba(2, 8, 20, 0) 84%, #020814 100%);
   }
-  .blue-run__paradas {
-    right: var(--gutter);
-    width: auto;
-    bottom: clamp(84px, 14vh, 120px);
-    min-height: 150px;
-  }
-  .blue-parada { padding: 13px 15px 15px; }
-  .blue-parada p { font-size: 12.5px; }
   .blue-run__foot { bottom: 25px; }
   .blue-run__foot > span { display: none; }
   .blue-run__foot .btn { margin-left: auto; padding: 12px 16px; }
@@ -1480,7 +1426,6 @@ html.no-motion .blue-run__stage { --truck-y: 0vh; }
    deja ver el plano lejano por debajo del cercano y se leen como dos
    camionetas superpuestas. El cambio va seco tambien sin movimiento. */
 html.no-motion .blue-run__frame { transition: none; }
-html.no-motion .blue-parada { transition: opacity 0.15s linear; }
 
 /* Estas dos reglas habian perdido su @media y quedaban sueltas, dejando
    ademas un cierre de mas que hacia al navegador descartar reglas hasta

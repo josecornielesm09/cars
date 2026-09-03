@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788407208";
+  var ASSETS_V = "1788413825";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1045,34 +1045,12 @@
 
     decodificarCerca(frames, 0);
 
-    /* RECORRIDO DE DETALLE, NO ACERCAMIENTO.
+    /* SIN TARJETAS ENCIMA DE LA TOMA.
 
-       Los sesenta planos de origen son la misma toma recortada cada vez mas:
-       el angulo no cambia, los reflejos no cambian, la camioneta nunca gira.
-       Por eso "se me viene encima" nunca se leyo —no hay camara moviendose
-       que ensenar, y ningun ajuste de codigo puede inventar la perspectiva
-       que el material no tiene.
-
-       Lo que el material SI hace, y hace bien, es entrar al detalle. Asi que
-       la seccion pasa a decir eso: tres paradas, del conjunto a la parrilla,
-       y en cada una un dato que ya se sostiene en el resto de la pagina. El
-       movimiento deja de fingir un acercamiento y pasa a significar algo.
-
-       Las cuatro tarjetas de color salen de aqui: las mismas camionetas de
-       estudio ya tienen su seccion propia mas abajo, y repetirlas encima de
-       la toma competia con las paradas. */
-    var PARADAS = [
-      { rot: "01 · El conjunto", t: "Doble cabina",   d: "El tamaño que entra en un estacionamiento y aguanta el trabajo del día." },
-      { rot: "02 · Más cerca",   t: "Revisada entera", d: "Ninguna unidad se publica antes de pasar por el taller." },
-      { rot: "03 · El detalle",  t: "Con garantía",    d: "Tres meses en motor, transmisión y aire acondicionado." }
-    ];
-
-    var paradas = PARADAS.map(function (o) {
-      return h("article.blue-parada", null,
-        h("span.blue-parada__rot", null, o.rot),
-        h("b", null, o.t),
-        h("p", null, o.d));
-    });
+       Primero fueron cuatro renders de color, despues tres paradas con un
+       dato cada una. Las dos veces tapaban justo lo unico que esta seccion
+       tiene que ensenar. El titular y el pie bastan: la camioneta se mira,
+       no se anota. */
 
     var progress = h("i");
     var stage = h("div.blue-run__stage", null,
@@ -1084,7 +1062,6 @@
            invitacion a deslizar y el enlace al catalogo ya viven en el pie
            de la seccion. */),
       h("div.blue-run__frames", null, frames),
-      h("div.blue-run__paradas", null, paradas),
       h("div.blue-run__foot", null,
         h("span", null, "Toma de referencia · las unidades de hoy están en el catálogo"),
         link(CONFIG.catalogUrl, "btn btn--wa", "Ver las de hoy", ARROW)),
@@ -1152,17 +1129,6 @@
          deriva vertical, que si es decoracion. */
       stage.style.setProperty("--truck-scale", chico ? scale : sc(scale));
       stage.style.setProperty("--truck-y", mv(y) + "vh");
-
-      /* Relevo, no acumulacion: cada parada entra, se queda un tramo y se
-         va antes de que llegue la siguiente. Solo la ultima se queda hasta
-         el final, que es donde esta el enlace al catalogo. */
-      paradas.forEach(function (el, i) {
-        var ini = 0.10 + i * 0.28;
-        var entra = range(travel, ini, ini + 0.10);
-        var sale = i < paradas.length - 1 ? 1 - range(travel, ini + 0.20, ini + 0.28) : 1;
-        el.style.opacity = String(entra * sale);
-        el.style.transform = "translate3d(0," + mv((1 - entra) * 24 - (1 - sale) * 16) + "px,0)";
-      });
 
       progress.style.transform = "scaleX(" + travel + ")";
       pistaBJ.style.opacity = String(1 - range(travel, 0.02, 0.13));
@@ -1240,8 +1206,13 @@
       var t = range(p, 0.02, 0.98);
       /* Empiezan desplazadas y se cruzan: la primera sube desde su mitad,
          la segunda baja desde la suya. Nunca se ve el final de ninguna. */
-      colA.style.transform = "translate3d(0," + mv(-t * 50) + "%,0)";
-      colB.style.transform = "translate3d(0," + mv(-50 + t * 50) + "%,0)";
+      /* SIN mv(). El recorrido de las columnas ES el contenido de la
+         seccion: solo avanza si el visitante decide bajar, igual que pasar
+         paginas. Pasarlo por mv() dejaba las dos columnas clavadas —la
+         seccion entera muerta— en cualquier equipo con "reducir movimiento"
+         puesto, que es precisamente donde mas se notaba el vacio. */
+      colA.style.transform = "translate3d(0," + (-t * 50) + "%,0)";
+      colB.style.transform = "translate3d(0," + (-50 + t * 50) + "%,0)";
       pistaV.style.opacity = String(1 - range(t, 0.02, 0.13));
     };
 
