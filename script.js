@@ -438,7 +438,7 @@
          cuando el tramo se completa, no antes. */
       var w = clamp((avance - i * 0.09) / 0.45, 0, 1);
       var suave = easeOut(w);
-      piezas[i].style.transform = "translate3d(0," + mv((1 - suave) * 106) + "%,0)";
+      piezas[i].style.transform = "translate3d(0," + (1 - suave) * 106 + "%,0)";
       piezas[i].style.opacity = String(reduceMotion ? w : suave);
     }
   }
@@ -468,7 +468,7 @@
      SUBIR ESTE NUMERO cada vez que se reemplace una imagen o un video
      conservando su nombre. Es la unica forma de que el cambio llegue.
      ====================================================================== */
-  var ASSETS_V = "1788413825";
+  var ASSETS_V = "1788415976";
 
   function asset(u) {
     if (!u || u.indexOf("assets/") !== 0) return u;
@@ -1127,7 +1127,7 @@
          Ahi no es un adorno que corre solo: es el contenido de la seccion, y
          solo avanza si el visitante decide bajar. Lo que si se apaga es la
          deriva vertical, que si es decoracion. */
-      stage.style.setProperty("--truck-scale", chico ? scale : sc(scale));
+      stage.style.setProperty("--truck-scale", scale);
       stage.style.setProperty("--truck-y", mv(y) + "vh");
 
       progress.style.transform = "scaleX(" + travel + ")";

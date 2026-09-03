@@ -1419,7 +1419,9 @@ html.no-motion .inv__card.is-on { transform: none; }
    nada que contar. */
 html.no-motion .blue-run__stage { --truck-y: 0vh; }
 @media (min-width: 768px) {
-  html.no-motion .blue-run__stage { --truck-scale: 1; }
+  /* El acercamiento tampoco: es lo unico que la seccion ensena, y solo
+     avanza si el visitante baja. Lo que si se apaga es la deriva vertical
+     de arriba, que esa si es adorno. */
 }
 /* Cruces mas cortos: el cambio se lee como avance, no como fundido lento. */
 /* Con cuarenta planos el cambio entre uno y otro es minimo: un fundido
@@ -3012,7 +3014,8 @@ html.no-motion .hero__di { transform: none !important; }
 
 /* Sin movimiento no hay ni subida ni cortina: el texto esta puesto desde el
    principio y solo se releva al bajar, que es informacion, no adorno. */
-html.no-motion .hero__titular .pal > i { transform: none !important; opacity: 1 !important; }
+/* Las palabras del titular suben con el scroll, no solas: es la entrada de
+   la portada, no una animacion en bucle. Congelarlas dejaba el hero mudo. */
 html.no-motion .hero__marca-tapa { display: none; }
 html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
 
@@ -3145,7 +3148,9 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
 
 /* Sin movimiento las columnas se quedan quietas: la seccion sigue contando
    lo mismo, un muro de Tacomas con su invitacion al catalogo. */
-html.no-motion .vmuro__col { transform: none !important; }
+/* El recorrido de las columnas NO se apaga. Es el contenido de la seccion
+   y lo dirige el dedo del visitante, no la pagina sola. Este !important
+   anulaba el JavaScript y dejaba el carrusel entero congelado. */
 
 
 /* ============ LA VISTA DEL CATALOGO, DENTRO DEL PANEL ====================
