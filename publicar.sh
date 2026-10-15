@@ -10,8 +10,8 @@ cd "$(dirname "$0")"
 
 V=$(date +%s)
 sed -i "s/var ASSETS_V = \"[0-9]*\"/var ASSETS_V = \"$V\"/" script.js
-sed -i -E "s/\?v=[0-9]+//g" index.html
-sed -i -E "s/(href|src)=\"(assets\/[^\"?]+|style\.css|script\.js)\"/\1=\"\2?v=$V\"/g" index.html
+sed -i -E "s/\?v=[0-9]+//g" index.html en.html
+sed -i -E "s/(href|src)=\"(assets\/[^\"?]+|style\.css|script\.js)\"/\1=\"\2?v=$V\"/g" index.html en.html
 
 node --check script.js
 python -c "s=open('style.css',encoding='utf-8').read(); assert s.count('{')==s.count('}'), 'llaves descuadradas'"

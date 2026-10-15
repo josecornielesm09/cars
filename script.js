@@ -247,6 +247,164 @@
     { q: "¿Qué revisan ustedes?", a: "Motor, transmisión, frenos, suspensión, dirección y aire acondicionado antes de ponerla en el lote. Te enseñamos la unidad completa, arriba y abajo." }
   ];
 
+
+  /* ============================ IDIOMA ===================================
+     El espanol es el idioma por defecto. /en (en.html) es la misma pagina
+     con <html lang="en-US">: todo texto que pasa por h() o link() se
+     traduce con este diccionario. Si se cambia un texto en espanol, hay que
+     cambiar aqui su llave, o en ingles saldra en espanol. */
+  var LANG = /^en/i.test(document.documentElement.lang) ? "en" : "es";
+  var EN = {
+      "Saltar a los vehículos": "Skip to the trucks",
+      "La Tacoma": "The Tacoma",
+      "Versiones": "Trims",
+      "El lote": "The lot",
+      "Título": "Title",
+      "Dónde estamos": "Find us",
+      "Ver catálogo": "See catalog",
+      "Catálogo": "Catalog",
+      "Ver el catálogo": "See the catalog",
+      "Car Haus LLC · Pharr, Texas": "Car Haus LLC · Pharr, Texas",
+      "en Pharr": "in Pharr",
+      "Lo que está disponible hoy vive en el catálogo, y ahí se actualiza cada vez que entra o sale una unidad.": "What's available today lives in the catalog, and it's updated every time a truck comes in or goes out.",
+      "del recorrido": "of the tour",
+      "Desliza para recorrer": "Scroll to explore",
+      "Años en el Valle": "Years in the Valley",
+      "Nuestra especialidad": "Our specialty",
+      "Garantía": "Warranty",
+      "3 meses en motor, transmisión y aire": "3 months on engine, transmission and A/C",
+      "Más cerca. ": "Up close. ",
+      "Más Tacoma.": "More Tacoma.",
+      "Más": "More",
+      "cerca.": "close.",
+      "TRD Sport · Deportiva y discreta": "TRD Sport · Sporty and understated",
+      "Deportiva y discreta": "Sporty and understated",
+      "TRD Pro · La de arriba de la gama": "TRD Pro · Top of the line",
+      "La de arriba de la gama": "Top of the line",
+      "Limited · Equipada de fábrica": "Limited · Fully loaded from the factory",
+      "Equipada de fábrica": "Fully loaded from the factory",
+      "Trailhunter · Para brecha y terracería": "Trailhunter · Built for trails and dirt roads",
+      "Para brecha y terracería": "Built for trails and dirt roads",
+      "Verde": "Green",
+      "Naranja": "Orange",
+      "Blanca": "White",
+      "Bronce": "Bronze",
+      "Azul": "Blue",
+      "Rojo": "Red",
+      "Blanco": "White",
+      "Gris": "Gray",
+      "Estilos de referencia · el inventario actual está en el catálogo": "Reference styles · current inventory is in the catalog",
+      "Ver las de hoy": "See today's trucks",
+      "Sigue bajando": "Keep scrolling",
+      "Versiones y colores": "Trims and colors",
+      "Todas las ": "Every ",
+      "versiones": "trim",
+      "TRD Sport, TRD Pro, Limited y Trailhunter. Lo que está disponible hoy vive en el catálogo.": "TRD Sport, TRD Pro, Limited and Trailhunter. What's available today lives in the catalog.",
+      "Lo que hay en el lote": "What's on the lot",
+      "Conoce nuestro catálogo ": "See our ",
+      "actualizado": "up-to-date catalog",
+      "Camionetas, SUV y sedanes, todos revisados. Lo que está disponible hoy vive en el catálogo, y ahí se actualiza.": "Trucks, SUVs and sedans, all inspected. What's available today lives in the catalog, and that's where it's updated.",
+      "Ver todas por WhatsApp": "See them all on WhatsApp",
+      "Se actualiza cada vez que entra o sale una unidad": "Updated every time a truck comes in or goes out",
+      "Sin letra chica": "No fine print",
+      "Todas con título ": "All with a ",
+      "rebuilt": "rebuilt title",
+      "Reparadas, inspeccionadas y legales para circular. Por eso una Tacoma bien equipada está a tu alcance. Te lo decimos aquí, antes de que preguntes.": "Repaired, inspected and street legal. That's why a well-equipped Tacoma is within your reach. We tell you here, before you ask.",
+      "Ver disponibles": "See available trucks",
+      "¿Dudas sobre el título? Pregúntanos, contesta una persona.": "Questions about the title? Ask us, a real person answers.",
+      "Último tramo": "Last stretch",
+      "Te ": "We'll ",
+      "esperamos": "see you",
+      " aquí": " here",
+      "Ver el mapa": "See the map",
+      "Cómo llegar": "Get directions",
+      "Correo": "Email",
+      "Preguntas frecuentes": "Frequently asked questions",
+      "¿Dónde están y qué ciudades atienden?": "Where are you located and which cities do you serve?",
+      "Estamos en 913 W U.S. Hwy 83, Suite C, en Pharr, Texas. Atendemos a clientes de McAllen, Edinburg, Mission, San Juan, Alamo, Weslaco y todo el Rio Grande Valley.": "We are at 913 W U.S. Hwy 83, Suite C, in Pharr, Texas. We serve buyers from McAllen, Edinburg, Mission, San Juan, Alamo, Weslaco and the whole Rio Grande Valley.",
+      "¿Ofrecen financiamiento para trocas usadas?": "Do you offer financing on used trucks?",
+      "Sí. Financiamos tu Toyota Tacoma usada con crédito aprobado. Escríbenos por WhatsApp o llama al 956-867-2015 para empezar.": "Yes. We finance your used Toyota Tacoma with approved credit. Message us on WhatsApp or call 956-867-2015 to get started.",
+      "¿Qué modelos de Toyota Tacoma usadas tienen?": "Which used Toyota Tacoma trims do you carry?",
+      "Trabajamos Tacoma TRD Pro, TRD Off Road, TRD Sport y SR, en 4x4 y 2WD, Double Cab y Access Cab. El inventario cambia; el catálogo de WhatsApp muestra lo disponible.": "We carry Tacoma TRD Pro, TRD Off Road, TRD Sport and SR, in 4x4 and 2WD, Double Cab and Access Cab. Inventory changes; the WhatsApp catalog shows what is available.",
+      "¿Qué significa título rebuilt?": "What is a rebuilt title?",
+      "Es un vehículo que tuvo título salvage, fue reparado y pasó la inspección del estado de Texas. Todas nuestras unidades tienen título rebuilt y lo decimos de frente.": "It is a vehicle that had a salvage title, was repaired and passed the State of Texas inspection. All our trucks have rebuilt titles and we disclose it upfront.",
+      "¿Necesito cita para ver una troca?": "Do I need an appointment to see a truck?",
+      "No. Pasa sin cita al lote en Pharr y te enseñamos la unidad completa, arriba y abajo.": "No. Walk in to our lot in Pharr and we will show you the whole truck, top to bottom.",
+      "Todas las unidades con título rebuilt. Disponibilidad sujeta a cambio.": "All trucks have rebuilt titles. Availability subject to change.",
+      "Aviso de privacidad": "Privacy notice",
+      "Car Haus LLC, inicio": "Car Haus LLC, home",
+      "Principal": "Main",
+      "Ver catálogo en WhatsApp": "See catalog on WhatsApp",
+      "Abrir menú": "Open menu",
+      "Cerrar menú": "Close menu",
+      "Navegación": "Navigation",
+      "Ver Car Haus LLC en el mapa: 913 W U.S. Hwy 83, Suite C, Pharr, TX 78577": "See Car Haus LLC on the map: 913 W U.S. Hwy 83, Suite C, Pharr, TX 78577",
+      "Recorrido aéreo del lote de Car Haus LLC en Pharr, Texas": "Aerial tour of the Car Haus LLC lot in Pharr, Texas",
+      "Toyota Tacoma azul acercándose en estudio": "Blue Toyota Tacoma approaching in the studio",
+      "Toyota Tacoma Verde, estilo TRD Sport": "Green Toyota Tacoma, TRD Sport style",
+      "Toyota Tacoma Naranja, estilo TRD Pro": "Orange Toyota Tacoma, TRD Pro style",
+      "Toyota Tacoma Blanca, estilo Limited": "White Toyota Tacoma, Limited style",
+      "Toyota Tacoma Bronce, estilo Trailhunter": "Bronze Toyota Tacoma, Trailhunter style",
+      "Catálogo de Car Haus en WhatsApp, con las Toyota Tacoma disponibles": "Car Haus WhatsApp catalog with the available Toyota Tacoma trucks",
+      "Cargar el mapa de Car Haus LLC en Pharr, Texas": "Load the map of Car Haus LLC in Pharr, Texas",
+      "Volver arriba": "Back to top",
+      "Abrir catálogo en WhatsApp": "Open catalog on WhatsApp",
+      "Mapa de Car Haus LLC en 913 W U.S. Hwy 83, Pharr, Texas": "Map of Car Haus LLC at 913 W U.S. Hwy 83, Pharr, Texas",
+      "Mapa de Car Haus LLC, 913 W U.S. Hwy 83, Pharr, Texas": "Map of Car Haus LLC, 913 W U.S. Hwy 83, Pharr, Texas",
+      "Sobre la 83": "On Highway 83",
+      "En la U.S. Highway 83, la que cruza todo el Valle. Fácil de encontrar, fácil de estacionarse.": "On U.S. Highway 83, the road that crosses the whole Valley. Easy to find, easy to park.",
+      "Lo que ves en la página es lo que está aquí parado. Sin fotos de catálogo.": "What you see on the site is what's parked here. No stock photos.",
+      "Puerta abierta": "Open door",
+      "Pasa a verlas sin cita. Te enseñamos la unidad completa, arriba y abajo.": "Come see them, no appointment needed. We'll show you the whole truck, top to bottom.",
+      "Suite C, Pharr, Texas. A minutos de McAllen, Edinburg, Mission, San Juan, Alamo y Weslaco.": "Suite C, Pharr, Texas. Minutes from McAllen, Edinburg, Mission, San Juan, Alamo and Weslaco.",
+      "Escoge": "Choose",
+      "Aplica": "Apply",
+      "Maneja": "Drive",
+      "Mira el inventario aquí o en el catálogo de WhatsApp. Pregunta lo que sea: te contestamos nosotros, no un robot.": "Browse the inventory here or in the WhatsApp catalog. Ask anything: we answer, not a robot.",
+      "Identificación, comprobante de ingresos y enganche. Trabajamos con crédito aprobado.": "ID, proof of income and a down payment. We work with approved credit.",
+      "Firmas, te entregamos placas y papeles en regla, y te la llevas.": "You sign, we hand you plates and paperwork in order, and you drive it home.",
+      "¿Qué es un título rebuilt?": "What is a rebuilt title?",
+      "Es una unidad que tuvo un daño, se reparó y pasó la inspección estatal que la regresa a circulación legal. El título lo dice y nosotros también.": "It's a vehicle that was damaged, repaired and passed the state inspection that makes it street legal again. The title says so, and so do we.",
+      "¿Por qué cuesta menos?": "Why does it cost less?",
+      "Porque el historial pesa en el valor de reventa, no en cómo camina. Es la razón de que una Tacoma equipada esté a tu alcance.": "Because the history affects resale value, not how it drives. That's why a well-equipped Tacoma is within your reach.",
+      "¿La puedo asegurar y financiar?": "Can I insure and finance it?",
+      "Sí. La cobertura de responsabilidad civil no tiene problema y trabajamos con financiamiento. La cobertura amplia depende de la aseguradora.": "Yes. Liability coverage is no problem and we offer financing. Full coverage depends on the insurance company.",
+      "¿Qué revisan ustedes?": "What do you inspect?",
+      "Motor, transmisión, frenos, suspensión, dirección y aire acondicionado antes de ponerla en el lote. Te enseñamos la unidad completa, arriba y abajo.": "Engine, transmission, brakes, suspension, steering and A/C before it goes on the lot. We'll show you the whole truck, top to bottom.",
+      "Cómo comprar": "How to buy",
+      "¿Dudas antes de empezar? Contesta una persona, no un robot.": "Questions before you start? A real person answers, not a robot.",
+      "Tres ": "Three ",
+      "pasos": "steps",
+      " y ya": " and done",
+      "Pasa ": "Come ",
+      "a": "see",
+      " verlas": " them",
+      "Dirección": "Address",
+      "Teléfono": "Phone",
+      "Catálogo en WhatsApp": "WhatsApp catalog",
+      "Estamos sobre la 83 en Pharr, a minutos de McAllen, Edinburg, Mission, San Juan, Alamo y Weslaco. Servimos a todo el Rio Grande Valley.": "We're on Highway 83 in Pharr, minutes from McAllen, Edinburg, Mission, San Juan, Alamo and Weslaco. We serve the whole Rio Grande Valley.",
+      "Abrir en Google Maps": "Open in Google Maps",
+      "Automática": "Automatic",
+      "Asientos eléctricos": "Power seats",
+      "Cámara de reversa": "Backup camera",
+      "Pantalla táctil": "Touchscreen",
+      "Estribos laterales": "Running boards",
+      "Tapa rígida para caja": "Hard tonneau cover",
+      "Quemacocos": "Sunroof",
+      "Asientos de piel con calefacción": "Heated leather seats",
+      "Sonido Premium JBL": "JBL premium sound",
+      "Monitor de punto ciego": "Blind spot monitor",
+      "Bolsas de aire intactas": "Airbags intact",
+      "Lista para uso diario o para el trabajo": "Ready for daily driving or work",
+      "Lista para el trabajo, la aventura o el uso diario": "Ready for work, adventure or daily driving",
+      "Título rebuilt — bien reparada": "Rebuilt title — well repaired",
+      "Título rebuilt — bien reparada profesionalmente": "Rebuilt title — professionally repaired",
+      "Título rebuilt — muy bien reparada": "Rebuilt title — very well repaired"
+  };
+  function tr(s) {
+    return LANG === "en" && typeof s === "string" && Object.prototype.hasOwnProperty.call(EN, s) ? EN[s] : s;
+  }
+
   /* ====================== 03 · UTILIDADES Y DOM ========================== */
 
   var clamp  = function (v, a, b) { return v < a ? a : v > b ? b : v; };
@@ -513,6 +671,7 @@
         if (!Object.prototype.hasOwnProperty.call(attrs, k)) continue;
         var v = attrs[k];
         if (v === null || v === undefined || v === false) continue;
+        if (k === "alt" || k === "title" || k === "aria-label" || k === "text") v = tr(v);
         if (k === "html") el.innerHTML = v;
         else if (k === "text") el.textContent = v;
         /* Toda ruta a assets/ sale versionada, sin tener que acordarse en
@@ -526,7 +685,7 @@
       var c = arguments[j];
       if (c === null || c === undefined || c === false) continue;
       if (Array.isArray(c)) { for (var m = 0; m < c.length; m++) if (c[m]) el.appendChild(c[m]); }
-      else if (typeof c === "string") el.appendChild(document.createTextNode(c));
+      else if (typeof c === "string") el.appendChild(document.createTextNode(tr(c)));
       else el.appendChild(c);
     }
     return el;
@@ -577,7 +736,7 @@
       href: href,
       target: href.indexOf("http") === 0 ? "_blank" : null,
       rel: href.indexOf("http") === 0 ? "noopener" : null
-    }, document.createTextNode(label), icon ? h("span", { html: icon }) : null);
+    }, document.createTextNode(tr(label)), icon ? h("span", { html: icon }) : null);
   }
 
   /* ======================= 04 · NAVEGACIÓN Y HERO ======================== */
@@ -643,9 +802,15 @@
         /* Un enlace que solo lleva un icono no dice nada a un lector de
            pantalla: hay que nombrarlo a mano. */
         var wa = link(CONFIG.catalogUrl, "nav__wa", "", WA_ICON);
-        wa.setAttribute("aria-label", "Ver catálogo en WhatsApp");
+        wa.setAttribute("aria-label", tr("Ver catálogo en WhatsApp"));
         return wa;
       })(),
+      /* Cambio de idioma. Siempre visible, tambien en telefono: el publico
+         es latino y la pagina abre en espanol, pero quien prefiera ingles
+         tiene que encontrarlo sin buscar. */
+      h("div.nav__lang", { role: "group", "aria-label": LANG === "en" ? "Language" : "Idioma" },
+        h("a", { href: "/", hreflang: "es", lang: "es", "aria-current": LANG === "es" ? "true" : null }, "ES"),
+        h("a", { href: "/en", hreflang: "en", lang: "en", "aria-current": LANG === "en" ? "true" : null }, "EN")),
       toggle,
       link(CONFIG.catalogUrl, "btn btn--wa", "Catálogo", ARROW),
       hoja
@@ -655,7 +820,7 @@
       nav.classList.toggle("is-open", v);
       fondo.classList.toggle("is-on", v);
       toggle.setAttribute("aria-expanded", v ? "true" : "false");
-      toggle.setAttribute("aria-label", v ? "Cerrar menú" : "Abrir menú");
+      toggle.setAttribute("aria-label", tr(v ? "Cerrar menú" : "Abrir menú"));
       document.body.style.overflow = v ? "hidden" : "";
       if (v) {
         /* El foco entra al menu para que el teclado no se quede detras. */
@@ -1550,17 +1715,21 @@
         })),
 
       h("div.foot__zonas", null,
-        h("p.eyebrow", null, "Zonas que servimos · Areas we serve"),
-        h("p.foot__zonas-txt", null,
-          "Car Haus LLC está en ", h("b", null, "Pharr, Texas"),
-          ", y vende Toyota Tacoma usadas a clientes de todo el Rio Grande Valley. ",
-          "Used Toyota Tacoma trucks in ", h("b", null, "Pharr, TX"),
-          ", serving the whole Rio Grande Valley."),
+        h("p.eyebrow", null, LANG === "en" ? "Areas we serve" : "Zonas que servimos"),
+        LANG === "en"
+          ? h("p.foot__zonas-txt", null,
+              "Car Haus LLC is in ", h("b", null, "Pharr, Texas"),
+              " and sells used Toyota Tacoma trucks to buyers across the whole Rio Grande Valley.")
+          : h("p.foot__zonas-txt", null,
+              "Car Haus LLC está en ", h("b", null, "Pharr, Texas"),
+              ", y vende Toyota Tacoma usadas a clientes de todo el Rio Grande Valley."),
         h("ul.foot__zonas-lista", null, ZONAS.map(function (c) { return h("li", null, c); })),
-        h("a.foot__zonas-en", { href: "/en", hreflang: "en", lang: "en" }, "Read in English →")),
+        LANG === "en"
+          ? h("a.foot__zonas-en", { href: "/", hreflang: "es", lang: "es" }, "Ver en español →")
+          : h("a.foot__zonas-en", { href: "/en", hreflang: "en", lang: "en" }, "Read in English →")),
 
       h("div.foot__legal", null,
-        h("span", null, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, TX · 30+ años"),
+        h("span", null, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, TX · " + (LANG === "en" ? "30+ years" : "30+ años")),
         h("span", null, "Todas las unidades con título rebuilt. Disponibilidad sujeta a cambio.",
           " ", h("a.foot__aviso", { href: "/privacidad" }, "Aviso de privacidad"))));
 
@@ -1771,7 +1940,7 @@
 
     var fab = link(CONFIG.catalogUrl, "fab", "", WA_ICON);
     fab.appendChild(h("span.fab__txt", null, "Ver catálogo"));
-    fab.setAttribute("aria-label", "Abrir catálogo en WhatsApp");
+    fab.setAttribute("aria-label", tr("Abrir catálogo en WhatsApp"));
     document.body.appendChild(fab);
 
     /* Titulares de seccion: entran palabra por palabra. El hero no, porque
