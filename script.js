@@ -1719,10 +1719,10 @@
         LANG === "en"
           ? h("p.foot__zonas-txt", null,
               "Car Haus LLC is in ", h("b", null, "Pharr, Texas"),
-              " and sells used Toyota Tacoma trucks to buyers across the whole Rio Grande Valley.")
+              " and sells used and pre-owned Toyota Tacoma pickup trucks to buyers across the whole Rio Grande Valley. We speak English and Spanish.")
           : h("p.foot__zonas-txt", null,
               "Car Haus LLC está en ", h("b", null, "Pharr, Texas"),
-              ", y vende Toyota Tacoma usadas a clientes de todo el Rio Grande Valley."),
+              ", y vende trocas Toyota Tacoma usadas y seminuevas a clientes de todo el Rio Grande Valley. Se habla español y English."),
         h("ul.foot__zonas-lista", null, ZONAS.map(function (c) { return h("li", null, c); })),
         LANG === "en"
           ? h("a.foot__zonas-en", { href: "/", hreflang: "es", lang: "es" }, "Ver en español →")
