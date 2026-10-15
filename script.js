@@ -211,6 +211,24 @@
     { t: "913 W Hwy 83",    d: "Suite C, Pharr, Texas. A minutos de McAllen, Edinburg, Mission, San Juan, Alamo y Weslaco." }
   ];
 
+  /* Ciudades del Rio Grande Valley para el pie. Pharr primero: es la sede. */
+  var ZONAS = ["Pharr", "McAllen", "Edinburg", "Mission", "San Juan", "Alamo",
+               "Weslaco", "Donna", "Hidalgo", "Mercedes", "Palmview", "Palmhurst",
+               "Peñitas", "La Joya", "Sullivan City", "Alton", "Elsa", "Edcouch",
+               "La Villa", "Progreso", "Rio Grande City", "Roma", "Harlingen",
+               "San Benito", "La Feria", "Brownsville", "Los Fresnos",
+               "Port Isabel", "South Padre Island", "Raymondville", "Lyford"];
+
+  /* Preguntas frecuentes del pie. El mismo texto va en el FAQPage de
+     index.html: si se cambia aqui, se cambia alla. */
+  var PREGUNTAS = [
+    { q: "¿Dónde están y qué ciudades atienden?", a: "Estamos en 913 W U.S. Hwy 83, Suite C, en Pharr, Texas. Atendemos a clientes de McAllen, Edinburg, Mission, San Juan, Alamo, Weslaco y todo el Rio Grande Valley." },
+    { q: "¿Ofrecen financiamiento para trocas usadas?", a: "Sí. Financiamos tu Toyota Tacoma usada con crédito aprobado. Escríbenos por WhatsApp o llama al 956-867-2015 para empezar." },
+    { q: "¿Qué modelos de Toyota Tacoma usadas tienen?", a: "Trabajamos Tacoma TRD Pro, TRD Off Road, TRD Sport y SR, en 4x4 y 2WD, Double Cab y Access Cab. El inventario cambia; el catálogo de WhatsApp muestra lo disponible." },
+    { q: "¿Qué significa título rebuilt?", a: "Es un vehículo que tuvo título salvage, fue reparado y pasó la inspección del estado de Texas. Todas nuestras unidades tienen título rebuilt y lo decimos de frente." },
+    { q: "¿Necesito cita para ver una troca?", a: "No. Pasa sin cita al lote en Pharr y te enseñamos la unidad completa, arriba y abajo." }
+  ];
+
   /* Los cuatro textos del giro, uno por cuarto de vuelta. */
 
   /* Recorrido de la sección clara. Cada panel trae su propia unidad, así el
@@ -1521,6 +1539,25 @@
               link(CONFIG.facebookUrl, "", "Facebook"),
               link("mailto:" + CONFIG.email, "", "Correo")),
             link(CONFIG.catalogUrl, "btn btn--wa", "Ver catálogo", ARROW)))),
+
+      /* Zonas que servimos. Texto visible, en los dos idiomas, para que
+         Google relacione la pagina con cada ciudad del Valle. Pharr va
+         primero porque ahi esta el lote. */
+      h("div.foot__faq", null,
+        h("p.eyebrow", null, "Preguntas frecuentes"),
+        PREGUNTAS.map(function (f) {
+          return h("details.foot__faq-item", null, h("summary", null, f.q), h("p", null, f.a));
+        })),
+
+      h("div.foot__zonas", null,
+        h("p.eyebrow", null, "Zonas que servimos · Areas we serve"),
+        h("p.foot__zonas-txt", null,
+          "Car Haus LLC está en ", h("b", null, "Pharr, Texas"),
+          ", y vende Toyota Tacoma usadas a clientes de todo el Rio Grande Valley. ",
+          "Used Toyota Tacoma trucks in ", h("b", null, "Pharr, TX"),
+          ", serving the whole Rio Grande Valley."),
+        h("ul.foot__zonas-lista", null, ZONAS.map(function (c) { return h("li", null, c); })),
+        h("a.foot__zonas-en", { href: "/en", hreflang: "en", lang: "en" }, "Read in English →")),
 
       h("div.foot__legal", null,
         h("span", null, "© " + new Date().getFullYear() + " Car Haus LLC · Pharr, TX · 30+ años"),

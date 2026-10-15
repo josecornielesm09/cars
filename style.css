@@ -3278,3 +3278,75 @@ html.no-motion .hero__cta { opacity: 1 !important; transform: none !important; }
   .vmuro__col { max-width: clamp(340px, 23vw, 420px); }
   .vmuro__copy { max-width: min(38rem, 46vw); }
 }
+
+
+/* ===================== ZONAS QUE SERVIMOS ==============================
+   Lista de ciudades del Valle para el SEO local. Discreta: es texto de
+   referencia al pie, no un bloque que compita con el catalogo.
+   ======================================================================== */
+.foot__zonas {
+  margin-top: clamp(28px, 3.5vw, 46px);
+  padding-top: 18px;
+  border-top: 1px solid rgba(237, 241, 250, 0.1);
+  position: relative;
+  z-index: 1;
+}
+.foot__zonas-txt {
+  margin-top: 10px;
+  max-width: 60rem;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(237, 241, 250, 0.72);
+}
+.foot__zonas-txt b { color: var(--ice, #EDF1FA); font-weight: 600; }
+.foot .foot__zonas-lista {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12.5px;
+  color: rgba(237, 241, 250, 0.55);
+}
+.foot__zonas-lista li:first-child { color: var(--ice, #EDF1FA); font-weight: 600; }
+.foot__zonas-en {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(237, 241, 250, 0.3);
+}
+.foot__zonas-en:hover { text-decoration-color: currentColor; }
+
+
+/* ====================== PREGUNTAS FRECUENTES ===========================
+   Cerradas por defecto: el texto existe para Google y para quien lo busca,
+   sin alargar el pie para todos los demas.
+   ======================================================================== */
+.foot__faq {
+  margin-top: clamp(28px, 3.5vw, 46px);
+  padding-top: 18px;
+  border-top: 1px solid rgba(237, 241, 250, 0.1);
+  position: relative;
+  z-index: 1;
+  max-width: 60rem;
+}
+.foot__faq-item { border-bottom: 1px solid rgba(237, 241, 250, 0.08); }
+.foot__faq-item summary {
+  cursor: pointer;
+  padding: 14px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ice, #EDF1FA);
+  list-style-position: outside;
+}
+.foot__faq-item summary:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.foot__faq-item p {
+  padding: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(237, 241, 250, 0.72);
+}
