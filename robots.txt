@@ -1,4 +1,26 @@
+# Car Haus LLC · www.carhausrgv.com
+# Buscadores y asistentes de IA son bienvenidos. Cada robot nombrado aqui
+# ignora el grupo "*", por eso cada grupo repite el Disallow.
+
 User-agent: *
+Allow: /
+Disallow: /revision
+
+# Buscadores de IA (ChatGPT, Perplexity, Claude, Gemini, Apple, Copilot)
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: ClaudeBot
+User-agent: Google-Extended
+User-agent: Applebot
+User-agent: Applebot-Extended
+User-agent: Bingbot
+User-agent: DuckAssistBot
+User-agent: MistralAI-User
 Allow: /
 Disallow: /revision
 
