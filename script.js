@@ -208,7 +208,7 @@
     { t: "Sobre la 83",     d: "En la U.S. Highway 83, la que cruza todo el Valle. Fácil de encontrar, fácil de estacionarse." },
     { t: "El lote",         d: "Lo que ves en la página es lo que está aquí parado. Sin fotos de catálogo." },
     { t: "Puerta abierta",  d: "Pasa a verlas sin cita. Te enseñamos la unidad completa, arriba y abajo." },
-    { t: "913 W Hwy 83",    d: "Suite C, Pharr, Texas. Servimos McAllen, Mission, Edinburg y todo el Valle." }
+    { t: "913 W Hwy 83",    d: "Suite C, Pharr, Texas. A minutos de McAllen, Edinburg, Mission, San Juan, Alamo y Weslaco." }
   ];
 
   /* Los cuatro textos del giro, uno por cuarto de vuelta. */
@@ -1419,7 +1419,7 @@
             h("p.eyebrow", null, "Dónde estamos"),
             h("h2.display.h-md", null, "Pasa ", h("em", null, "a"), " verlas"),
             h("p.lede", { style: "margin-top:20px" },
-              "Estamos sobre la 83 en Pharr. Servimos McAllen, Mission, Edinburg y todo el Valle."),
+              "Estamos sobre la 83 en Pharr, a minutos de McAllen, Edinburg, Mission, San Juan, Alamo y Weslaco. Servimos a todo el Rio Grande Valley."),
             h("div.place__rows", null, rows)))));
   }
 

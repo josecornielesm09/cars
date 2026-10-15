@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /revision
+
+Sitemap: https://www.carhausrgv.com/sitemap.xml
